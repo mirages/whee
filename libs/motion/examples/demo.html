@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <style>
+      .demo {
+        height: 100px;
+        width: 100px;
+        text-align: center;
+        line-height: 100px;
+        color: #000;
+      }
+      #demox {
+        background-color: cyan;
+      }
+      #demoy {
+        background-color: #aa2c3f;
+      }
+      #demoxy {
+        background-color: rgb(243, 247, 6);
+      }
+      #demo2 {
+        background-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <h4>水平移动</h4>
+    <div class="demo" id=demox>x</div>
+    <h4>垂直移动</h4>
+    <div class="demo" id=demoy>y</div>
+    <h4>自由移动</h4>
+    <div class="demo" id=demoxy>xy</div>
+    <h4>手动绑定事件</h4>
+    <div class="demo" id=demo2></div>
+    <script src="../dist/motion.js"></script>
+    <script>
+      // x 移动
+      var motionx = new Motion({ target: '#demox', direction: 'x' })
+      var movex = (() => {
+        var prev = 0
+        return ({x, y}, e) => {
+          prev += x
+          e.target.style.cssText = `transform:translate(${prev}px, 0px);`
+        }
+      })()
+      motionx.touchmove(movex)
+      motionx.touchend(movex)
+
+      // y 移动
+      var motiony = new Motion({ target: '#demoy', direction: 'y' })
+      var movey = (() => {
+        var prev = 0
+        return ({x, y}, e) => {
+          prev += y
+          e.target.style.cssText = `transform:translate(0px, ${prev}px);`
+        }
+      })()
+      motiony.touchmove(movey)
+      motiony.touchend(movey)
+
+      // xy 同时移动
+      var motionxy = new Motion({ target: '#demoxy' })
+      var movexy = (() => {
+        var prevx = 0
+        var prevy = 0
+        return ({x, y}, e) => {
+          prevx += x
+          prevy += y
+          e.target.style.cssText = `transform:translate(${prevx}px, ${prevy}px);`
+        }
+      })()
+      motionxy.touchmove(movexy)
+      motionxy.touchend(movexy)
+
+      // 手动绑定事件
+      var motion2 = new Motion()
+      var target = document.querySelector('#demo2')
+      var move2 = (() => {
+      var x1 = 0
+      var y1 = 0
+        return ({x, y}) => {
+          x1 += x
+          y1 += y
+          target.style.cssText = `transform:translate(${x1}px, ${y1}px);`
+        }
+      })()
+      target.addEventListener('touchstart', e => {
+        motion2.start(e)
+      }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
+      target.addEventListener('touchmove', e => {
+        e.preventDefault()
+        motion2.move(e, move2)
+      }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
+      target.addEventListener('touchend', e => {
+        motion2.end(e, move2)
+      })
+    </script>
+  </body>
+</html>
