@@ -1,8 +1,8 @@
-enum Mode {
+export enum Mode {
   realtime = 'realtime',
   animation = 'animation'
 }
-enum Direction {
+export enum Direction {
   x = 'x',
   y = 'y',
   xy = 'xy'
@@ -21,8 +21,8 @@ interface stepCallback {
   (arg: {x?: number, y?: number}): void
 }
 interface eventCallback {
-  // (s, e) => {} or (e) => {}
-  (...args: [s: { x?: number, y?: number}, e: TouchEvent] | [e: TouchEvent]): void
+  (e: TouchEvent): void
+  (s: { x?: number, y?: number }, e: TouchEvent): void
 }
 
 const noop = () => {
@@ -47,9 +47,9 @@ class Motion {
     return supportsPassive
   })()
 
-  private el: HTMLElement|null
-  private mode: Mode
-  private direction: Direction
+  readonly el: HTMLElement|null
+  readonly mode: Mode
+  readonly direction: Direction
   private trendData: tData[] = []
   private maxLength = 4
   private tmThreshold = 50 // 惯性滚动时间差阈值，超过该值不触发惯性滚动，ios 比较灵敏，android 不灵敏
@@ -171,8 +171,14 @@ class Motion {
     if (!this.rendering) {
       this.rendering = true
       const moveData = this.getMoveData(data)
+      const cbData = this.direction === Direction.x
+        ? { x: moveData.x }
+        : this.direction === Direction.y
+          ? { y: moveData.y }
+          : { x: moveData.x, y: moveData.y }
+
       this.animateId = requestAnimationFrame(() => {
-        cb({ x: moveData.x, y: moveData.y })
+        cb(cbData)
         this.rendering = false
       })
     }
@@ -315,4 +321,4 @@ class Motion {
   }
 }
 
-export default Motion
+export { Motion }

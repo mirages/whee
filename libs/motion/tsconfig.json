@@ -13,10 +13,14 @@
     // Disallow features that require cross-file information for emit.
     "isolatedModules": true,
     // Import non-ES modules as default imports.
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    // 指定输出目录，但是 @rollup/plugin-babel 插件会报错：https://github.com/rollup/plugins/issues/243
+    // 并且必须使用 rollup 的 output.dir 配置，而不能使用 output.file 配置
+    // "outDir": "dist",
+    // "rootDir": "src"
   },
-  "files": [
-    "src/index.ts"
+  "include": [
+    "src/**/*"
   ],
   "exclude": [
     "node_modules/**",
