@@ -11,7 +11,8 @@ export default {
     // file 构建文件名，单文件构建。dir 和 file 只能二选一
     file: 'dist/motion.js',
     format: 'umd',
-    name: 'Motion'
+    name: 'Motion',
+    sourcemap: true
   },
   plugins: [
     nodeResolve(),

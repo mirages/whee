@@ -1,23 +1,21 @@
 // Karma configuration
 // Generated on Mon Sep 14 2020 13:49:19 GMT+0800 (GMT+08:00)
-require('@babel/register')
-const rollupConfig = require('./rollup.config')
-
 module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: 'test',
+    // basePath: 'test',
 
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai'],
-
+    frameworks: ['mocha', 'karma-typescript'],
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: '**/*.test.js', watched: false }
+      // { pattern: '*.test.js', watched: false }
+      'test/**/*.test.ts',
+      'src/**/*.ts'
     ],
 
 
@@ -29,25 +27,41 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      '**/*.test.js': ['rollup']
+      '**/*.ts': ['karma-typescript']
     },
-
-    rollupPreprocessor: {
-      ...rollupConfig.default
-    },
-
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha'],
+    reporters: ['mocha', 'karma-typescript'],
 
+    // mocha reporter 配置
     mochaReporter: {
       showDiff: true,
       output: 'minimal',
       divider: ''
     },
 
+    // karma typescript 插件：https://www.npmjs.com/package/karma-typescript
+    // Run unit tests written in Typescript with full type checking
+    // Get remapped test coverage with Istanbul.
+    karmaTypescriptConfig: {
+      tsconfig: './tsconfig.json',
+      compilerOptions: {
+        // module: 'umd',
+        target: 'es5'
+      },
+      include: [
+        "test/**/*"
+      ],
+      reports: {
+        html: {
+          directory: 'coverage',
+          subdirectory: 'html'
+        },
+        'text-summary': null
+      }
+    },
 
     // web server port
     port: 9876,
@@ -77,7 +91,7 @@ module.exports = function(config) {
         // change Karma's debug.html to the mocha web reporter
         reporter: 'html',
         ui: 'bdd',
-        // require: ['@babel/register'],
+        // require: [require.resolve('@babel/register')],
         timeout: 5000
       },
       // 每跑完一个测试用例，就清掉客户端的 window 上下文环境
@@ -90,10 +104,9 @@ module.exports = function(config) {
 
     plugins: [
       'karma-mocha',
-      'karma-chai',
       'karma-chrome-launcher',
-      'karma-rollup-preprocessor',
-      'karma-mocha-reporter'
+      'karma-mocha-reporter',
+      'karma-typescript'
     ],
 
 

@@ -21,7 +21,7 @@ interface stepCallback {
   (arg: {x?: number, y?: number}): void
 }
 interface eventCallback {
-  (e: TouchEvent): void
+  (e: TouchEvent): void,
   (s: { x?: number, y?: number }, e: TouchEvent): void
 }
 
