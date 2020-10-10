@@ -20,8 +20,10 @@ interface tData {
 interface stepCallback {
   (arg: {x?: number, y?: number}): void
 }
-interface eventCallback {
-  (e: TouchEvent): void,
+interface touchstartCallback {
+  (e: TouchEvent): void
+}
+interface touchmoveCallback {
   (s: { x?: number, y?: number }, e: TouchEvent): void
 }
 
@@ -57,9 +59,9 @@ class Motion {
   private animateId = 0
   private rendering = false
   private accumulation = 6
-  private touchstartHandler: eventCallback = noop
-  private touchmoveHandler: eventCallback = noop
-  private touchendHandler: eventCallback = noop
+  private touchstartHandler: touchstartCallback = noop
+  private touchmoveHandler: touchmoveCallback = noop
+  private touchendHandler: touchmoveCallback = noop
 
   /**
    * Motion 构造函数
@@ -140,15 +142,15 @@ class Motion {
     return this.trendData.length > 1
   }
 
-  touchstart (cb: eventCallback = noop): void {
+  touchstart (cb: touchstartCallback = noop): void {
     this.touchstartHandler = cb
   }
 
-  touchmove (cb: eventCallback = noop): void {
+  touchmove (cb: touchmoveCallback = noop): void {
     this.touchmoveHandler = cb
   }
 
-  touchend (cb: eventCallback = noop): void {
+  touchend (cb: touchmoveCallback = noop): void {
     this.touchendHandler = cb
   }
 

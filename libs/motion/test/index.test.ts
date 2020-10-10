@@ -1,6 +1,13 @@
 import { Motion, Direction, Mode } from '../src/index'
 import { expect } from 'chai'
 
+const createTouch = (options: any) => {
+  return new Touch({
+    identifier: Number(Math.random().toString().split('.')[1]),
+    ...options
+  })
+}
+
 describe('Direction Object', () => {
   describe('properties', () => {
     it('Derection has a "x" property', () => {
@@ -64,12 +71,82 @@ describe('Motion Class', () => {
   })
 
   describe('instance methods', () => {
-    describe('touchstart(cb)', () => {
-      it('excute cb function when options.target element emit touchstart event', () => {
-  
+    const target = document.createElement('div')
+    const motion = new Motion({ target })
+
+    describe('touchstart(cb) - listen options.target element\'s touchstart event', () => {
+      it('callback function is optional', () => {
+        expect(() => {
+          motion.touchstart()
+        }).to.not.throw()
       })
-      it('cb function\'s first parameter is the touchstart event', () => {
-  
+      it('callback first parameter is the touchstart event', done => {
+        const touch = createTouch({
+          target,
+          pageX: 100,
+          pageY: 100
+        })
+        const touchstart = new TouchEvent('touchstart', {
+          // 屏幕上所有触摸点 touch 对象列表
+          touches: [touch],
+          // 当前 dom 节点上的 touch 对象列表
+          targetTouches: [touch],
+          // 触发事件变化的 touch 对象列表
+          changedTouches: [touch]
+        })
+        motion.touchstart((e: any) => {
+          expect(e).to.be.equal(touchstart)
+          done()
+        })
+        // 派发事件
+        target.dispatchEvent(touchstart)
+      })
+    })
+
+    describe('touchmove(cb) - listen options.target element\'s touchmove event', () => {
+      it('callback function is optional', () => {
+        expect(() => {
+          motion.touchmove()
+        }).to.not.throw()
+      })
+      it('callback first parameter has "x" property when options.direction equal Derection.x', done => {
+        const xMotion = new Motion({ target, direction: Direction.x })
+        const touchstart = createTouch({
+          target,
+          pageX: 100,
+          pageY: 100
+        })
+        const touchmove = createTouch({
+          target,
+          pageX: 120,
+          pageY: 130
+        })
+        const touchstartEvent = new TouchEvent('touchstart', {
+          // 屏幕上所有触摸点 touch 对象列表
+          touches: [touchstart],
+          // 当前 dom 节点上的 touch 对象列表
+          targetTouches: [touchstart],
+          // 触发事件变化的 touch 对象列表
+          changedTouches: [touchstart]
+        })
+        const touchmoveEvent = new TouchEvent('touchmove', {
+          // 屏幕上所有触摸点 touch 对象列表
+          touches: [touchmove],
+          // 当前 dom 节点上的 touch 对象列表
+          targetTouches: [touchmove],
+          // 触发事件变化的 touch 对象列表
+          changedTouches: [touchmove]
+        })
+        xMotion.touchmove((dis, e) => {
+          // expect(e).to.be.equal(touchmoveEvent)
+          console.log(dis, e)
+          // expect(dis).to.have.property('x')
+          // expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
+          done()
+        })
+        // 派发事件
+        target.dispatchEvent(touchstartEvent)
+        target.dispatchEvent(touchmoveEvent)
       })
     })
   })
