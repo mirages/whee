@@ -159,6 +159,7 @@ class Motion {
 
     this.trendData = []
     this.prevData = this.createData(touch)
+    this.setTrendData(this.prevData)
     this.clearInertiaScroll()
   }
 
@@ -169,7 +170,9 @@ class Motion {
     const touch = event.targetTouches[0]
     const data = this.createData(touch)
 
+    // 实时收集数据
     this.setTrendData(data)
+    // 下一帧渲染
     if (!this.rendering) {
       this.rendering = true
       const moveData = this.getMoveData(data)
@@ -211,7 +214,7 @@ class Motion {
     const y = data.y - lastData.y
 
     if (t > this.tmThreshold && Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / t < 0.3) {
-      // 距上次滚动时间差较大（缓慢滚动）时，不收集滚动数据
+      // 距上次数据时间差较大并且移动距离较小时（缓慢滚动），不收集滚动数据
       this.trendData = []
     } else {
       // 否则收集滚动数据，用于计算惯性滚动
