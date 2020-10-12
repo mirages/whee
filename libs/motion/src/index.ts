@@ -164,6 +164,7 @@ class Motion {
     this.clearInertiaScroll()
   }
 
+  /* istanbul ignore next */
   // eslint-disable-next-line
   move (event: TouchEvent, cb: stepCallback = noop): void {}
 
