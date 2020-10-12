@@ -15,6 +15,7 @@ module.exports = function(config) {
     files: [
       // { pattern: '*.test.js', watched: false }
       'test/**/*.test.ts',
+      'test/helper.ts',
       'src/**/*.ts'
     ],
 
@@ -97,7 +98,7 @@ module.exports = function(config) {
       // 每跑完一个测试用例，就清掉客户端的 window 上下文环境
       clearContext: true,
       // 使用新的窗口运行测试用例，而不是在一个 iframe 中运行
-      //useIframe: false,
+      // useIframe: false,
       // 是否捕获客户端控制台的日志
       captureConsole: false
     },

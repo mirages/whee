@@ -17,14 +17,14 @@ interface tData {
   y: number,
   t: number
 }
-interface stepCallback {
-  (arg: {x?: number, y?: number}): void
+export interface stepCallback {
+  (arg: {x: number, y: number}): void
 }
-interface touchstartCallback {
+export interface touchstartCallback {
   (e: TouchEvent): void
 }
-interface touchmoveCallback {
-  (s: { x?: number, y?: number }, e: TouchEvent): void
+export interface touchmoveCallback {
+  (s: { x: number, y: number }, e: TouchEvent): void
 }
 
 const noop = () => {
@@ -56,6 +56,7 @@ class Motion {
   private maxLength = 4
   private tmThreshold = 50 // 惯性滚动时间差阈值，超过该值不触发惯性滚动，ios 比较灵敏，android 不灵敏
   private prevData: tData|null = null
+  private renderData: tData|null = null
   private animateId = 0
   private rendering = false
   private accumulation = 6
@@ -173,16 +174,18 @@ class Motion {
     // 实时收集数据
     this.setTrendData(data)
     // 下一帧渲染
+    this.renderData = data
     if (!this.rendering) {
       this.rendering = true
-      const moveData = this.getMoveData(data)
-      const cbData = this.direction === Direction.x
-        ? { x: moveData.x }
-        : this.direction === Direction.y
-          ? { y: moveData.y }
-          : { x: moveData.x, y: moveData.y }
 
       this.animateId = requestAnimationFrame(() => {
+        const moveData = this.getMoveData(this.renderData as tData)
+        const cbData = this.direction === Direction.x
+          ? { x: moveData.x, y: 0 }
+          : this.direction === Direction.y
+            ? { y: moveData.y, x: 0 }
+            : { x: moveData.x, y: moveData.y }
+
         cb(cbData)
         this.rendering = false
       })
@@ -194,9 +197,9 @@ class Motion {
     const data = this.createData(touch)
     const moveData = this.getMoveData(data)
     const cbData = this.direction === Direction.x
-      ? { x: moveData.x }
+      ? { x: moveData.x, y: 0 }
       : this.direction === Direction.y
-        ? { y: moveData.y }
+        ? { y: moveData.y, x: 0 }
         : { x: moveData.x, y: moveData.y }
 
     this.setTrendData(data)
@@ -232,11 +235,7 @@ class Motion {
     if (this.isNeedInertiaScroll()) {
       this.inertiaScroll(cb)
     } else {
-      const cbData = this.direction === Direction.x
-        ? { x: 0 }
-        : this.direction === Direction.y
-          ? { y: 0 }
-          : { x: 0, y: 0 }
+      const cbData = { x: 0, y: 0 }
       cb(cbData)
     }
   }
@@ -258,7 +257,7 @@ class Motion {
         this.animateId = requestAnimationFrame(stepX)
       }
 
-      cb({ x: deltaSx })
+      cb({ x: deltaSx, y: 0 })
     }
     const stepY = () => {
       const deltaSy = yMoveStep()
@@ -267,7 +266,7 @@ class Motion {
         this.animateId = requestAnimationFrame(stepY)
       }
 
-      cb({ y: deltaSy })
+      cb({ y: deltaSy, x: 0 })
     }
     const stepXY = () => {
       const deltaSx = xMoveStep()
@@ -313,12 +312,12 @@ class Motion {
   }
 
   /**
-   * 速度为 0，或者速度方向改变，则停止运动
+   * 速度为 0，或者速度方向改变，或者速度无限大，则停止运动
    * @param v - 当前速度
    * @param nextV - 下一刻速度
    */
   private isMoveStop (v: number, nextV: number): boolean {
-    return v === 0 || v / nextV < 0
+    return v === Infinity || v === -Infinity || v === 0 || v / nextV < 0
   }
 
   clearInertiaScroll (): void {

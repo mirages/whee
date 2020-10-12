@@ -1,5 +1,6 @@
-import { Motion, Direction, Mode } from '../src/index'
+import { Motion, Direction, Mode, stepCallback } from '../src/index'
 import { expect } from 'chai'
+import { delay } from './helper'
 
 const createTouch = (options: any) => {
   return new Touch({
@@ -8,8 +9,401 @@ const createTouch = (options: any) => {
   })
 }
 
-describe('Motion Class - instance methods', () => {
-  describe('touchstart(cb) - listen options.target element\'s touchstart event', () => {
+describe('Motion Class - instance methods', function () {
+  describe('start(e) - tell motion the target\'s touchstart event manually', () => {
+    it('it only accept the touchstart event as the first parameter', () => {
+      const target = document.createElement('div')
+      const motion = new Motion()
+      const touchstart = createTouch({
+        target,
+        pageX: 0,
+        pageY: 0
+      })
+      const touchstartEvent = new TouchEvent('touchstart',{
+        touches: [touchstart],
+        targetTouches: [touchstart],
+        changedTouches: [touchstart]
+      })
+      expect(() => {
+        motion.start(touchstartEvent)
+      }).to.not.throw()
+    })
+  })
+
+  describe('move(e, cb) - tell motion the target\'s touchmove event manually', () => {
+    it('the second parameter callback function is optional', () => {
+      const target = document.createElement('div')
+      const motion = new Motion()
+      const motion1 = new Motion({ mode: Mode.animation })
+      const touchmove = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchmove],
+        targetTouches: [touchmove],
+        changedTouches: [touchmove]
+      })
+      expect(() => {
+        motion.move(touchmoveEvent)
+        motion1.move(touchmoveEvent)
+      }).to.not.throw()
+    })
+    it('move only in "x" direction when options.direction equal Derection.x', done => {
+      const target = document.createElement('div')
+      const motion = new Motion({ direction: Direction.x })
+      const touchstart = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmove = createTouch({
+        target,
+        pageX: 105,
+        pageY: 105
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart],
+        targetTouches: [touchstart],
+        changedTouches: [touchstart]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchmove],
+        targetTouches: [touchmove],
+        changedTouches: [touchmove]
+      })
+      motion.start(touchstartEvent)
+      motion.move(touchmoveEvent, (dis) => {
+        expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
+        expect(dis.y).to.be.equal(0)
+        done()
+      })
+    })
+    it('move only in "y" direction when options.direction equal Derection.y', done => {
+      const target = document.createElement('div')
+      const motion = new Motion({ direction: Direction.y })
+      const touchstart = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmove = createTouch({
+        target,
+        pageX: 105,
+        pageY: 105
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart],
+        targetTouches: [touchstart],
+        changedTouches: [touchstart]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchmove],
+        targetTouches: [touchmove],
+        changedTouches: [touchmove]
+      })
+      motion.start(touchstartEvent)
+      motion.move(touchmoveEvent, (dis) => {
+        expect(dis.x).to.be.equal(0)
+        expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
+        done()
+      })
+    })
+    it('move can in "x" and "y" direction when options.direction equal Derection.xy', done => {
+      const target = document.createElement('div')
+      const motion = new Motion({ direction: Direction.xy })
+      const touchstart = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmove = createTouch({
+        target,
+        pageX: 105,
+        pageY: 105
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart],
+        targetTouches: [touchstart],
+        changedTouches: [touchstart]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchmove],
+        targetTouches: [touchmove],
+        changedTouches: [touchmove]
+      })
+      motion.start(touchstartEvent)
+      motion.move(touchmoveEvent, (dis) => {
+        expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
+        expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
+        done()
+      })
+    })
+    it('move realtime when options.mode equal Mode.realtime', done => {
+      const target = document.createElement('div')
+      const motion = new Motion({ direction: Direction.xy })
+      const touchstart = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmove = createTouch({
+        target,
+        pageX: 105,
+        pageY: 105
+      })
+      const touchmove1 = createTouch({
+        target,
+        pageX: 110,
+        pageY: 110
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart],
+        targetTouches: [touchstart],
+        changedTouches: [touchstart]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchmove],
+        targetTouches: [touchmove],
+        changedTouches: [touchmove]
+      })
+      const touchmoveEvent1 = new TouchEvent('touchmove', {
+        touches: [touchmove1],
+        targetTouches: [touchmove1],
+        changedTouches: [touchmove1]
+      })
+      let moveX = 0
+      let moveY = 0
+      motion.start(touchstartEvent)
+      motion.move(touchmoveEvent, (dis) => {
+        moveX += dis.x
+        moveY += dis.y
+      })
+      expect(moveX).to.be.equal(touchmove.pageX - touchstart.pageX)
+      expect(moveY).to.be.equal(touchmove.pageY - touchstart.pageY)
+      motion.move(touchmoveEvent1, (dis) => {
+        moveX += dis.x
+        moveY += dis.y
+      })
+      expect(moveX).to.be.equal(touchmove1.pageX - touchstart.pageX)
+      expect(moveY).to.be.equal(touchmove1.pageY - touchstart.pageY)
+      done()
+    })
+    it('move frame by frame when options.mode equal Mode.animation', done => {
+      const target = document.createElement('div')
+      const motion = new Motion({ direction: Direction.xy, mode: Mode.animation })
+      const touchstart = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmove = createTouch({
+        target,
+        pageX: 105,
+        pageY: 105
+      })
+      const touchmove1 = createTouch({
+        target,
+        pageX: 110,
+        pageY: 110
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart],
+        targetTouches: [touchstart],
+        changedTouches: [touchstart]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchmove],
+        targetTouches: [touchmove],
+        changedTouches: [touchmove]
+      })
+      const touchmoveEvent1 = new TouchEvent('touchmove', {
+        touches: [touchmove1],
+        targetTouches: [touchmove1],
+        changedTouches: [touchmove1]
+      })
+      let moveX = 0
+      let moveY = 0
+      motion.start(touchstartEvent)
+      motion.move(touchmoveEvent, (dis) => {
+        moveX += dis.x
+        moveY += dis.y
+      })
+      motion.move(touchmoveEvent1, (dis) => {
+        moveX += dis.x
+        moveY += dis.y
+      })
+      // 并没有执行 callback
+      expect(moveX).to.be.equal(0)
+      expect(moveY).to.be.equal(0)
+      // 下一帧动画才执行 callback
+      requestAnimationFrame(() => {
+        expect(moveX).to.be.equal(touchmove1.pageX - touchstart.pageX)
+        expect(moveY).to.be.equal(touchmove1.pageY - touchstart.pageY)
+        done()
+      })
+    })
+  })
+  
+  describe('end(e, cb) - tell motion the target\'s touchend event manually', () => {
+    it('the second parameter callback function is optional', () => {
+      const target = document.createElement('div')
+      const motion = new Motion()
+      const touchend = createTouch({
+        target,
+        pageX: 0,
+        pageY: 0
+      })
+      const touchendEvent = new TouchEvent('touchend', {
+        touches: [],
+        targetTouches: [],
+        changedTouches: [touchend]
+      })
+      expect(() => {
+        motion.end(touchendEvent)
+      }).to.not.throw()
+    })
+    it('end immediately when move slowly', async () => {
+      const target = document.createElement('div')
+      const motionX = new Motion({ direction: Direction.x })
+      const motionY = new Motion({ direction: Direction.y })
+      const motionXY = new Motion({ direction: Direction.xy })
+      const touchstart = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmove = createTouch({
+        target,
+        pageX: 105,
+        pageY: 105
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [touchstart],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [touchstart],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touchstart]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [touchmove],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [touchmove],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touchmove]
+      })
+      const touchendEvent = new TouchEvent('touchend', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touchmove]
+      })
+      motionX.start(touchstartEvent)
+      motionX.move(touchmoveEvent)
+      motionY.start(touchstartEvent)
+      motionY.move(touchmoveEvent)
+      motionXY.start(touchstartEvent)
+      motionXY.move(touchmoveEvent)
+      await delay(60) // 延时不进行惯性滚动
+      motionX.end(touchendEvent, dis => {
+        expect(dis.x).to.be.equal(0)
+      })
+      motionY.end(touchendEvent, dis => {
+        expect(dis.y).to.be.equal(0)
+      })
+      motionXY.end(touchendEvent, dis => {
+        expect(dis.x).to.be.equal(0)
+        expect(dis.y).to.be.equal(0)
+      })
+    })
+    it('end emit inertial scroll when move fastly', async () => {
+      const target = document.createElement('div')
+      const motionX = new Motion({ direction: Direction.x })
+      const motionY = new Motion({ direction: Direction.y })
+      const motionXY = new Motion({ direction: Direction.xy })
+      const touchstart = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchmove = createTouch({
+        target,
+        pageX: 105,
+        pageY: 105
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [touchstart],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [touchstart],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touchstart]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [touchmove],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [touchmove],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touchmove]
+      })
+      const touchendEvent = new TouchEvent('touchend', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touchmove]
+      })
+      motionX.start(touchstartEvent)
+      motionY.start(touchstartEvent)
+      motionXY.start(touchstartEvent)
+      await delay(4)
+      motionX.move(touchmoveEvent)
+      motionY.move(touchmoveEvent)
+      motionXY.move(touchmoveEvent)
+      await delay(4) // 触发惯性滚动
+      const times: number[] = await Promise.all([
+        new Promise(resolve => {
+          let times = 0
+          motionX.end(touchendEvent, dis => {
+            times++
+            if (dis.x === 0) {
+              resolve(times)
+            }
+          })
+        }),
+        new Promise(resolve => {
+          let times = 0
+          motionY.end(touchendEvent, dis => {
+            times++
+            if (dis.y === 0) {
+              resolve(times)
+            }
+          })
+        }),
+        new Promise(resolve => {
+          let times = 0
+          motionXY.end(touchendEvent, dis => {
+            times++
+            if (dis.x === 0 && dis.y === 0) {
+              resolve(times)
+            }
+          })
+        })
+      ])
+      expect(times[0]).to.be.above(2)
+      expect(times[1]).to.be.above(2)
+      expect(times[2]).to.be.above(2)
+    })
+  })
+
+  describe('touchstart(cb) - listen motion (options.target) touchstart event passively', () => {
     it('callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion({ target })
@@ -17,7 +411,7 @@ describe('Motion Class - instance methods', () => {
         motion.touchstart()
       }).to.not.throw()
     })
-    it('callback first parameter is the touchstart event', done => {
+    it('excute callback when options.target emit touchstart event', done => {
       const target = document.createElement('div')
       const motion = new Motion({ target })
       const touch = createTouch({
@@ -42,7 +436,7 @@ describe('Motion Class - instance methods', () => {
     })
   })
 
-  describe('touchmove(cb) - listen options.target element\'s touchmove event', () => {
+  describe('touchmove(cb) - listen motion (options.target) touchmove event passively', () => {
     it('callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion({ target })
@@ -50,85 +444,7 @@ describe('Motion Class - instance methods', () => {
         motion.touchmove()
       }).to.not.throw()
     })
-    it('callback first parameter has "x" property when options.direction equal Derection.x', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ target, direction: Direction.x })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchstart],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchstart],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchmove],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchmove],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      motion.touchmove((dis, e) => {
-        expect(e).to.be.equal(touchmoveEvent)
-        expect(dis).to.have.property('x')
-        expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
-        done()
-      })
-      // 派发事件
-      target.dispatchEvent(touchstartEvent)
-      target.dispatchEvent(touchmoveEvent)
-    })
-    it('callback first parameter has "y" property when options.direction equal Derection.y', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ target, direction: Direction.y })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchstart],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchstart],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchmove],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchmove],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      motion.touchmove((dis, e) => {
-        expect(e).to.be.equal(touchmoveEvent)
-        expect(dis).to.have.property('y')
-        expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
-        done()
-      })
-      // 派发事件
-      target.dispatchEvent(touchstartEvent)
-      target.dispatchEvent(touchmoveEvent)
-    })
-    it('callback first parameter has "x" and "y" property when options.direction equal Derection.xy', done => {
+    it('excute callback when options.target emit touchmove event', done => {
       const target = document.createElement('div')
       const motion = new Motion({ target, direction: Direction.xy })
       const touchstart = createTouch({
@@ -138,8 +454,8 @@ describe('Motion Class - instance methods', () => {
       })
       const touchmove = createTouch({
         target,
-        pageX: 120,
-        pageY: 130
+        pageX: 105,
+        pageY: 105
       })
       const touchstartEvent = new TouchEvent('touchstart', {
         // 屏幕上所有触摸点 touch 对象列表
@@ -159,8 +475,6 @@ describe('Motion Class - instance methods', () => {
       })
       motion.touchmove((dis, e) => {
         expect(e).to.be.equal(touchmoveEvent)
-        expect(dis).to.have.property('x')
-        expect(dis).to.have.property('x')
         expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
         expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
         done()
@@ -171,7 +485,7 @@ describe('Motion Class - instance methods', () => {
     })
   })
 
-  describe('touchend(cb) - listen options.target element\'s touchend event', () => {
+  describe('touchend(cb) - listen motion (options.target) touchend event passively', () => {
     it('callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion({ target })
@@ -179,217 +493,7 @@ describe('Motion Class - instance methods', () => {
         motion.touchend()
       }).to.not.throw()
     })
-    it('callback first parameter has "x" property when options.direction equal Derection.x', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ target, direction: Direction.x })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchstart],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchstart],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchmove],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchmove],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      const touchendEvent = new TouchEvent('touchend', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      motion.touchend((dis, e) => {
-        expect(e).to.be.equal(touchendEvent)
-        expect(dis).to.have.property('x')
-        expect(dis.x).to.be.equal(0)
-        done()
-      })
-      // 派发事件
-      target.dispatchEvent(touchstartEvent)
-      target.dispatchEvent(touchmoveEvent)
-      // 需要延时操作，
-      setTimeout(() => {
-        target.dispatchEvent(touchendEvent)
-      }, 60)
-    })
-    it('callback may excute many times when options.direction equal Derection.x and trigger "x" direction inertial scroll', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ target, direction: Direction.x })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchstart],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchstart],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchmove],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchmove],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      const touchendEvent = new TouchEvent('touchend', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      let times = 0
-      motion.touchend((dis) => {
-        times++
-        if (dis.x === 0) {
-          console.log('times - x', times)
-          expect(times).to.be.above(2)
-          done()
-        }
-      })
-      // 派发事件
-      target.dispatchEvent(touchstartEvent)
-      target.dispatchEvent(touchmoveEvent)
-      // 需要延时操作，
-      setTimeout(() => {
-        target.dispatchEvent(touchendEvent)
-      }, 20)
-    })
-    it('callback first parameter has "y" property when options.direction equal Derection.y', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ target, direction: Direction.y })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchstart],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchstart],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchmove],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchmove],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      const touchendEvent = new TouchEvent('touchend', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      motion.touchend((dis, e) => {
-        expect(e).to.be.equal(touchendEvent)
-        expect(dis).to.have.property('y')
-        expect(dis.y).to.be.equal(0)
-        done()
-      })
-      // 派发事件
-      target.dispatchEvent(touchstartEvent)
-      target.dispatchEvent(touchmoveEvent)
-      // 需要延时操作，
-      setTimeout(() => {
-        target.dispatchEvent(touchendEvent)
-      }, 60)
-    })
-    it('callback may excute many times when options.direction equal Derection.y and trigger "y" direction inertial scroll', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ target, direction: Direction.y })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchstart],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchstart],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchmove],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchmove],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      const touchendEvent = new TouchEvent('touchend', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      let times = 0
-      motion.touchend((dis, e) => {
-        times++
-        if (dis.y === 0) {
-          console.log('times - y', times)
-          expect(times).to.be.above(2)
-          done()
-        }
-      })
-      // 派发事件
-      target.dispatchEvent(touchstartEvent)
-      target.dispatchEvent(touchmoveEvent)
-      // 需要延时操作，
-      setTimeout(() => {
-        target.dispatchEvent(touchendEvent)
-      }, 20)
-    })
-    it('callback first parameter has "x" and "y" property when options.direction equal Derection.xy', done => {
+    it('excute callback when options.target emit touchend event', async () => {
       const target = document.createElement('div')
       const motion = new Motion({ target, direction: Direction.xy })
       const touchstart = createTouch({
@@ -399,8 +503,8 @@ describe('Motion Class - instance methods', () => {
       })
       const touchmove = createTouch({
         target,
-        pageX: 120,
-        pageY: 130
+        pageX: 105,
+        pageY: 105
       })
       const touchstartEvent = new TouchEvent('touchstart', {
         // 屏幕上所有触摸点 touch 对象列表
@@ -428,207 +532,15 @@ describe('Motion Class - instance methods', () => {
       })
       motion.touchend((dis, e) => {
         expect(e).to.be.equal(touchendEvent)
-        expect(dis).to.have.property('x')
-        expect(dis).to.have.property('x')
         expect(dis.x).to.be.equal(0)
         expect(dis.y).to.be.equal(0)
-        done()
       })
       // 派发事件
       target.dispatchEvent(touchstartEvent)
       target.dispatchEvent(touchmoveEvent)
       // 需要延时操作，
-      setTimeout(() => {
-        target.dispatchEvent(touchendEvent)
-      }, 60)
-    })
-    it('callback may excute many times when options.direction equal Derection.xy and trigger "x" or "y" direction inertial scroll', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ target, direction: Direction.xy })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchstart],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchstart],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touchmove],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touchmove],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      const touchendEvent = new TouchEvent('touchend', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touchmove]
-      })
-      let times = 0
-      motion.touchend((dis, e) => {
-        times++
-        if (dis.x === 0 && dis.y === 0) {
-          console.log('times - xy', times)
-          expect(times).to.be.above(2)
-          done()
-        }
-      })
-      // 派发事件
-      target.dispatchEvent(touchstartEvent)
-      target.dispatchEvent(touchmoveEvent)
-      // 需要延时操作，
-      setTimeout(() => {
-        target.dispatchEvent(touchendEvent)
-      }, 20)
+      await delay(60)
+      target.dispatchEvent(touchendEvent)
     })
   })
-
-  describe('start(e) - tell motion the target\'s touchstart event manually', () => {
-    it('it only accept the touchstart event as the first paramter', () => {
-      const target = document.createElement('div')
-      const motion = new Motion()
-      const touchstart = createTouch({
-        target,
-        pageX: 0,
-        pageY: 0
-      })
-      const touchstartEvent = new TouchEvent('touchstart',{
-        touches: [touchstart],
-        targetTouches: [touchstart],
-        changedTouches: [touchstart]
-      })
-      expect(() => {
-        motion.start(touchstartEvent)
-      }).to.not.throw()
-    })
-  })
-
-  describe('move(e, cb) - tell motion the target\'s touchmove event manually', () => {
-    it('the second paramter callback function is optional', () => {
-      const target = document.createElement('div')
-      const motion = new Motion()
-      const touchmove = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        touches: [touchmove],
-        targetTouches: [touchmove],
-        changedTouches: [touchmove]
-      })
-      expect(() => {
-        motion.move(touchmoveEvent)
-      }).to.not.throw()
-    })
-    it('callback first parameter has "x" property when options.direction equal Derection.x', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ direction: Direction.x })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        touches: [touchstart],
-        targetTouches: [touchstart],
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        touches: [touchmove],
-        targetTouches: [touchmove],
-        changedTouches: [touchmove]
-      })
-      motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
-        expect(dis).to.have.property('x')
-        expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
-        done()
-      })
-    })
-    it('callback first parameter has "y" property when options.direction equal Derection.y', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ direction: Direction.y })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        touches: [touchstart],
-        targetTouches: [touchstart],
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        touches: [touchmove],
-        targetTouches: [touchmove],
-        changedTouches: [touchmove]
-      })
-      motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
-        expect(dis).to.have.property('y')
-        expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
-        done()
-      })
-    })
-    it('callback first parameter has "x" and "y" property when options.direction equal Derection.xy', done => {
-      const target = document.createElement('div')
-      const motion = new Motion({ direction: Direction.xy })
-      const touchstart = createTouch({
-        target,
-        pageX: 100,
-        pageY: 100
-      })
-      const touchmove = createTouch({
-        target,
-        pageX: 120,
-        pageY: 130
-      })
-      const touchstartEvent = new TouchEvent('touchstart', {
-        touches: [touchstart],
-        targetTouches: [touchstart],
-        changedTouches: [touchstart]
-      })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        touches: [touchmove],
-        targetTouches: [touchmove],
-        changedTouches: [touchmove]
-      })
-      motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
-        expect(dis).to.have.property('x')
-        expect(dis).to.have.property('y')
-        expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
-        expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
-        done()
-      })
-    })
-  })
-  
-  describe('end(e, cb) - tell motion the target\'s touchend event manually', () => {})
 })
