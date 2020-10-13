@@ -50,7 +50,8 @@ module.exports = function(config) {
       tsconfig: './tsconfig.json',
       compilerOptions: {
         // module: 'umd',
-        target: 'es5'
+        target: 'es5',
+        noEmit: false
       },
       include: [
         "test/**/*"

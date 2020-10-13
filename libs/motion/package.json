@@ -11,9 +11,17 @@
     "rollup:watch": "node node_modules/rollup/dist/bin/rollup -c -w",
     "test": "node node_modules/karma/bin/karma start"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuijingleihen/motion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shuijingleihen/motion/issues"
+  },
+  "homepage": "https://github.com/shuijingleihen/motion.git#readme",
   "keywords": [
     "mobile",
-    "movement",
+    "motion",
     "guesture"
   ],
   "author": "shuijingleihen",

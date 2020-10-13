@@ -1,4 +1,4 @@
-import { Motion, Direction, Mode, stepCallback } from '../src/index'
+import { Motion, Direction, Mode } from '../src/index'
 import { expect } from 'chai'
 import { delay } from './helper'
 
@@ -140,7 +140,7 @@ describe('Motion Class - instance methods', function () {
         done()
       })
     })
-    it('move realtime when options.mode equal Mode.realtime', done => {
+    it('move realtime when options.mode equal Mode.realtime', () => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.xy })
       const touchstart = createTouch({
@@ -148,53 +148,49 @@ describe('Motion Class - instance methods', function () {
         pageX: 100,
         pageY: 100
       })
-      const touchmove = createTouch({
-        target,
-        pageX: 105,
-        pageY: 105
-      })
-      const touchmove1 = createTouch({
-        target,
-        pageX: 110,
-        pageY: 110
-      })
       const touchstartEvent = new TouchEvent('touchstart', {
         touches: [touchstart],
         targetTouches: [touchstart],
         changedTouches: [touchstart]
       })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        touches: [touchmove],
-        targetTouches: [touchmove],
-        changedTouches: [touchmove]
-      })
-      const touchmoveEvent1 = new TouchEvent('touchmove', {
-        touches: [touchmove1],
-        targetTouches: [touchmove1],
-        changedTouches: [touchmove1]
-      })
-      let moveX = 0
-      let moveY = 0
+      // 触发 touchstart
       motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
-        moveX += dis.x
-        moveY += dis.y
-      })
-      expect(moveX).to.be.equal(touchmove.pageX - touchstart.pageX)
-      expect(moveY).to.be.equal(touchmove.pageY - touchstart.pageY)
-      motion.move(touchmoveEvent1, (dis) => {
-        moveX += dis.x
-        moveY += dis.y
-      })
-      expect(moveX).to.be.equal(touchmove1.pageX - touchstart.pageX)
-      expect(moveY).to.be.equal(touchmove1.pageY - touchstart.pageY)
-      done()
+      // 循环触发 touchmove
+      for (let i = 0; i < 6; i++) {
+        const disX = 5
+        const disY = 5
+        const touchmove = createTouch({
+          target,
+          pageX: 100 + (i + 1) * disX,
+          pageY: 100 + (i + 1) * disY
+        })
+        const touchmoveEvent = new TouchEvent('touchmove', {
+          touches: [touchmove],
+          targetTouches: [touchmove],
+          changedTouches: [touchmove]
+        })
+        let moveX = 0
+        let moveY = 0
+        motion.move(touchmoveEvent, (dis) => {
+          moveX = dis.x
+          moveY = dis.y
+        })
+        expect(moveX).to.be.equal(disX)
+        expect(moveY).to.be.equal(disY)
+      }
     })
     it('move frame by frame when options.mode equal Mode.animation', done => {
       const target = document.createElement('div')
-      const motionX = new Motion({ direction: Direction.x, mode: Mode.animation })
-      const motionY = new Motion({ direction: Direction.y, mode: Mode.animation })
-      const motionXY = new Motion({ direction: Direction.xy, mode: Mode.animation })
+      const motions = [
+        new Motion({ direction: Direction.x, mode: Mode.animation }),
+        new Motion({ direction: Direction.y, mode: Mode.animation }),
+        new Motion({ direction: Direction.xy, mode: Mode.animation })
+      ]
+      const moves = [
+        { x: 0, y: 0 },
+        { x: 0, y: 0 },
+        { x: 0, y: 0 }
+      ]
       const touchstart = createTouch({
         target,
         pageX: 100,
@@ -225,43 +221,34 @@ describe('Motion Class - instance methods', function () {
         targetTouches: [touchmove1],
         changedTouches: [touchmove1]
       })
-      let moveX = 0
-      let moveY = 0
-      let moveXY = 0
-      motionX.start(touchstartEvent)
-      motionX.move(touchmoveEvent, (dis) => {
-        moveX += dis.x
-      })
-      motionX.move(touchmoveEvent1, (dis) => {
-        moveX += dis.x
-      })
-      motionY.start(touchstartEvent)
-      motionY.move(touchmoveEvent, (dis) => {
-        moveY += dis.y
-      })
-      motionY.move(touchmoveEvent1, (dis) => {
-        moveY += dis.y
-      })
-      motionXY.start(touchstartEvent)
-      motionXY.move(touchmoveEvent, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
-      motionXY.move(touchmoveEvent1, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
+
+      for (let i = 0; i < 3; i++) {
+        motions[i].start(touchstartEvent)
+        motions[i].move(touchmoveEvent, dis => {
+          moves[i].x += dis.x
+          moves[i].y += dis.y
+        })
+        motions[i].move(touchmoveEvent1, dis => {
+          moves[i].x += dis.x
+          moves[i].y += dis.y
+        })
+      }
       // 并没有执行 callback
-      expect(moveX).to.be.equal(0)
-      expect(moveY).to.be.equal(0)
-      expect(moveXY).to.be.equal(0)
+      expect(moves[0].x).to.be.equal(0)
+      expect(moves[0].y).to.be.equal(0)
+      expect(moves[1].x).to.be.equal(0)
+      expect(moves[1].y).to.be.equal(0)
+      expect(moves[2].x).to.be.equal(0)
+      expect(moves[2].y).to.be.equal(0)
       // 下一帧动画才执行 callback
       requestAnimationFrame(() => {
         console.log('next frame')
-        expect(moveX).to.be.equal(touchmove1.pageX - touchstart.pageX)
-        expect(moveY).to.be.equal(touchmove1.pageY - touchstart.pageY)
-        expect(moveXY).to.be.equal(Math.sqrt(
-          Math.pow(touchmove1.pageX - touchstart.pageX, 2) + 
-          Math.pow(touchmove1.pageY - touchstart.pageY, 2)
-        ))
+        expect(moves[0].x).to.be.equal(touchmove1.pageX - touchstart.pageX)
+        expect(moves[0].y).to.be.equal(0)
+        expect(moves[1].x).to.be.equal(0)
+        expect(moves[1].y).to.be.equal(touchmove1.pageY - touchstart.pageY)
+        expect(moves[2].x).to.be.equal(touchmove1.pageX - touchstart.pageX)
+        expect(moves[2].y).to.be.equal(touchmove1.pageY - touchstart.pageY)
         done()
       })
     })
@@ -273,110 +260,40 @@ describe('Motion Class - instance methods', function () {
         pageX: 100,
         pageY: 100
       })
-      const touchmove = createTouch({
-        target,
-        pageX: 105,
-        pageY: 105
-      })
-      const touchmove1 = createTouch({
-        target,
-        pageX: 110,
-        pageY: 110
-      })
-      const touchmove2 = createTouch({
-        target,
-        pageX: 115,
-        pageY: 115
-      })
-      const touchmove3 = createTouch({
-        target,
-        pageX: 120,
-        pageY: 120
-      })
-      const touchmove4 = createTouch({
-        target,
-        pageX: 125,
-        pageY: 125
-      })
-      const touchmove5 = createTouch({
-        target,
-        pageX: 130,
-        pageY: 130
-      })
-      const touchmove6 = createTouch({
-        target,
-        pageX: 135,
-        pageY: 135
-      })
       const touchstartEvent = new TouchEvent('touchstart', {
         touches: [touchstart],
         targetTouches: [touchstart],
         changedTouches: [touchstart]
       })
-      const touchmoveEvent = new TouchEvent('touchmove', {
-        touches: [touchmove],
-        targetTouches: [touchmove],
-        changedTouches: [touchmove]
-      })
-      const touchmoveEvent1 = new TouchEvent('touchmove', {
-        touches: [touchmove1],
-        targetTouches: [touchmove1],
-        changedTouches: [touchmove1]
-      })
-      const touchmoveEvent2 = new TouchEvent('touchmove', {
-        touches: [touchmove2],
-        targetTouches: [touchmove2],
-        changedTouches: [touchmove2]
-      })
-      const touchmoveEvent3 = new TouchEvent('touchmove', {
-        touches: [touchmove3],
-        targetTouches: [touchmove3],
-        changedTouches: [touchmove3]
-      })
-      const touchmoveEvent4 = new TouchEvent('touchmove', {
-        touches: [touchmove4],
-        targetTouches: [touchmove4],
-        changedTouches: [touchmove4]
-      })
-      const touchmoveEvent5 = new TouchEvent('touchmove', {
-        touches: [touchmove5],
-        targetTouches: [touchmove5],
-        changedTouches: [touchmove5]
-      })
-      const touchmoveEvent6 = new TouchEvent('touchmove', {
-        touches: [touchmove6],
-        targetTouches: [touchmove6],
-        changedTouches: [touchmove6]
-      })
-      let moveXY = 0
+      // 触发 touchstart
       motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
-      motion.move(touchmoveEvent1, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
-      motion.move(touchmoveEvent2, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
-      motion.move(touchmoveEvent3, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
-      motion.move(touchmoveEvent4, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
-      motion.move(touchmoveEvent5, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
-      motion.move(touchmoveEvent6, (dis) => {
-        moveXY += Math.sqrt(Math.pow(dis.x, 2) + Math.pow(dis.y, 2))
-      })
+      // 循环触发 touchmove
+      let moveX = 0
+      let moveY = 0
+      for (let i = 0; i < 6; i++) {
+        const touchmove = createTouch({
+          target,
+          pageX: 105 + i * 5,
+          pageY: 105 + i * 5
+        })
+        const touchmoveEvent = new TouchEvent('touchmove', {
+          touches: [touchmove],
+          targetTouches: [touchmove],
+          changedTouches: [touchmove]
+        })
+        motion.move(touchmoveEvent, (dis) => {
+          moveX += dis.x
+          moveY += dis.y
+        })
+      }
+      // 重新触发 touchstart
       motion.start(touchstartEvent)
       // 下一帧也没有执行 move callback
       setTimeout(() => {
-        expect(moveXY).to.be.equal(0)
+        expect(moveX).to.be.equal(0)
+        expect(moveY).to.be.equal(0)
         done()
-      }, 30)
+      }, 40)
     })
   })
   

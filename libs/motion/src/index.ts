@@ -100,14 +100,14 @@ class Motion {
     this.el.addEventListener('touchstart', e => {
       this.start(e)
       this.touchstartHandler(e)
-    }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
+    }, Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */false)
 
     this.el.addEventListener('touchmove', e => {
       e.preventDefault()
       this.move(e, s => {
         this.touchmoveHandler(s, e)
       })
-    }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
+    }, Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */false)
 
     this.el.addEventListener('touchend', e => {
       this.end(e, s => {
