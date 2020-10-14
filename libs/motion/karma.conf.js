@@ -84,15 +84,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeHeadless', 'ChromeHeadlessNoSandbox'],
-
-    // you can define custom flags
-    customLaunchers: {
-      ChromeHeadlessNoSandbox: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
-      }
-    },
+    browsers: ['Chrome', 'ChromeHeadless'],
 
     client: {
       // 具体用法可查看：https://www.npmjs.com/package/karma-mocha
@@ -129,4 +121,3 @@ module.exports = function(config) {
     concurrency: Infinity
   })
 }
-console.log('env=============', process.env.TRAVIS)
