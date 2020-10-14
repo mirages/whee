@@ -84,7 +84,9 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'ChromeHeadless'],
+    browsers: [
+      process.env.TRAVIS ? 'ChromeHeadless' : 'Chrome'
+    ],
 
     client: {
       // 具体用法可查看：https://www.npmjs.com/package/karma-mocha
