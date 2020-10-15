@@ -1,5 +1,6 @@
 # Motion
 [!(Build Status)[https://travis-ci.com/shuijingleihen/motion.svg?branch=master]](https://travis-ci.com/shuijingleihen/motion)
+
 移动端触摸滑动工具，自动根据传入目标元素的 `touchstart, touchmove, touchend` 事件计算滑动距离，以及触摸事件结束后的惯性滑动；也可以手动传入相关事件来计算滑动距离。
 
 ## 用法
