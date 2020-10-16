@@ -61,6 +61,21 @@ module.exports = function(config) {
           directory: 'coverage',
           subdirectory: 'html'
         },
+        json: {
+          directory: 'coverage',
+          subdirectory: 'json',
+          filename: 'coverage.json'
+        },
+        lcovonly: {
+          directory: 'coverage',
+          subdirectory: 'lcovonly',
+          filename: 'coverage.txt'
+        },
+        text: {
+          directory: 'coverage',
+          subdirectory: 'text',
+          filename: 'coverage.txt'
+        },
         'text-summary': null
       }
     },
