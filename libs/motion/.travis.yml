@@ -5,4 +5,4 @@ dist: xenial
 addons:
   chrome: stable
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -s ./coverage/ -X html
+  - bash <(curl -s https://codecov.io/bash) -s ./coverage/
