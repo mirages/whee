@@ -34,10 +34,13 @@
     <div class="demo" id=demoxy>xy</div>
     <h4>手动绑定事件</h4>
     <div class="demo" id=demo2></div>
-    <script src="../dist/motion.js"></script>
+    <script src="../dist/motion.min.js"></script>
     <script>
+      var Direction = Motion.Direction
+      var Mode = Motion.Mode
+
       // x 移动
-      var motionx = new Motion.Motion({ target: '#demox', direction: Motion.Direction.x })
+      var motionx = new Motion({ target: '#demox', direction: Direction.x })
       var movex = (() => {
         var prev = 0
         return ({x, y}, e) => {
@@ -49,7 +52,7 @@
       motionx.touchend(movex)
 
       // y 移动
-      var motiony = new Motion.Motion({ target: '#demoy', direction: Motion.Direction.y })
+      var motiony = new Motion({ target: '#demoy', direction: Direction.y })
       var movey = (() => {
         var prev = 0
         return ({x, y}, e) => {
@@ -61,7 +64,7 @@
       motiony.touchend(movey)
 
       // xy 同时移动
-      var motionxy = new Motion.Motion({ target: '#demoxy' })
+      var motionxy = new Motion({ target: '#demoxy' })
       var movexy = (() => {
         var prevx = 0
         var prevy = 0
@@ -75,7 +78,7 @@
       motionxy.touchend(movexy)
 
       // 手动绑定事件
-      var motion2 = new Motion.Motion()
+      var motion2 = new Motion()
       var target = document.querySelector('#demo2')
       var move2 = (() => {
       var x1 = 0
@@ -88,11 +91,11 @@
       })()
       target.addEventListener('touchstart', e => {
         motion2.start(e)
-      }, Motion.Motion.isSupportPassive ? { passive: false, capture: true } : false)
+      }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
       target.addEventListener('touchmove', e => {
         e.preventDefault()
         motion2.move(e, move2)
-      }, Motion.Motion.isSupportPassive ? { passive: false, capture: true } : false)
+      }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
       target.addEventListener('touchend', e => {
         motion2.end(e, move2)
       })

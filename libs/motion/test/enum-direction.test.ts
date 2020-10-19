@@ -1,5 +1,7 @@
-import { Direction } from '../src/index'
+import Motion from '../src/index'
 import { expect } from 'chai'
+
+const Direction = Motion.Direction
 
 describe('Direction Object', () => {
   it('Derection has a "x" property', () => {

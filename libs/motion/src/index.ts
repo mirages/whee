@@ -1,8 +1,8 @@
-export enum Mode {
+enum Mode {
   realtime = 'realtime',
-  animation = 'animation'
+  frame = 'frame'
 }
-export enum Direction {
+enum Direction {
   x = 'x',
   y = 'y',
   xy = 'xy'
@@ -49,6 +49,9 @@ class Motion {
     return supportsPassive
   })()
 
+  static Direction = Direction
+  static Mode = Mode
+
   readonly el: HTMLElement|null
   readonly mode: Mode
   readonly direction: Direction
@@ -75,14 +78,10 @@ class Motion {
    */
   constructor (options: Opts = {}) {
     this.el = options.target ? this.getEl(options.target) : null
-    this.mode = options.mode === 'animation' ? Mode.animation : Mode.realtime
-    this.direction = options.direction === 'x'
-      ? Direction.x
-      : options.direction === 'y'
-        ? Direction.y
-        : Direction.xy
+    this.mode = options.mode || Mode.realtime
+    this.direction = options.direction || Direction.xy
 
-    if (this.mode === Mode.animation) {
+    if (this.mode === Mode.frame) {
       this.move = this.moveAnimate
     } else {
       this.move = this.moveRealtime
@@ -181,11 +180,10 @@ class Motion {
 
       this.animateId = requestAnimationFrame(() => {
         const moveData = this.getMoveData(this.renderData as tData)
-        const cbData = this.direction === Direction.x
-          ? { x: moveData.x, y: 0 }
-          : this.direction === Direction.y
-            ? { y: moveData.y, x: 0 }
-            : { x: moveData.x, y: moveData.y }
+        const cbData = {
+          x: this.direction !== Direction.y ? moveData.x : 0,
+          y: this.direction !== Direction.x ? moveData.y : 0
+        }
 
         cb(cbData)
         this.rendering = false
@@ -197,11 +195,10 @@ class Motion {
     const touch = event.targetTouches[0]
     const data = this.createData(touch)
     const moveData = this.getMoveData(data)
-    const cbData = this.direction === Direction.x
-      ? { x: moveData.x, y: 0 }
-      : this.direction === Direction.y
-        ? { y: moveData.y, x: 0 }
-        : { x: moveData.x, y: moveData.y }
+    const cbData = {
+      x: this.direction !== Direction.y ? moveData.x : 0,
+      y: this.direction !== Direction.x ? moveData.y : 0
+    }
 
     this.setTrendData(data)
     cb(cbData)
@@ -249,42 +246,27 @@ class Motion {
       y: last.y - first.y,
       t: last.t - first.t
     }
-    const xMoveStep = this.getMoveStep(average.x, average.t)
-    const yMoveStep = this.getMoveStep(average.y, average.t)
-    const stepX = () => {
-      const deltaSx = xMoveStep()
+    let xMoveStep = this.getMoveStep(average.x, average.t)
+    let yMoveStep = this.getMoveStep(average.y, average.t)
 
-      if (deltaSx !== 0) {
-        this.animateId = requestAnimationFrame(stepX)
-      }
-
-      cb({ x: deltaSx, y: 0 })
+    if (this.direction === Direction.x) {
+      yMoveStep = () => 0
+    } else if (this.direction === Direction.y) {
+      xMoveStep = () => 0
     }
-    const stepY = () => {
-      const deltaSy = yMoveStep()
 
-      if (deltaSy !== 0) {
-        this.animateId = requestAnimationFrame(stepY)
-      }
-
-      cb({ y: deltaSy, x: 0 })
-    }
-    const stepXY = () => {
+    const step = () => {
       const deltaSx = xMoveStep()
       const deltaSy = yMoveStep()
 
       if (deltaSx !== 0 || deltaSy !== 0) {
-        this.animateId = requestAnimationFrame(stepXY)
+        this.animateId = requestAnimationFrame(step)
       }
 
       cb({ x: deltaSx, y: deltaSy })
     }
 
-    this.direction === Direction.x
-      ? stepX()
-      : this.direction === Direction.y
-        ? stepY()
-        : stepXY()
+    step()
   }
 
   private getMoveStep (s: number, t: number): () => number {
@@ -326,4 +308,4 @@ class Motion {
   }
 }
 
-export { Motion }
+export default Motion

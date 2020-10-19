@@ -1,4 +1,4 @@
-import { Motion } from '../src/index'
+import Motion from '../src/index'
 import { expect } from 'chai'
 
 describe('Motion Class - static properties', () => {

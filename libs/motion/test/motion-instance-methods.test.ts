@@ -1,7 +1,9 @@
-import { Motion, Direction, Mode } from '../src/index'
+import Motion from '../src/index'
 import { expect } from 'chai'
 import { delay } from './helper'
 
+const Direction = Motion.Direction
+const Mode = Motion.Mode
 const createTouch = (options: any) => {
   return new Touch({
     identifier: Number(Math.random().toString().split('.')[1]),
@@ -34,7 +36,7 @@ describe('Motion Class - instance methods', function () {
     it('the second parameter callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion()
-      const motion1 = new Motion({ mode: Mode.animation })
+      const motion1 = new Motion({ mode: Mode.frame })
       const touchmove = createTouch({
         target,
         pageX: 100,
@@ -50,7 +52,7 @@ describe('Motion Class - instance methods', function () {
         motion1.move(touchmoveEvent)
       }).to.not.throw()
     })
-    it('move only in "x" direction when options.direction equal Derection.x', done => {
+    it('move only in "x" direction when options.direction equal Direction.x', done => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.x })
       const touchstart = createTouch({
@@ -80,7 +82,7 @@ describe('Motion Class - instance methods', function () {
         done()
       })
     })
-    it('move only in "y" direction when options.direction equal Derection.y', done => {
+    it('move only in "y" direction when options.direction equal Direction.y', done => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.y })
       const touchstart = createTouch({
@@ -110,7 +112,7 @@ describe('Motion Class - instance methods', function () {
         done()
       })
     })
-    it('move can in "x" and "y" direction when options.direction equal Derection.xy', done => {
+    it('move can in "x" and "y" direction when options.direction equal Direction.xy', done => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.xy })
       const touchstart = createTouch({
@@ -179,12 +181,12 @@ describe('Motion Class - instance methods', function () {
         expect(moveY).to.be.equal(disY)
       }
     })
-    it('move frame by frame when options.mode equal Mode.animation', done => {
+    it('move frame by frame when options.mode equal Mode.frame', done => {
       const target = document.createElement('div')
       const motions = [
-        new Motion({ direction: Direction.x, mode: Mode.animation }),
-        new Motion({ direction: Direction.y, mode: Mode.animation }),
-        new Motion({ direction: Direction.xy, mode: Mode.animation })
+        new Motion({ direction: Direction.x, mode: Mode.frame }),
+        new Motion({ direction: Direction.y, mode: Mode.frame }),
+        new Motion({ direction: Direction.xy, mode: Mode.frame })
       ]
       const moves = [
         { x: 0, y: 0 },
@@ -254,7 +256,7 @@ describe('Motion Class - instance methods', function () {
     })
     it('stop animation move when recall start(e)', done => {
       const target = document.createElement('div')
-      const motion = new Motion({ direction: Direction.xy, mode: Mode.animation })
+      const motion = new Motion({ direction: Direction.xy, mode: Mode.frame })
       const touchstart = createTouch({
         target,
         pageX: 100,

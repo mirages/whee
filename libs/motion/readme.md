@@ -32,7 +32,7 @@ motion.touchend(({ x, y }, e) => {
 
   即每一次  `touchmove` 事件进行处理计算滑动距离。
 
-- `Mode.animation` - 帧模式：
+- `Mode.frame` - 帧模式：
 
   即一帧内的多个 `touchmove` 事件合并，进行一次处理，计算总的滑动距离。
 
