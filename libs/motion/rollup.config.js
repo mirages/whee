@@ -9,14 +9,25 @@ const pkg = require('./package.json')
 
 export default {
   input: 'src/index.ts',
-  output: {
-    // dir 构建目录，多文件构建
-    // dir: 'dist',
-    // file 构建文件名，单文件构建。dir 和 file 只能二选一
-    file: 'dist/motion.min.js',
-    format: 'umd',
-    name: 'Motion'
-  },
+  output: [
+    {
+      // dir 构建目录，多文件构建
+      // dir: 'dist',
+      // file 构建文件名，单文件构建。dir 和 file 只能二选一
+      file: 'dist/motion.umd.js',
+      format: 'umd',
+      name: 'Motion',
+      plugins: [
+        uglify({
+          mangle: true
+        })
+      ]
+    },
+    {
+      file: 'dist/motion.esm.js',
+      format: 'es'
+    }
+  ],
   plugins: [
     nodeResolve(),
     commonjs(),
@@ -29,9 +40,6 @@ export default {
     //   exclude: 'node_modules/**',
     //   extensions: ['.js', '.ts']
     // }),
-    uglify({
-      mangle: true
-    }),
     banner(`motion\nv${pkg.version}\nby ${pkg.author}`)
   ]
 }

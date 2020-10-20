@@ -1,8 +1,9 @@
 {
-  "name": "motion",
+  "name": "js-motion",
   "version": "1.0.0",
-  "description": "guesture movement for mobile",
-  "main": "index.ts",
+  "description": "motion for mobile",
+  "main": "dist/motion.umd.js",
+  "module": "dist/motion.esm.js",
   "scripts": {
     "build": "npm run lint && npm run rollup",
     "lint": "node node_modules/eslint/bin/eslint.js src/ --ext .ts --format codeframe",
@@ -13,18 +14,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shuijingleihen/motion.git"
+    "url": "git+https://github.com/mirages/motion.git"
   },
   "bugs": {
-    "url": "https://github.com/shuijingleihen/motion/issues"
+    "url": "https://github.com/mirages/motion/issues"
   },
-  "homepage": "https://github.com/shuijingleihen/motion.git#readme",
+  "homepage": "https://github.com/mirages/motion.git#readme",
   "keywords": [
     "mobile",
     "motion",
     "guesture"
   ],
-  "author": "shuijingleihen",
+  "author": "mirages",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.11.2",

@@ -1,12 +1,14 @@
 # Motion
-[![Build Status](https://travis-ci.com/shuijingleihen/motion.svg?branch=master)](https://travis-ci.com/shuijingleihen/motion) [![codecov](https://codecov.io/gh/shuijingleihen/motion/branch/master/graph/badge.svg?token=ZM4K1Q670O)](https://codecov.io/gh/shuijingleihen/motion/branch/master)
+[![Build Status](https://travis-ci.com/mirages/motion.svg?branch=master)](https://travis-ci.com/mirages/motion) [![codecov](https://codecov.io/gh/mirages/motion/branch/master/graph/badge.svg?token=ZM4K1Q670O)](https://codecov.io/gh/mirages/motion/branch/master)
 
 移动端触摸滑动工具，自动根据传入目标元素的 `touchstart, touchmove, touchend` 事件计算滑动距离，以及触摸事件结束后的惯性滑动；也可以手动传入相关事件来计算滑动距离。
 
 ## 用法
 ```
-import { Motion, Mode, Direction } from 'motion'
+import Motion from 'js-motion'
 
+const Mode = Motion.Mode
+const Direction = Motion.Direction
 const motion = new Motion({
   target: '#target',
   mode: Mode.realtime,
