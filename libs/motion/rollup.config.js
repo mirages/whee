@@ -24,6 +24,7 @@ export default {
       ]
     },
     {
+      // dir: 'dist',
       file: 'dist/motion.esm.js',
       format: 'es'
     }
@@ -33,6 +34,7 @@ export default {
     commonjs(),
     typescript({
       // 可覆盖 tsconfig.json 文件中的 CompilerOptions 配置
+      // https://github.com/rollup/plugins/tree/master/packages/typescript/#readme
       sourceMap: false
     }),
     // babel({
