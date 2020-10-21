@@ -1,6 +1,6 @@
 {
   "name": "js-motion",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "motion for mobile",
   "main": "dist/motion.umd.js",
   "module": "dist/motion.esm.js",
