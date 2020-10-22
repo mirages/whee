@@ -2,6 +2,10 @@
   "name": "js-motion",
   "version": "0.1.0-alpha.0",
   "description": "motion for mobile",
+  "files": [
+    "dist",
+    "types"
+  ],
   "main": "dist/motion.umd.js",
   "module": "dist/motion.esm.js",
   "types": "types/index.d.ts",
@@ -28,16 +32,8 @@
   ],
   "author": "mirages",
   "license": "MIT",
-  "dependencies": {
-    "@babel/runtime": "^7.11.2",
-    "@babel/runtime-corejs3": "^7.11.2",
-    "core-js": "^3.6.5"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/plugin-transform-runtime": "^7.11.5",
-    "@babel/preset-env": "^7.11.5",
-    "@rollup/plugin-babel": "^5.2.0",
     "@rollup/plugin-commonjs": "^15.0.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^5.0.2",

@@ -12,7 +12,7 @@ const createTouch = (options: any) => {
 }
 
 describe('Motion Class - instance methods', function () {
-  describe('start(e) - tell motion the target\'s touchstart event manually', () => {
+  describe('touchstart(e) - tell motion the target\'s touchstart event manually', () => {
     it('it only accept the touchstart event as the first parameter', () => {
       const target = document.createElement('div')
       const motion = new Motion()
@@ -27,12 +27,12 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchstart]
       })
       expect(() => {
-        motion.start(touchstartEvent)
+        motion.touchstart(touchstartEvent)
       }).to.not.throw()
     })
   })
 
-  describe('move(e, cb) - tell motion the target\'s touchmove event manually', () => {
+  describe('touchmove(e, cb) - tell motion the target\'s touchmove event manually', () => {
     it('the second parameter callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion()
@@ -48,8 +48,8 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchmove]
       })
       expect(() => {
-        motion.move(touchmoveEvent)
-        motion1.move(touchmoveEvent)
+        motion.touchmove(touchmoveEvent)
+        motion1.touchmove(touchmoveEvent)
       }).to.not.throw()
     })
     it('move only in "x" direction when options.direction equal Direction.x', done => {
@@ -75,8 +75,8 @@ describe('Motion Class - instance methods', function () {
         targetTouches: [touchmove],
         changedTouches: [touchmove]
       })
-      motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
+      motion.touchstart(touchstartEvent)
+      motion.touchmove(touchmoveEvent, (dis) => {
         expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
         expect(dis.y).to.be.equal(0)
         done()
@@ -105,8 +105,8 @@ describe('Motion Class - instance methods', function () {
         targetTouches: [touchmove],
         changedTouches: [touchmove]
       })
-      motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
+      motion.touchstart(touchstartEvent)
+      motion.touchmove(touchmoveEvent, (dis) => {
         expect(dis.x).to.be.equal(0)
         expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
         done()
@@ -135,8 +135,8 @@ describe('Motion Class - instance methods', function () {
         targetTouches: [touchmove],
         changedTouches: [touchmove]
       })
-      motion.start(touchstartEvent)
-      motion.move(touchmoveEvent, (dis) => {
+      motion.touchstart(touchstartEvent)
+      motion.touchmove(touchmoveEvent, (dis) => {
         expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
         expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
         done()
@@ -156,7 +156,7 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchstart]
       })
       // 触发 touchstart
-      motion.start(touchstartEvent)
+      motion.touchstart(touchstartEvent)
       // 循环触发 touchmove
       for (let i = 0; i < 6; i++) {
         const disX = 5
@@ -173,7 +173,7 @@ describe('Motion Class - instance methods', function () {
         })
         let moveX = 0
         let moveY = 0
-        motion.move(touchmoveEvent, (dis) => {
+        motion.touchmove(touchmoveEvent, (dis) => {
           moveX = dis.x
           moveY = dis.y
         })
@@ -225,12 +225,12 @@ describe('Motion Class - instance methods', function () {
       })
 
       for (let i = 0; i < 3; i++) {
-        motions[i].start(touchstartEvent)
-        motions[i].move(touchmoveEvent, dis => {
+        motions[i].touchstart(touchstartEvent)
+        motions[i].touchmove(touchmoveEvent, dis => {
           moves[i].x += dis.x
           moves[i].y += dis.y
         })
-        motions[i].move(touchmoveEvent1, dis => {
+        motions[i].touchmove(touchmoveEvent1, dis => {
           moves[i].x += dis.x
           moves[i].y += dis.y
         })
@@ -268,7 +268,7 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchstart]
       })
       // 触发 touchstart
-      motion.start(touchstartEvent)
+      motion.touchstart(touchstartEvent)
       // 循环触发 touchmove
       let moveX = 0
       let moveY = 0
@@ -283,13 +283,13 @@ describe('Motion Class - instance methods', function () {
           targetTouches: [touchmove],
           changedTouches: [touchmove]
         })
-        motion.move(touchmoveEvent, (dis) => {
+        motion.touchmove(touchmoveEvent, (dis) => {
           moveX += dis.x
           moveY += dis.y
         })
       }
       // 重新触发 touchstart
-      motion.start(touchstartEvent)
+      motion.touchstart(touchstartEvent)
       // 下一帧也没有执行 move callback
       setTimeout(() => {
         expect(moveX).to.be.equal(0)
@@ -299,7 +299,7 @@ describe('Motion Class - instance methods', function () {
     })
   })
   
-  describe('end(e, cb) - tell motion the target\'s touchend event manually', () => {
+  describe('touchend(e, cb) - tell motion the target\'s touchend event manually', () => {
     it('the second parameter callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion()
@@ -314,7 +314,7 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchend]
       })
       expect(() => {
-        motion.end(touchendEvent)
+        motion.touchend(touchendEvent)
       }).to.not.throw()
     })
     it('end immediately when move slowly', async () => {
@@ -356,20 +356,20 @@ describe('Motion Class - instance methods', function () {
         // 触发事件变化的 touch 对象列表
         changedTouches: [touchmove]
       })
-      motionX.start(touchstartEvent)
-      motionX.move(touchmoveEvent)
-      motionY.start(touchstartEvent)
-      motionY.move(touchmoveEvent)
-      motionXY.start(touchstartEvent)
-      motionXY.move(touchmoveEvent)
+      motionX.touchstart(touchstartEvent)
+      motionX.touchmove(touchmoveEvent)
+      motionY.touchstart(touchstartEvent)
+      motionY.touchmove(touchmoveEvent)
+      motionXY.touchstart(touchstartEvent)
+      motionXY.touchmove(touchmoveEvent)
       await delay(60) // 延时不进行惯性滚动
-      motionX.end(touchendEvent, dis => {
+      motionX.touchend(touchendEvent, dis => {
         expect(dis.x).to.be.equal(0)
       })
-      motionY.end(touchendEvent, dis => {
+      motionY.touchend(touchendEvent, dis => {
         expect(dis.y).to.be.equal(0)
       })
-      motionXY.end(touchendEvent, dis => {
+      motionXY.touchend(touchendEvent, dis => {
         expect(dis.x).to.be.equal(0)
         expect(dis.y).to.be.equal(0)
       })
@@ -413,18 +413,18 @@ describe('Motion Class - instance methods', function () {
         // 触发事件变化的 touch 对象列表
         changedTouches: [touchmove]
       })
-      motionX.start(touchstartEvent)
-      motionY.start(touchstartEvent)
-      motionXY.start(touchstartEvent)
+      motionX.touchstart(touchstartEvent)
+      motionY.touchstart(touchstartEvent)
+      motionXY.touchstart(touchstartEvent)
       await delay(4)
-      motionX.move(touchmoveEvent)
-      motionY.move(touchmoveEvent)
-      motionXY.move(touchmoveEvent)
+      motionX.touchmove(touchmoveEvent)
+      motionY.touchmove(touchmoveEvent)
+      motionXY.touchmove(touchmoveEvent)
       await delay(4) // 触发惯性滚动
       const times: number[] = await Promise.all([
         new Promise(resolve => {
           let times = 0
-          motionX.end(touchendEvent, dis => {
+          motionX.touchend(touchendEvent, dis => {
             times++
             if (dis.x === 0) {
               resolve(times)
@@ -433,7 +433,7 @@ describe('Motion Class - instance methods', function () {
         }),
         new Promise(resolve => {
           let times = 0
-          motionY.end(touchendEvent, dis => {
+          motionY.touchend(touchendEvent, dis => {
             times++
             if (dis.y === 0) {
               resolve(times)
@@ -442,7 +442,7 @@ describe('Motion Class - instance methods', function () {
         }),
         new Promise(resolve => {
           let times = 0
-          motionXY.end(touchendEvent, dis => {
+          motionXY.touchend(touchendEvent, dis => {
             times++
             if (dis.x === 0 && dis.y === 0) {
               resolve(times)
@@ -491,17 +491,17 @@ describe('Motion Class - instance methods', function () {
         // 触发事件变化的 touch 对象列表
         changedTouches: [touchmove]
       })
-      motionXY.start(touchstartEvent)
+      motionXY.touchstart(touchstartEvent)
       await delay(4)
-      motionXY.move(touchmoveEvent)
+      motionXY.touchmove(touchmoveEvent)
       await delay(4) // 触发惯性滚动
       const times = await new Promise(resolve => {
         let times = 0
-        motionXY.end(touchendEvent, dis => {
+        motionXY.touchend(touchendEvent, dis => {
           times++
           if (times === 2) {
             // 重新开始，则会停止上一次的惯性滚动
-            motionXY.start(touchstartEvent)
+            motionXY.touchstart(touchstartEvent)
             setTimeout(() => {
               resolve(2)
             }, 30)
@@ -514,12 +514,12 @@ describe('Motion Class - instance methods', function () {
     })
   })
 
-  describe('touchstart(cb) - listen motion (options.target) touchstart event passively', () => {
+  describe('onTouchstart(cb) - listen motion (options.target) touchstart event passively', () => {
     it('callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion({ target })
       expect(() => {
-        motion.touchstart()
+        motion.onTouchstart()
       }).to.not.throw()
     })
     it('excute callback when options.target emit touchstart event', done => {
@@ -538,7 +538,7 @@ describe('Motion Class - instance methods', function () {
         // 触发事件变化的 touch 对象列表
         changedTouches: [touch]
       })
-      motion.touchstart((e: any) => {
+      motion.onTouchstart((e: any) => {
         expect(e).to.be.equal(touchstart)
         done()
       })
@@ -547,12 +547,12 @@ describe('Motion Class - instance methods', function () {
     })
   })
 
-  describe('touchmove(cb) - listen motion (options.target) touchmove event passively', () => {
+  describe('onTouchmove(cb) - listen motion (options.target) touchmove event passively', () => {
     it('callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion({ target })
       expect(() => {
-        motion.touchmove()
+        motion.onTouchmove()
       }).to.not.throw()
     })
     it('excute callback when options.target emit touchmove event', done => {
@@ -584,7 +584,7 @@ describe('Motion Class - instance methods', function () {
         // 触发事件变化的 touch 对象列表
         changedTouches: [touchmove]
       })
-      motion.touchmove((dis, e) => {
+      motion.onTouchmove((dis, e) => {
         expect(e).to.be.equal(touchmoveEvent)
         expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
         expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
@@ -596,12 +596,12 @@ describe('Motion Class - instance methods', function () {
     })
   })
 
-  describe('touchend(cb) - listen motion (options.target) touchend event passively', () => {
+  describe('onTouchend(cb) - listen motion (options.target) touchend event passively', () => {
     it('callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion({ target })
       expect(() => {
-        motion.touchend()
+        motion.onTouchend()
       }).to.not.throw()
     })
     it('excute callback when options.target emit touchend event', async () => {
@@ -641,7 +641,7 @@ describe('Motion Class - instance methods', function () {
         // 触发事件变化的 touch 对象列表
         changedTouches: [touchmove]
       })
-      motion.touchend((dis, e) => {
+      motion.onTouchend((dis, e) => {
         expect(e).to.be.equal(touchendEvent)
         expect(dis.x).to.be.equal(0)
         expect(dis.y).to.be.equal(0)

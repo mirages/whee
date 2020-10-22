@@ -7,21 +7,27 @@ declare enum Direction {
     y = "y",
     xy = "xy"
 }
-interface Opts {
+interface Options {
     target?: HTMLElement | string;
     mode?: Mode;
     direction?: Direction;
 }
-export interface stepCallback {
+interface stepCallback {
     (arg: {
         x: number;
         y: number;
     }): void;
 }
-export interface touchstartCallback {
+interface touchstartCallback {
     (e: TouchEvent): void;
 }
-export interface touchmoveCallback {
+interface touchmoveCallback {
+    (s: {
+        x: number;
+        y: number;
+    }, e: TouchEvent): void;
+}
+interface touchendCallback {
     (s: {
         x: number;
         y: number;
@@ -35,13 +41,13 @@ declare class Motion {
     readonly mode: Mode;
     readonly direction: Direction;
     private trendData;
-    private maxLength;
-    private tmThreshold;
+    private trendLength;
     private prevData;
     private renderData;
-    private animateId;
+    private frameId;
     private rendering;
     private accumulation;
+    private tmThreshold;
     private touchstartHandler;
     private touchmoveHandler;
     private touchendHandler;
@@ -54,21 +60,13 @@ declare class Motion {
      *  'absolute' 绝对模式，输出绝对位置变量
      *  'relative' 相对模式，输出相对（上一次）位置变量
      */
-    constructor(options?: Opts);
+    constructor(options?: Options);
     private getEl;
     private initEvent;
     private createData;
     private getMoveData;
-    private isNeedInertiaScroll;
-    touchstart(cb?: touchstartCallback): void;
-    touchmove(cb?: touchmoveCallback): void;
-    touchend(cb?: touchmoveCallback): void;
-    start(event: TouchEvent): void;
-    move(event: TouchEvent, cb?: stepCallback): void;
-    moveAnimate(event: TouchEvent, cb?: stepCallback): void;
-    moveRealtime(event: TouchEvent, cb?: stepCallback): void;
     private setTrendData;
-    end(event: TouchEvent, cb?: stepCallback): void;
+    private isNeedInertiaScroll;
     private inertiaScroll;
     private getMoveStep;
     /**
@@ -77,6 +75,14 @@ declare class Motion {
      * @param nextV - 下一刻速度
      */
     private isMoveStop;
+    private moveFrame;
+    private moveRealtime;
+    onTouchstart(cb?: touchstartCallback): void;
+    onTouchmove(cb?: touchmoveCallback): void;
+    onTouchend(cb?: touchendCallback): void;
+    touchstart(event: TouchEvent): void;
+    touchmove(event: TouchEvent, cb?: stepCallback): void;
+    touchend(event: TouchEvent, cb?: stepCallback): void;
     clearInertiaScroll(): void;
 }
 export default Motion;

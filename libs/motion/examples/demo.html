@@ -48,8 +48,8 @@
           e.target.style.cssText = `transform:translate(${prev}px, 0px);`
         }
       })()
-      motionx.touchmove(movex)
-      motionx.touchend(movex)
+      motionx.onTouchmove(movex)
+      motionx.onTouchend(movex)
 
       // y 移动
       var motiony = new Motion({ target: '#demoy', direction: Direction.y })
@@ -60,8 +60,8 @@
           e.target.style.cssText = `transform:translate(0px, ${prev}px);`
         }
       })()
-      motiony.touchmove(movey)
-      motiony.touchend(movey)
+      motiony.onTouchmove(movey)
+      motiony.onTouchend(movey)
 
       // xy 同时移动
       var motionxy = new Motion({ target: '#demoxy' })
@@ -74,8 +74,8 @@
           e.target.style.cssText = `transform:translate(${prevx}px, ${prevy}px);`
         }
       })()
-      motionxy.touchmove(movexy)
-      motionxy.touchend(movexy)
+      motionxy.onTouchmove(movexy)
+      motionxy.onTouchend(movexy)
 
       // 手动绑定事件
       var motion2 = new Motion()
@@ -90,14 +90,14 @@
         }
       })()
       target.addEventListener('touchstart', e => {
-        motion2.start(e)
+        motion2.touchstart(e)
       }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
       target.addEventListener('touchmove', e => {
         e.preventDefault()
-        motion2.move(e, move2)
+        motion2.touchmove(e, move2)
       }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
       target.addEventListener('touchend', e => {
-        motion2.end(e, move2)
+        motion2.touchend(e, move2)
       })
     </script>
   </body>

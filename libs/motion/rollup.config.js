@@ -1,4 +1,3 @@
-// import babel from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import typescript from '@rollup/plugin-typescript'
@@ -37,11 +36,6 @@ export default {
       // https://github.com/rollup/plugins/tree/master/packages/typescript/#readme
       sourceMap: false
     }),
-    // babel({
-    //   babelHelpers: 'runtime',
-    //   exclude: 'node_modules/**',
-    //   extensions: ['.js', '.ts']
-    // }),
     banner(`motion\nv${pkg.version}\nby ${pkg.author}`)
   ]
 }
