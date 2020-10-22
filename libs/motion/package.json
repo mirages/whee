@@ -15,7 +15,8 @@
     "rollup": "node node_modules/rollup/dist/bin/rollup -c",
     "rollup:watch": "node node_modules/rollup/dist/bin/rollup -c -w",
     "build": "npm run lint && npm run rollup && npm run types",
-    "test": "node node_modules/karma/bin/karma start"
+    "test": "node node_modules/karma/bin/karma start",
+    "pub": "sh scripts/release.sh"
   },
   "repository": {
     "type": "git",
