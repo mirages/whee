@@ -36,6 +36,6 @@ export default {
       // https://github.com/rollup/plugins/tree/master/packages/typescript/#readme
       sourceMap: false
     }),
-    banner(`motion\nv${pkg.version}\nby ${pkg.author}`)
+    banner(`${pkg.name}\nv${pkg.version}\nby ${pkg.author}`)
   ]
 }
