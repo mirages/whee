@@ -16,6 +16,7 @@
     ],
     "rules": {
         "standard/no-callback-literal": "off",
+        "space-before-function-paren": "off",
         "key-spacing": ["error", {
             "beforeColon": false,
             "afterColon": true,
@@ -24,16 +25,6 @@
         "@typescript-eslint/type-annotation-spacing": ["error"],
         "comma-spacing": "off",
         "@typescript-eslint/comma-spacing": ["error"],
-        "@typescript-eslint/semi": ["error", "never"],
-        "@typescript-eslint/member-delimiter-style": ["error", {
-            "singleline": {
-                "delimiter": "comma",
-                "requireLast": false
-            },
-            "multiline": {
-                "delimiter": "comma",
-                "requireLast": false
-            }
-        }]
+        "@typescript-eslint/semi": ["error", "never"]
     }
 }

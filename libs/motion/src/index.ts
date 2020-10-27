@@ -8,26 +8,26 @@ enum Direction {
   xy = 'xy'
 }
 interface Options {
-  target?: HTMLElement|string,
-  mode?: Mode,
+  target?: HTMLElement | string
+  mode?: Mode
   direction?: Direction
 }
 interface moveData {
-  x: number,
-  y: number,
+  x: number
+  y: number
   t: number
 }
 interface stepCallback {
-  (arg: {x: number, y: number}): void
+  (arg: { x: number; y: number }): void
 }
 interface touchstartCallback {
   (e: TouchEvent): void
 }
 interface touchmoveCallback {
-  (s: { x: number, y: number }, e: TouchEvent): void
+  (s: { x: number; y: number }, e: TouchEvent): void
 }
 interface touchendCallback {
-  (s: { x: number, y: number }, e: TouchEvent): void
+  (s: { x: number; y: number }, e: TouchEvent): void
 }
 
 const noop = () => {
@@ -40,7 +40,7 @@ class Motion {
 
     try {
       document.createElement('div').addEventListener('testPassive', noop, {
-        get passive () {
+        get passive() {
           supportsPassive = true
           return false
         }
@@ -55,13 +55,13 @@ class Motion {
   static Direction = Direction
   static Mode = Mode
 
-  readonly el: HTMLElement|null
+  readonly el: HTMLElement | null
   readonly mode: Mode
   readonly direction: Direction
   private trendData: moveData[] = []
   private trendLength = 4
-  private prevData: moveData|null = null
-  private renderData: moveData|null = null
+  private prevData: moveData | null = null
+  private renderData: moveData | null = null
   private frameId = 0
   private rendering = false
   private accumulation = 6
@@ -79,7 +79,7 @@ class Motion {
    *  'absolute' 绝对模式，输出绝对位置变量
    *  'relative' 相对模式，输出相对（上一次）位置变量
    */
-  constructor (options: Options = {}) {
+  constructor(options: Options = {}) {
     this.el = options.target ? this.getEl(options.target) : null
     this.mode = options.mode || Mode.realtime
     this.direction = options.direction || Direction.xy
@@ -93,23 +93,31 @@ class Motion {
     this.initEvent()
   }
 
-  private getEl (el: HTMLElement|string): HTMLElement|null {
+  private getEl(el: HTMLElement | string): HTMLElement | null {
     return typeof el === 'string' ? document.querySelector(el) : el
   }
 
-  private initEvent (): void {
+  private initEvent(): void {
     if (!this.el) return
-    this.el.addEventListener('touchstart', e => {
-      this.touchstart(e)
-      this.touchstartHandler(e)
-    }, Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */false)
+    this.el.addEventListener(
+      'touchstart',
+      e => {
+        this.touchstart(e)
+        this.touchstartHandler(e)
+      },
+      Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */ false
+    )
 
-    this.el.addEventListener('touchmove', e => {
-      e.preventDefault()
-      this.touchmove(e, s => {
-        this.touchmoveHandler(s, e)
-      })
-    }, Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */false)
+    this.el.addEventListener(
+      'touchmove',
+      e => {
+        e.preventDefault()
+        this.touchmove(e, s => {
+          this.touchmoveHandler(s, e)
+        })
+      },
+      Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */ false
+    )
 
     this.el.addEventListener('touchend', e => {
       this.touchend(e, s => {
@@ -118,7 +126,7 @@ class Motion {
     })
   }
 
-  private createData (touch: Touch): moveData {
+  private createData(touch: Touch): moveData {
     const now = Date.now()
     const data: moveData = {
       x: touch.pageX,
@@ -129,7 +137,7 @@ class Motion {
     return data
   }
 
-  private getMoveData (currData: moveData): moveData {
+  private getMoveData(currData: moveData): moveData {
     if (!this.prevData) this.prevData = currData
     const moveData: moveData = {
       x: currData.x - this.prevData.x,
@@ -141,7 +149,7 @@ class Motion {
     return moveData
   }
 
-  private setTrendData (data: moveData): void {
+  private setTrendData(data: moveData): void {
     if (this.trendData.length < 1) {
       this.trendData.push(data)
       return
@@ -162,11 +170,11 @@ class Motion {
     if (this.trendData.length > this.trendLength) this.trendData.shift()
   }
 
-  private isNeedInertiaScroll (): boolean {
+  private isNeedInertiaScroll(): boolean {
     return this.trendData.length > 1
   }
 
-  private inertiaScroll (cb: stepCallback): void {
+  private inertiaScroll(cb: stepCallback): void {
     const first = this.trendData[0]
     const last = this.trendData[this.trendData.length - 1]
     const average = {
@@ -197,7 +205,7 @@ class Motion {
     step()
   }
 
-  private getMoveStep (s: number, t: number): () => number {
+  private getMoveStep(s: number, t: number): () => number {
     const v0 = s / t
     const a0 = v0 / t / 10
     let v = v0
@@ -206,7 +214,7 @@ class Motion {
     return /* step */ () => {
       const nextA = a + 0.04 * a0
       const nextV = v - a * this.accumulation
-      let deltaS = (v + nextV) / 2 * this.accumulation
+      let deltaS = ((v + nextV) / 2) * this.accumulation
 
       if (this.isMoveStop(v, nextV)) {
         // 停止运动
@@ -227,11 +235,11 @@ class Motion {
    * @param v - 当前速度
    * @param nextV - 下一刻速度
    */
-  private isMoveStop (v: number, nextV: number): boolean {
+  private isMoveStop(v: number, nextV: number): boolean {
     return v === Infinity || v === -Infinity || v === 0 || v / nextV < 0
   }
 
-  private moveFrame (event: TouchEvent, cb: stepCallback = noop): void {
+  private moveFrame(event: TouchEvent, cb: stepCallback = noop): void {
     const touch = event.targetTouches[0]
     const data = this.createData(touch)
 
@@ -255,7 +263,7 @@ class Motion {
     }
   }
 
-  private moveRealtime (event: TouchEvent, cb: stepCallback = noop): void {
+  private moveRealtime(event: TouchEvent, cb: stepCallback = noop): void {
     const touch = event.targetTouches[0]
     const data = this.createData(touch)
     const moveData = this.getMoveData(data)
@@ -268,19 +276,19 @@ class Motion {
     cb(cbData)
   }
 
-  onTouchstart (cb: touchstartCallback = noop): void {
+  onTouchstart(cb: touchstartCallback = noop): void {
     this.touchstartHandler = cb
   }
 
-  onTouchmove (cb: touchmoveCallback = noop): void {
+  onTouchmove(cb: touchmoveCallback = noop): void {
     this.touchmoveHandler = cb
   }
 
-  onTouchend (cb: touchendCallback = noop): void {
+  onTouchend(cb: touchendCallback = noop): void {
     this.touchendHandler = cb
   }
 
-  touchstart (event: TouchEvent): void {
+  touchstart(event: TouchEvent): void {
     const touch = event.targetTouches[0]
 
     this.trendData = []
@@ -291,9 +299,9 @@ class Motion {
 
   /* istanbul ignore next */
   // eslint-disable-next-line
-  touchmove (event: TouchEvent, cb: stepCallback = noop): void {}
+  touchmove(event: TouchEvent, cb: stepCallback = noop): void {}
 
-  touchend (event: TouchEvent, cb: stepCallback = noop): void {
+  touchend(event: TouchEvent, cb: stepCallback = noop): void {
     const touch = event.changedTouches[0]
     const data = this.createData(touch)
 
@@ -306,7 +314,7 @@ class Motion {
     }
   }
 
-  clearInertiaScroll (): void {
+  clearInertiaScroll(): void {
     cancelAnimationFrame(this.frameId)
   }
 }
