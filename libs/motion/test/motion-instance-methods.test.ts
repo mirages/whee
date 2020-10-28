@@ -12,7 +12,7 @@ const createTouch = (options: any) => {
 }
 
 describe('Motion Class - instance methods', function () {
-  describe('touchstart(e) - tell motion the target\'s touchstart event manually', () => {
+  describe("touchstart(e) - tell motion the target's touchstart event manually", () => {
     it('it only accept the touchstart event as the first parameter', () => {
       const target = document.createElement('div')
       const motion = new Motion()
@@ -21,7 +21,7 @@ describe('Motion Class - instance methods', function () {
         pageX: 0,
         pageY: 0
       })
-      const touchstartEvent = new TouchEvent('touchstart',{
+      const touchstartEvent = new TouchEvent('touchstart', {
         touches: [touchstart],
         targetTouches: [touchstart],
         changedTouches: [touchstart]
@@ -32,7 +32,7 @@ describe('Motion Class - instance methods', function () {
     })
   })
 
-  describe('touchmove(e, cb) - tell motion the target\'s touchmove event manually', () => {
+  describe("touchmove(e, cb) - tell motion the target's touchmove event manually", () => {
     it('the second parameter callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion()
@@ -61,6 +61,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
@@ -76,7 +78,7 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchmove]
       })
       motion.touchstart(touchstartEvent)
-      motion.touchmove(touchmoveEvent, (dis) => {
+      motion.touchmove(touchmoveEvent, dis => {
         expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
         expect(dis.y).to.be.equal(0)
         done()
@@ -91,6 +93,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
@@ -106,7 +110,7 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchmove]
       })
       motion.touchstart(touchstartEvent)
-      motion.touchmove(touchmoveEvent, (dis) => {
+      motion.touchmove(touchmoveEvent, dis => {
         expect(dis.x).to.be.equal(0)
         expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
         done()
@@ -121,6 +125,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
@@ -136,7 +142,7 @@ describe('Motion Class - instance methods', function () {
         changedTouches: [touchmove]
       })
       motion.touchstart(touchstartEvent)
-      motion.touchmove(touchmoveEvent, (dis) => {
+      motion.touchmove(touchmoveEvent, dis => {
         expect(dis.x).to.be.equal(touchmove.pageX - touchstart.pageX)
         expect(dis.y).to.be.equal(touchmove.pageY - touchstart.pageY)
         done()
@@ -162,6 +168,8 @@ describe('Motion Class - instance methods', function () {
         const disX = 5
         const disY = 5
         const touchmove = createTouch({
+          // 表示 touchstart touchmove 是由同一个触点触发的
+          identifier: touchstart.identifier,
           target,
           pageX: 100 + (i + 1) * disX,
           pageY: 100 + (i + 1) * disY
@@ -173,7 +181,7 @@ describe('Motion Class - instance methods', function () {
         })
         let moveX = 0
         let moveY = 0
-        motion.touchmove(touchmoveEvent, (dis) => {
+        motion.touchmove(touchmoveEvent, dis => {
           moveX = dis.x
           moveY = dis.y
         })
@@ -199,11 +207,15 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
       })
       const touchmove1 = createTouch({
+        // 表示 touchstart touchmove1 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 110,
         pageY: 110
@@ -283,7 +295,7 @@ describe('Motion Class - instance methods', function () {
           targetTouches: [touchmove],
           changedTouches: [touchmove]
         })
-        motion.touchmove(touchmoveEvent, (dis) => {
+        motion.touchmove(touchmoveEvent, dis => {
           moveX += dis.x
           moveY += dis.y
         })
@@ -298,8 +310,8 @@ describe('Motion Class - instance methods', function () {
       }, 40)
     })
   })
-  
-  describe('touchend(e, cb) - tell motion the target\'s touchend event manually', () => {
+
+  describe("touchend(e, cb) - tell motion the target's touchend event manually", () => {
     it('the second parameter callback function is optional', () => {
       const target = document.createElement('div')
       const motion = new Motion()
@@ -328,6 +340,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
@@ -385,6 +399,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
@@ -463,6 +479,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
@@ -511,6 +529,90 @@ describe('Motion Class - instance methods', function () {
         })
       })
       expect(times).to.be.equal(2)
+    })
+    it('multi finger touch only emit last touchend', async () => {
+      const target = document.createElement('div')
+      const motion = new Motion()
+      const touch1 = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touch2 = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchstartEvent2 = new TouchEvent('touchstart', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [touch1, touch2],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [touch1, touch2],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touch2]
+      })
+      const touchendEvent1 = new TouchEvent('touchend', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [touch2],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [touch2],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touch1]
+      })
+      const touchendEvent2 = new TouchEvent('touchend', {
+        // 屏幕上所有触摸点 touch 对象列表
+        touches: [],
+        // 当前 dom 节点上的 touch 对象列表
+        targetTouches: [],
+        // 触发事件变化的 touch 对象列表
+        changedTouches: [touch2]
+      })
+      let times = 0
+      motion.touchstart(
+        new TouchEvent('touchstart', {
+          // 屏幕上所有触摸点 touch 对象列表
+          touches: [touch1],
+          // 当前 dom 节点上的 touch 对象列表
+          targetTouches: [touch1],
+          // 触发事件变化的 touch 对象列表
+          changedTouches: [touch1]
+        })
+      )
+      motion.touchstart(
+        new TouchEvent('touchstart', {
+          // 屏幕上所有触摸点 touch 对象列表
+          touches: [touch1, touch2],
+          // 当前 dom 节点上的 touch 对象列表
+          targetTouches: [touch1, touch2],
+          // 触发事件变化的 touch 对象列表
+          changedTouches: [touch2]
+        })
+      )
+      motion.touchend(touchendEvent1, ({ x, y }) => {
+        times++
+      })
+      motion.touchend(touchendEvent2, ({ x, y }) => {
+        times++
+      })
+      expect(times).to.be.equal(1)
+      await delay(10)
+      times = 0
+      motion.touchstart(
+        new TouchEvent('touchstart', {
+          // 屏幕上所有触摸点 touch 对象列表
+          touches: [touch2],
+          // 当前 dom 节点上的 touch 对象列表
+          targetTouches: [touch2],
+          // 触发事件变化的 touch 对象列表
+          changedTouches: [touch2]
+        })
+      )
+      motion.touchend(touchendEvent1, ({ x, y }) => {
+        times++
+      })
+      motion.touchend(touchendEvent2, ({ x, y }) => {
+        times++
+      })
     })
   })
 
@@ -564,6 +666,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
@@ -613,6 +717,8 @@ describe('Motion Class - instance methods', function () {
         pageY: 100
       })
       const touchmove = createTouch({
+        // 表示 touchstart touchmove 是由同一个触点触发的
+        identifier: touchstart.identifier,
         target,
         pageX: 105,
         pageY: 105
