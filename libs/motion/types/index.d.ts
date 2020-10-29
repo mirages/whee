@@ -12,22 +12,22 @@ interface Options {
     mode?: Mode;
     direction?: Direction;
 }
-interface stepCallback {
+interface StepCallback {
     (arg: {
         x: number;
         y: number;
     }): void;
 }
-interface touchstartCallback {
+interface TouchstartCallback {
     (e: TouchEvent): void;
 }
-interface touchmoveCallback {
+interface TouchmoveCallback {
     (s: {
         x: number;
         y: number;
     }, e: TouchEvent): void;
 }
-interface touchendCallback {
+interface TouchendCallback {
     (s: {
         x: number;
         y: number;
@@ -40,6 +40,7 @@ declare class Motion {
     readonly el: HTMLElement | null;
     readonly mode: Mode;
     readonly direction: Direction;
+    private mainFinger;
     private trendData;
     private trendLength;
     private prevData;
@@ -51,6 +52,7 @@ declare class Motion {
     private touchstartHandler;
     private touchmoveHandler;
     private touchendHandler;
+    private scaleHandler;
     /**
      * Motion 构造函数
      * @param {Object} [options] - 配置项
@@ -77,12 +79,12 @@ declare class Motion {
     private isMoveStop;
     private moveFrame;
     private moveRealtime;
-    onTouchstart(cb?: touchstartCallback): void;
-    onTouchmove(cb?: touchmoveCallback): void;
-    onTouchend(cb?: touchendCallback): void;
+    onTouchstart(cb?: TouchstartCallback): void;
+    onTouchmove(cb?: TouchmoveCallback): void;
+    onTouchend(cb?: TouchendCallback): void;
     touchstart(event: TouchEvent): void;
-    touchmove(event: TouchEvent, cb?: stepCallback): void;
-    touchend(event: TouchEvent, cb?: stepCallback): void;
+    touchmove(event: TouchEvent, cb?: StepCallback): void;
+    touchend(event: TouchEvent, cb?: StepCallback): void;
     clearInertiaScroll(): void;
 }
 export default Motion;

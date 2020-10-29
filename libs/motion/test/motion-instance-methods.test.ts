@@ -760,4 +760,49 @@ describe('Motion Class - instance methods', function () {
       target.dispatchEvent(touchendEvent)
     })
   })
+
+  describe('two finger touches', () => {
+    it('move distance depends on first touch finger', done => {
+      const target = document.createElement('div')
+      const motion = new Motion()
+      const touchstart1 = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchstart2 = createTouch({
+        target,
+        pageX: 120,
+        pageY: 120
+      })
+      const touchmove1 = createTouch({
+        identifier: touchstart1.identifier,
+        target,
+        pageX: 120,
+        pageY: 100
+      })
+      const touchmove2 = createTouch({
+        identifier: touchstart2.identifier,
+        target,
+        pageX: 130,
+        pageY: 130
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart1, touchstart2],
+        targetTouches: [touchstart1, touchstart2],
+        changedTouches: [touchstart1, touchstart2]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchmove1, touchmove2],
+        targetTouches: [touchmove1, touchmove2],
+        changedTouches: [touchmove1, touchmove2]
+      })
+      motion.touchstart(touchstartEvent)
+      motion.touchmove(touchmoveEvent, dis => {
+        expect(dis.x).to.be.equal(touchmove1.pageX - touchstart1.pageX)
+        expect(dis.y).to.be.equal(touchmove1.pageY - touchstart1.pageY)
+        done()
+      })
+    })
+  })
 })

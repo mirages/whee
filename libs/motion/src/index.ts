@@ -12,24 +12,33 @@ interface Options {
   mode?: Mode
   direction?: Direction
 }
-interface moveData {
+interface TransData {
   x: number
   y: number
   t: number
+  scale?: number
+  angle?: number
 }
-interface stepCallback {
+interface TouchData {
+  x: number
+  y: number
+  t: number
+  l: number
+  a: number
+}
+interface StepCallback {
   (arg: { x: number; y: number }): void
 }
-interface touchstartCallback {
+interface TouchstartCallback {
   (e: TouchEvent): void
 }
-interface touchmoveCallback {
+interface TouchmoveCallback {
   (s: { x: number; y: number }, e: TouchEvent): void
 }
-interface touchendCallback {
+interface TouchendCallback {
   (s: { x: number; y: number }, e: TouchEvent): void
 }
-interface scaleCallback {
+interface ScaleCallback {
   (s: { x: number; y: number }, e: TouchEvent): void
 }
 
@@ -62,18 +71,18 @@ class Motion {
   readonly mode: Mode
   readonly direction: Direction
   private mainFinger = 0
-  private trendData: moveData[] = []
+  private trendData: TouchData[] = []
   private trendLength = 4
-  private prevData: moveData = {} as moveData
-  private renderData: moveData | null = null
+  private prevData: TouchData = {} as TouchData
+  private renderData: TouchData | null = null
   private frameId = 0
   private rendering = false
   private accumulation = 8
   private tmThreshold = 50 // 惯性滚动时间差阈值，超过该值不触发惯性滚动，ios 比较灵敏，android 不灵敏
-  private touchstartHandler: touchstartCallback = noop
-  private touchmoveHandler: touchmoveCallback = noop
-  private touchendHandler: touchendCallback = noop
-  private scaleHandler: scaleCallback = noop
+  private touchstartHandler: TouchstartCallback = noop
+  private touchmoveHandler: TouchmoveCallback = noop
+  private touchendHandler: TouchendCallback = noop
+  private scaleHandler: ScaleCallback = noop
 
   /**
    * Motion 构造函数
@@ -125,29 +134,51 @@ class Motion {
     })
   }
 
-  private createData(touch: Touch): moveData {
-    const now = Date.now()
-    const data: moveData = {
-      x: touch.pageX,
-      y: touch.pageY,
-      t: now
+  private createData(
+    event: TouchEvent,
+    prop: 'targetTouches' | 'changedTouches' = 'targetTouches'
+  ): TouchData {
+    const firstTouch = event[prop][0]
+    const secondTouch = event[prop][1]
+    const data: TouchData = {
+      x: firstTouch.pageX,
+      y: firstTouch.pageY,
+      t: Date.now(),
+      l: 0,
+      a: 0
     }
+
+    if (secondTouch) {
+      data.l = Math.sqrt(
+        Math.pow(firstTouch.pageX - secondTouch.pageX, 2) +
+          Math.pow(firstTouch.pageY - secondTouch.pageY, 2)
+      )
+      data.a = Math.atan(
+        (secondTouch.pageY - firstTouch.pageY) / (firstTouch.pageX - secondTouch.pageX)
+      )
+    }
+
+    // 收集数据
+    this.setTrendData(data)
 
     return data
   }
 
-  private getMoveData(currData: moveData): moveData {
-    const moveData: moveData = {
-      x: currData.x - this.prevData.x,
-      y: currData.y - this.prevData.y,
-      t: currData.t - this.prevData.t
+  private getMoveData(currData: TouchData): TransData {
+    const prevData = this.prevData
+    const moveData: TransData = {
+      x: currData.x - prevData.x,
+      y: currData.y - prevData.y,
+      t: currData.t - prevData.t,
+      scale: currData.l === 0 || prevData.l === 0 ? 1 : currData.l / prevData.l,
+      angle: currData.a - prevData.a
     }
     this.prevData = currData
 
     return moveData
   }
 
-  private setTrendData(data: moveData): void {
+  private setTrendData(data: TouchData): void {
     if (this.trendData.length < 1) {
       this.trendData.push(data)
       return
@@ -172,7 +203,7 @@ class Motion {
     return this.trendData.length > 1
   }
 
-  private inertiaScroll(cb: stepCallback): void {
+  private inertiaScroll(cb: StepCallback): void {
     const first = this.trendData[0]
     const last = this.trendData[this.trendData.length - 1]
     const average = {
@@ -237,19 +268,16 @@ class Motion {
     return v === Infinity || v === -Infinity || v === 0 || v / nextV < 0
   }
 
-  private moveFrame(event: TouchEvent, cb: stepCallback): void {
-    const touch = event.targetTouches[0]
-    const data = this.createData(touch)
+  private moveFrame(event: TouchEvent, cb: StepCallback): void {
+    const data = this.createData(event)
 
-    // 实时收集数据
-    this.setTrendData(data)
     // 下一帧渲染
     this.renderData = data
     if (!this.rendering) {
       this.rendering = true
 
       this.frameId = requestAnimationFrame(() => {
-        const moveData = this.getMoveData(this.renderData as moveData)
+        const moveData = this.getMoveData(this.renderData as TouchData)
         const cbData = {
           x: this.direction !== Direction.y ? moveData.x : 0,
           y: this.direction !== Direction.x ? moveData.y : 0
@@ -261,33 +289,31 @@ class Motion {
     }
   }
 
-  private moveRealtime(event: TouchEvent, cb: stepCallback): void {
-    const touch = event.targetTouches[0]
-    const data = this.createData(touch)
+  private moveRealtime(event: TouchEvent, cb: StepCallback): void {
+    const data = this.createData(event)
     const moveData = this.getMoveData(data)
     const cbData = {
       x: this.direction !== Direction.y ? moveData.x : 0,
       y: this.direction !== Direction.x ? moveData.y : 0
     }
 
-    this.setTrendData(data)
     cb(cbData)
   }
 
-  onTouchstart(cb: touchstartCallback = noop): void {
+  onTouchstart(cb: TouchstartCallback = noop): void {
     this.touchstartHandler = cb
   }
 
-  onTouchmove(cb: touchmoveCallback = noop): void {
+  onTouchmove(cb: TouchmoveCallback = noop): void {
     this.touchmoveHandler = cb
   }
 
-  onTouchend(cb: touchendCallback = noop): void {
+  onTouchend(cb: TouchendCallback = noop): void {
     this.touchendHandler = cb
   }
 
   // TODO
-  // onScale(cb: scaleCallback = noop): void {
+  // onScale(cb: ScaleCallback = noop): void {
   //   this.scaleHandler = cb
   // }
 
@@ -301,15 +327,14 @@ class Motion {
 
       this.trendData = []
       this.mainFinger = touch.identifier
-      this.prevData = this.createData(touch)
-      this.setTrendData(this.prevData)
+      this.prevData = this.createData(event)
       this.clearInertiaScroll()
     } else {
       // second touch, do nothing
     }
   }
 
-  touchmove(event: TouchEvent, cb: stepCallback = noop): void {
+  touchmove(event: TouchEvent, cb: StepCallback = noop): void {
     if (event.targetTouches[0].identifier === this.mainFinger) {
       // move with main finger
       this.mode === Mode.frame ? this.moveFrame(event, cb) : this.moveRealtime(event, cb)
@@ -318,8 +343,7 @@ class Motion {
     }
   }
 
-  touchend(event: TouchEvent, cb: stepCallback = noop): void {
-    const changedTouch = event.changedTouches[0]
+  touchend(event: TouchEvent, cb: StepCallback = noop): void {
     const targetTouches = event.targetTouches
 
     if (targetTouches.length > 0) {
@@ -328,15 +352,14 @@ class Motion {
 
       if (this.mainFinger !== firstTouch.identifier) {
         // main finger leave, changed main finger
+        this.trendData = []
         this.mainFinger = firstTouch.identifier
-        this.prevData = this.createData(firstTouch)
-        this.setTrendData(this.prevData)
+        this.prevData = this.createData(event)
       }
     } else {
       // has no finger touch, emit touchend
-      const data = this.createData(changedTouch)
+      this.createData(event, 'changedTouches')
 
-      this.setTrendData(data)
       if (this.isNeedInertiaScroll()) {
         this.inertiaScroll(cb)
       } else {
