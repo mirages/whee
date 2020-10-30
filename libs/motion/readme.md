@@ -1,9 +1,9 @@
 # Motion
-[![Build Status](https://travis-ci.com/mirages/motion.svg?branch=master)](https://travis-ci.com/mirages/motion) [![codecov](https://codecov.io/gh/mirages/motion/branch/master/graph/badge.svg?token=ZM4K1Q670O)](https://codecov.io/gh/mirages/motion/branch/master)
+[![Build Status](https://travis-ci.com/mirages/motion.svg?branch=master)](https://travis-ci.com/mirages/motion) [![codecov](https://codecov.io/gh/mirages/motion/branch/master/graph/badge.svg?token=ZM4K1Q670O)](https://codecov.io/gh/mirages/motion/branch/master) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 移动端触摸手势检测工具，根据元素的 `touchstart, touchmove, touchend` 事件计算相关的滑动、缩放和旋转操作，以及触摸事件结束后的惯性滑动。
 
-> 滑动距离和旋转角度都是**当前时刻**相对元素**上一时刻**的状态计算的差值，因此从触摸开始(`touchstart`)到触摸结束(`touchend`)时的总的滑动距离和旋转角度，需要将每一时刻值进行累加。
+> 滑动、缩放以及旋转都是**当前时刻**相对元素**上一时刻**的状态计算的，因此从触摸开始(`touchstart`)到触摸结束(`touchend`)之间总的滑动距离和旋转角度，需要将每一时刻值进行**累加**，而缩放大小则需要**累乘**。
 
 ## 使用
 
@@ -34,7 +34,7 @@ motion.onTouchend(({ x, y }, e) => {
 })
 ```
 
-已经手动绑定了目标元素的 `touch` 相关事件，只需要传入相关的事件，便可以检测到 `event.target` 元素的手势操作：
+如果已经进行了目标元素的 `touch` 事件绑定，则需要传入相关的事件，便可以检测到 `event.target` 元素的手势操作：
 
 ```js
 import Motion from 'js-motion'
@@ -48,12 +48,14 @@ const motion = new Motion({
 const target = document.querySelector('#target')
 
 target.addEventListener('touchstart', e => {
+  e.preventDefault()
   motion.touchstart(e)
   // 其他操作
   //...
 }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
 
 target.addEventListener('touchmove', e => {
+  e.preventDefault()
   motion.touchmove(e, ({ x, y, scale, angle }) => {
     // ...
   })
@@ -70,7 +72,7 @@ target.addEventListener('touchend', e => {
 }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
 ```
 
-
+推荐使用第一种方式，`motion` 实例会自动监听 `options.target` 元素的相关事件。
 
 ### Mode
 
@@ -83,6 +85,8 @@ target.addEventListener('touchend', e => {
 - `Mode.frame` - 帧模式：
 
   即一帧内的多个 `touchmove` 事件合并，进行一次处理，计算总的滑动距离。
+
+*注意：如果可以尽量使用 `realtime` 模式，因为部分浏览器对 `touchmove` 事件触发的频率已经做了优化，使用 `frame` 会出现跨度较大的问题。*
 
 ### Direction
 `motion` 监听的移动方向：

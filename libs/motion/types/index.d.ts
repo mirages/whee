@@ -12,30 +12,27 @@ interface Options {
     mode?: Mode;
     direction?: Direction;
 }
-interface TransData {
+interface MoveData {
     x: number;
     y: number;
     t: number;
+}
+interface TransData extends MoveData {
     scale: number;
     angle: number;
 }
+declare type CbData = Pick<TransData, 'x' | 'y' | 'angle' | 'scale'>;
 interface StepCallback {
-    (trans: Pick<TransData, 'x' | 'y' | 'angle' | 'scale'>): void;
+    (trans: CbData): void;
 }
 interface TouchstartCallback {
     (e: TouchEvent): void;
 }
 interface TouchmoveCallback {
-    (s: {
-        x: number;
-        y: number;
-    }, e: TouchEvent): void;
+    (s: CbData, e: TouchEvent): void;
 }
 interface TouchendCallback {
-    (s: {
-        x: number;
-        y: number;
-    }, e: TouchEvent): void;
+    (s: CbData, e: TouchEvent): void;
 }
 declare class Motion {
     static isSupportPassive: boolean;
@@ -62,8 +59,8 @@ declare class Motion {
      * @param {string} [options.target=HTMLElement|string] - 绑定元素
      * @param {string} [options.direction=xy] - 移动记录方向：x 只记录水平方向，y 只记录垂直方向，xy 水平垂直方向都记录
      * @param {string} [options.mode=realtime] - 模式：
-     *  'absolute' 绝对模式，输出绝对位置变量
-     *  'relative' 相对模式，输出相对（上一次）位置变量
+     *  'realtime' 实时模式，实时计算触摸情况
+     *  'frame' 帧模式
      */
     constructor(options?: Options);
     private getEl;
