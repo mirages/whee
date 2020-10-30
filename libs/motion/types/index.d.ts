@@ -12,11 +12,15 @@ interface Options {
     mode?: Mode;
     direction?: Direction;
 }
+interface TransData {
+    x: number;
+    y: number;
+    t: number;
+    scale: number;
+    angle: number;
+}
 interface StepCallback {
-    (arg: {
-        x: number;
-        y: number;
-    }): void;
+    (trans: Pick<TransData, 'x' | 'y' | 'angle' | 'scale'>): void;
 }
 interface TouchstartCallback {
     (e: TouchEvent): void;
@@ -52,7 +56,6 @@ declare class Motion {
     private touchstartHandler;
     private touchmoveHandler;
     private touchendHandler;
-    private scaleHandler;
     /**
      * Motion 构造函数
      * @param {Object} [options] - 配置项
@@ -66,8 +69,8 @@ declare class Motion {
     private getEl;
     private initEvent;
     private createData;
-    private getMoveData;
     private setTrendData;
+    private getMoveData;
     private isNeedInertiaScroll;
     private inertiaScroll;
     private getMoveStep;

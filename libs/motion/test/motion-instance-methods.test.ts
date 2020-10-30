@@ -543,14 +543,6 @@ describe('Motion Class - instance methods', function () {
         pageX: 100,
         pageY: 100
       })
-      const touchstartEvent2 = new TouchEvent('touchstart', {
-        // 屏幕上所有触摸点 touch 对象列表
-        touches: [touch1, touch2],
-        // 当前 dom 节点上的 touch 对象列表
-        targetTouches: [touch1, touch2],
-        // 触发事件变化的 touch 对象列表
-        changedTouches: [touch2]
-      })
       const touchendEvent1 = new TouchEvent('touchend', {
         // 屏幕上所有触摸点 touch 对象列表
         touches: [touch2],
@@ -802,6 +794,91 @@ describe('Motion Class - instance methods', function () {
         expect(dis.x).to.be.equal(touchmove1.pageX - touchstart1.pageX)
         expect(dis.y).to.be.equal(touchmove1.pageY - touchstart1.pageY)
         done()
+      })
+    })
+    it('rotate angle should be correct when cross 90deg', () => {
+      const target = document.createElement('div')
+      const motion = new Motion()
+      const touchstart1 = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchstart2 = createTouch({
+        target,
+        pageX: 105,
+        pageY: 180
+      })
+      const touchmove2 = createTouch({
+        identifier: touchstart2.identifier,
+        target,
+        pageX: 95,
+        pageY: touchstart2.pageY
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart1, touchstart2],
+        targetTouches: [touchstart1, touchstart2],
+        changedTouches: [touchstart1, touchstart2]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchstart1, touchmove2],
+        targetTouches: [touchstart1, touchmove2],
+        changedTouches: [touchmove2]
+      })
+      motion.touchstart(touchstartEvent)
+      motion.touchmove(touchmoveEvent, trans => {
+        expect(trans.angle).to.be.closeTo(
+          (2 *
+            Math.atan(
+              (touchstart2.pageX - touchstart1.pageX) / (touchstart2.pageY - touchstart1.pageY)
+            ) *
+            180) /
+            Math.PI,
+          0.01
+        )
+      })
+    })
+
+    it('rotate angle should be correct when cross -90deg', () => {
+      const target = document.createElement('div')
+      const motion = new Motion()
+      const touchstart1 = createTouch({
+        target,
+        pageX: 100,
+        pageY: 100
+      })
+      const touchstart2 = createTouch({
+        target,
+        pageX: 105,
+        pageY: 20
+      })
+      const touchmove2 = createTouch({
+        identifier: touchstart2.identifier,
+        target,
+        pageX: 95,
+        pageY: touchstart2.pageY
+      })
+      const touchstartEvent = new TouchEvent('touchstart', {
+        touches: [touchstart1, touchstart2],
+        targetTouches: [touchstart1, touchstart2],
+        changedTouches: [touchstart1, touchstart2]
+      })
+      const touchmoveEvent = new TouchEvent('touchmove', {
+        touches: [touchstart1, touchmove2],
+        targetTouches: [touchstart1, touchmove2],
+        changedTouches: [touchmove2]
+      })
+      motion.touchstart(touchstartEvent)
+      motion.touchmove(touchmoveEvent, trans => {
+        expect(trans.angle).to.be.closeTo(
+          (-2 *
+            Math.atan(
+              (touchstart2.pageX - touchstart1.pageX) / (touchstart1.pageY - touchstart2.pageY)
+            ) *
+            180) /
+            Math.PI,
+          0.01
+        )
       })
     })
   })

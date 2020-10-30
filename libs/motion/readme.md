@@ -1,14 +1,16 @@
 # Motion
 [![Build Status](https://travis-ci.com/mirages/motion.svg?branch=master)](https://travis-ci.com/mirages/motion) [![codecov](https://codecov.io/gh/mirages/motion/branch/master/graph/badge.svg?token=ZM4K1Q670O)](https://codecov.io/gh/mirages/motion/branch/master)
 
-移动端触摸滑动工具，自动根据传入目标元素的 `touchstart, touchmove, touchend` 事件计算滑动距离，以及触摸事件结束后的惯性滑动；也可以手动传入相关事件来计算滑动距离。
+移动端触摸手势检测工具，根据元素的 `touchstart, touchmove, touchend` 事件计算相关的滑动、缩放和旋转操作，以及触摸事件结束后的惯性滑动。
+
+> 滑动距离和旋转角度都是**当前时刻**相对元素**上一时刻**的状态计算的差值，因此从触摸开始(`touchstart`)到触摸结束(`touchend`)时的总的滑动距离和旋转角度，需要将每一时刻值进行累加。
 
 ## 使用
 
 ```shell
 npm install js-motion
 ```
-监听传入 `target` 元素的触摸滑动情况：
+自动监听 `options.target` 元素的手势操作：
 
 ```js
 import Motion from 'js-motion'
@@ -24,7 +26,7 @@ const motion = new Motion({
 motion.onTouchstart(e => {
   // ...
 })
-motion.onTouchmove(({ x, y }, e) => {
+motion.onTouchmove(({ x, y, scale, angle }, e) => {
   // ...
 })
 motion.onTouchend(({ x, y }, e) => {
@@ -32,7 +34,7 @@ motion.onTouchend(({ x, y }, e) => {
 })
 ```
 
-手动传入相关触摸事件，计算触摸滑动情况：
+已经手动绑定了目标元素的 `touch` 相关事件，只需要传入相关的事件，便可以检测到 `event.target` 元素的手势操作：
 
 ```js
 import Motion from 'js-motion'
@@ -47,18 +49,24 @@ const target = document.querySelector('#target')
 
 target.addEventListener('touchstart', e => {
   motion.touchstart(e)
+  // 其他操作
+  //...
 }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
 
 target.addEventListener('touchmove', e => {
-  motion.touchmove(e, ({ x, y }) => {
+  motion.touchmove(e, ({ x, y, scale, angle }) => {
     // ...
   })
+  // 其他操作
+  // ...
 }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
 
 target.addEventListener('touchend', e => {
   motion.touchend(e, ({ x, y }) => {
     // ...
   })
+  // 其他操作
+  // ...
 }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
 ```
 
@@ -120,9 +128,11 @@ motion.onTouchstart(e => {
 监听 `options.target` 的 `touchmove` 操作，并将滑动距离和 `touchmove` 事件回调。
 
 ```js
-motion.onTouchmove(({ x, y }, e) => {
+motion.onTouchmove(({ x, y, scale, angle }, e) => {
   // x 是水平方向的移动距离
   // y 是垂直方向的移动距离
+  // scale 是缩放比率
+  // angle 是旋转的角度
   // e 是 options.target 元素的原生 touchmove 事件
 })
 ```
@@ -171,9 +181,11 @@ const target = document.querySelector('#target')
 
 target.addEventListener('touchmove', e => {
   // 主动传入 touchmove 事件，正在滑动
-  motion.touchmove(e, ({ x, y }) => {
+  motion.touchmove(e, ({ x, y, scale, angle }) => {
     // x 是水平方向的滑动距离
     // y 是垂直方向的滑动距离
+    // scale 是缩放比率
+    // angle 是旋转的角度
   })
 }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
 ```
