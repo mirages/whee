@@ -1,49 +1,84 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <style>
+      * {
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
       .demo {
-        height: 100px;
-        width: 100px;
+        height: 200px;
+        width: 200px;
         text-align: center;
         line-height: 100px;
         color: #000;
       }
-      #demox {
+      .touchpad {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+        width: 100%;
+        color: #fff;
+        font-size: 18px;
+        background: #666;
+        border: 3px solid #000;
+      }
+      .cyan {
         background-color: cyan;
       }
-      #demoy {
+      .red {
         background-color: #aa2c3f;
       }
-      #demoxy {
+      .yellow {
         background-color: rgb(243, 247, 6);
-      }
-      #demo2 {
-        background-color: blue;
       }
     </style>
   </head>
   <body>
+    <h4>模拟触摸板</h4>
+    <div class="demo cyan" id="target">焦点元素</div>
+    <p>触摸板</p>
+    <div class="touchpad" id="touchpad">TouchPad</div>
     <h4>水平移动</h4>
-    <div class="demo" id=demox>x</div>
+    <div class="demo red" id="demox">x</div>
     <h4>垂直移动</h4>
-    <div class="demo" id=demoy>y</div>
-    <h4>自由移动</h4>
-    <div class="demo" id=demoxy>xy</div>
-    <h4>手动绑定事件</h4>
-    <div class="demo" id=demo2></div>
+    <div class="demo yellow" id="demoy">y</div>
     <script src="../dist/motion.umd.js"></script>
     <script>
       var Direction = Motion.Direction
       var Mode = Motion.Mode
+      var $target = document.querySelector('#target')
+
+      // 触摸板
+      var motionx = new Motion({ target: '#touchpad' })
+      var move = (() => {
+        var prevX = 0
+        var prevY = 0
+        var prevScale = 1
+        var prevAngle = 0
+        return ({ x, y, scale, angle }) => {
+          prevX += x
+          prevY += y
+          prevAngle += angle
+          prevScale *= scale
+          $target.style.cssText = `transform:translate3d(${prevX}px, ${prevY}px, 0) scale(${prevScale}) rotate(${prevAngle}deg);`
+        }
+      })()
+      motionx.onTouchmove(move)
+      motionx.onTouchend(move)
 
       // x 移动
       var motionx = new Motion({ target: '#demox', direction: Direction.x })
       var movex = (() => {
         var prev = 0
-        return ({x, y}, e) => {
+        return ({ x, y }, e) => {
           prev += x
           e.target.style.cssText = `transform:translate(${prev}px, 0px);`
         }
@@ -55,50 +90,13 @@
       var motiony = new Motion({ target: '#demoy', direction: Direction.y })
       var movey = (() => {
         var prev = 0
-        return ({x, y}, e) => {
+        return ({ x, y }, e) => {
           prev += y
           e.target.style.cssText = `transform:translate(0px, ${prev}px);`
         }
       })()
       motiony.onTouchmove(movey)
       motiony.onTouchend(movey)
-
-      // xy 同时移动
-      var motionxy = new Motion({ target: '#demoxy' })
-      var movexy = (() => {
-        var prevx = 0
-        var prevy = 0
-        return ({x, y}, e) => {
-          prevx += x
-          prevy += y
-          e.target.style.cssText = `transform:translate(${prevx}px, ${prevy}px);`
-        }
-      })()
-      motionxy.onTouchmove(movexy)
-      motionxy.onTouchend(movexy)
-
-      // 手动绑定事件
-      var motion2 = new Motion()
-      var target = document.querySelector('#demo2')
-      var move2 = (() => {
-      var x1 = 0
-      var y1 = 0
-        return ({x, y}) => {
-          x1 += x
-          y1 += y
-          target.style.cssText = `transform:translate(${x1}px, ${y1}px);`
-        }
-      })()
-      target.addEventListener('touchstart', e => {
-        motion2.touchstart(e)
-      }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
-      target.addEventListener('touchmove', e => {
-        e.preventDefault()
-        motion2.touchmove(e, move2)
-      }, Motion.isSupportPassive ? { passive: false, capture: true } : false)
-      target.addEventListener('touchend', e => {
-        motion2.touchend(e, move2)
-      })
     </script>
   </body>
 </html>
