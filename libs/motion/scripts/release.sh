@@ -1,5 +1,8 @@
 #! /usr/bin/bash
 
+git checkout master
+git merge dev
+
 # 选择要发布的 npm 包版本
 VERSION=`npx select-version-cli`
 
@@ -10,15 +13,24 @@ if [[ $sure =~ ^[Yy]$ ]]
 then
   echo "Releasing v$VERSION ..."
 
-  # build
-  npm run build
-
   # npm version
   npm version $VERSION -m "[release] v$VERSION"
 
-  # npm publish
-  npm publish
+  # build dist and types
+  npm run build
 
+  # create changelog
+  npm run changelog
+
+  # commit changelog and types amend
+  git commit -a --amend
+  
   # git push
   git push origin master --tags
+  git checkout dev
+  git rebase master
+  git push origin dev
+
+  # npm publish
+  npm publish
 fi

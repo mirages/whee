@@ -10,7 +10,7 @@
   "module": "dist/motion.esm.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "commit": "cz",
+    "commit": "karma start --single-run && npm run lint && cz",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lint": "eslint src/ --ext .ts --format codeframe",
     "types": "tsc -d --declarationDir types --emitDeclarationOnly",
