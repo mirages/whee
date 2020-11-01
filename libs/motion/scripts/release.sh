@@ -14,22 +14,27 @@ then
   echo "Releasing v$VERSION ..."
 
   # npm version
-  npm version $VERSION -m "[release] v$VERSION"
+  npm --no-git-tag-version version $VERSION
 
   # build dist and types
   npm run build
 
-  # create changelog
+  # build changelog
   npm run changelog
 
-  # commit changelog and types amend
-  git commit -a --amend
+  # commit changelog, types and package.json, package-lock.json(version info)
+  git add -A
+  git commit -m "[release] v$VERSION"
+
+  # git tag
+  git tag "v$VERSION"
   
   # git push
-  git push origin master --tags
+  git push
+  git push --tags
   git checkout dev
   git rebase master
-  git push origin dev
+  git push
 
   # npm publish
   npm publish
