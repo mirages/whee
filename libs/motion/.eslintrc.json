@@ -25,6 +25,7 @@
         "@typescript-eslint/type-annotation-spacing": ["error"],
         "comma-spacing": "off",
         "@typescript-eslint/comma-spacing": ["error"],
-        "@typescript-eslint/semi": ["error", "never"]
+        "@typescript-eslint/semi": ["error", "never"],
+        "@typescript-eslint/no-unused-vars": ["error"]
     }
 }

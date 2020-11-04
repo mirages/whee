@@ -4,7 +4,12 @@ import { delay } from './helper'
 
 const Direction = Motion.Direction
 const Mode = Motion.Mode
-const createTouch = (options: any) => {
+const createTouch = (options: {
+  pageX: number
+  pageY: number
+  target: Element
+  identifier?: number
+}) => {
   return new Touch({
     identifier: Number(Math.random().toString().split('.')[1]),
     ...options
@@ -515,7 +520,7 @@ describe('Motion Class - instance methods', function () {
       await delay(4) // 触发惯性滚动
       const times = await new Promise(resolve => {
         let times = 0
-        motionXY.touchend(touchendEvent, dis => {
+        motionXY.touchend(touchendEvent, () => {
           times++
           if (times === 2) {
             // 重新开始，则会停止上一次的惯性滚动
@@ -580,10 +585,10 @@ describe('Motion Class - instance methods', function () {
           changedTouches: [touch2]
         })
       )
-      motion.touchend(touchendEvent1, ({ x, y }) => {
+      motion.touchend(touchendEvent1, () => {
         times++
       })
-      motion.touchend(touchendEvent2, ({ x, y }) => {
+      motion.touchend(touchendEvent2, () => {
         times++
       })
       expect(times).to.be.equal(1)
@@ -599,10 +604,10 @@ describe('Motion Class - instance methods', function () {
           changedTouches: [touch2]
         })
       )
-      motion.touchend(touchendEvent1, ({ x, y }) => {
+      motion.touchend(touchendEvent1, () => {
         times++
       })
-      motion.touchend(touchendEvent2, ({ x, y }) => {
+      motion.touchend(touchendEvent2, () => {
         times++
       })
     })
@@ -632,7 +637,7 @@ describe('Motion Class - instance methods', function () {
         // 触发事件变化的 touch 对象列表
         changedTouches: [touch]
       })
-      motion.onTouchstart((e: any) => {
+      motion.onTouchstart((e: TouchEvent) => {
         expect(e).to.be.equal(touchstart)
         done()
       })

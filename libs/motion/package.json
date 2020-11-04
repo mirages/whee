@@ -12,7 +12,7 @@
   "scripts": {
     "commit": "karma start --single-run && npm run lint && cz",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "lint": "eslint src/ --ext .ts --format codeframe",
+    "lint": "eslint --f codeframe {src,test}/**",
     "types": "tsc -d --declarationDir types --emitDeclarationOnly",
     "rollup": "rollup -c",
     "rollup:watch": "rollup -c -w",
@@ -56,11 +56,13 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.3.0",
     "karma": "^5.2.2",
     "karma-chrome-launcher": "^3.1.0",
     "karma-mocha": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
     "karma-typescript": "^5.2.0",
+    "lint-staged": "^10.5.1",
     "mocha": "^8.1.3",
     "prettier": "2.1.2",
     "rollup": "^2.26.10",
@@ -73,5 +75,13 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": ["prettier --write", "eslint --fix"]
   }
 }
