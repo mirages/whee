@@ -10,7 +10,7 @@
   "module": "dist/motion.esm.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "commit": "karma start --single-run && npm run lint && cz",
+    "commit": "cz",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lint": "eslint --f codeframe {src,test}/**",
     "types": "tsc -d --declarationDir types --emitDeclarationOnly",
@@ -82,6 +82,6 @@
     }
   },
   "lint-staged": {
-    "*.ts": ["prettier --write", "eslint --fix"]
+    "*.ts": ["karma start --single-run --browsers ChromeHeadless", "prettier --write", "eslint --fix"]
   }
 }
