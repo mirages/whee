@@ -1,0 +1,8 @@
+"*.md":
+  - prettier --write
+"*.{ts,tsx}":
+  # modify ts file, test it first
+  - karma start karma.config.js --single-run --browsers ChromeHeadless
+  # then prettier and eslint
+  - prettier --write
+  - eslint --fix

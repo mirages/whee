@@ -1,0 +1,12 @@
+# 使用单引号
+singleQuote: true
+# 语句结尾不加分号
+semi: false
+# 不使用 tab 缩进
+useTabs: false
+# 多行对象和数组等末尾不加逗号
+trailingComma: none
+# 自动换行宽度
+printWidth: 80
+# 箭头函数单参数不加圆括号
+arrowParens: avoid

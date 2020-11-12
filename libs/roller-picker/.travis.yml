@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - lts/*
+dist: xenial
+addons:
+  chrome: stable
+scripts:
+  # run test by ChromeHeadless
+  - karma start --single-run --browsers ChromeHeadless
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -s ./coverage/
