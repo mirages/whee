@@ -54,7 +54,11 @@ export default {
     }),
     postcss({
       // css module
-      modules: true,
+      extensions: ['.css', '.less'],
+      autoModules: false, // 关闭自动 css module，使用自定义的 css module
+      modules: {
+        generateScopedName: '[local]__[contenthash:base64:8]'
+      },
       extract: 'dist/index.css',
       minimize: true
     })

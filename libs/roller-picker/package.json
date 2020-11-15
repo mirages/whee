@@ -1,7 +1,7 @@
 {
-  "name": "lib-starter",
+  "name": "scroller-picker",
   "version": "0.1.0",
-  "description": "a library starter based on typescript, rollup, karma and mocha",
+  "description": "a scroll picker for mobile",
   "engines": {
     "node": ">=10.13.0",
     "git": ">=2.13.0"
@@ -19,7 +19,7 @@
     "cm": "cz",
     "clean": "rimraf dist && rimraf types",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "lint:ts": "eslint --f codeframe {src,test}/**",
+    "lint:ts": "eslint --f codeframe {src,test}/**/*.ts",
     "test": "karma start",
     "build": "npm run clean && rollup -c"
   },
@@ -61,6 +61,7 @@
     "karma-mocha": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
     "karma-typescript": "^5.2.0",
+    "less": "^3.12.2",
     "lint-staged": "^10.5.1",
     "mocha": "^8.2.1",
     "postcss": "^8.1.7",
@@ -83,5 +84,7 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "js-motion": "^1.1.0"
+  }
 }
