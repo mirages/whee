@@ -2,6 +2,7 @@ import ts from '@rollup/plugin-typescript'
 import { terser } from 'rollup-plugin-terser'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
+import postcss from 'rollup-plugin-postcss'
 
 const pkg = require('./package.json')
 const banner = `
@@ -50,6 +51,12 @@ export default {
           }
         }
       }
+    }),
+    postcss({
+      // css module
+      modules: true,
+      extract: 'dist/index.css',
+      minimize: true
     })
   ]
 }
