@@ -26,10 +26,12 @@ export function createEle(tag: string, cls: string): HTMLElement {
 
 export class Emitter {
   private _events: {
-    [prop: string]: ((...rest: unknown[]) => void)[]
+    // eslint-disable-next-line
+    [prop: string]: ((...rest: any[]) => void)[]
   } = {}
 
-  on(event: string, handler: (...rest: unknown[]) => void): void {
+  // eslint-disable-next-line
+  on(event: string, handler: (...rest: any[]) => void): void {
     if (this._events[event]) {
       this._events[event].push(handler)
     } else {
@@ -37,7 +39,8 @@ export class Emitter {
     }
   }
 
-  emit(event: string, ...rest: unknown[]): void {
+  // eslint-disable-next-line
+  emit(event: string, ...rest: any[]): void {
     const handlers = this._events[event]
     if (!handlers) return
     handlers.forEach(handler => {

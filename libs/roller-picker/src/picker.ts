@@ -1,25 +1,25 @@
-import { PickerDataFactory } from './data'
+import { DataFactories, BaseData } from './data'
 import Scroller from './scoller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
 
-interface PickerOpts {
+interface PickerOpts<T extends BaseData> {
   radius?: number
   scaleRatio?: number
   intervalAngle?: number
-  pickerDataFactory: PickerDataFactory
+  dataFactories: DataFactories<T>
 }
 
-class Picker extends Emitter {
-  private _scrollers: Scroller[] = []
-  private _values: unknown[] = []
-  private _tempValues: unknown[] = []
+class Picker<T extends BaseData> extends Emitter {
+  private _scrollers: Scroller<T>[] = []
+  private _values: (T | null)[] = []
+  private _tempValues: (T | null)[] = []
   private $wrapper: HTMLElement
 
-  constructor(options: PickerOpts) {
+  constructor(options: PickerOpts<T>) {
     super()
-    if (!options.pickerDataFactory) {
-      throw new Error('Picker: please assign the options.pickerDataFactory')
+    if (!options.dataFactories) {
+      throw new Error('Picker: please assign the options.dataFactories')
     }
 
     this.$wrapper = createEle('div', styles.picker)
@@ -32,19 +32,19 @@ class Picker extends Emitter {
   hide(): void {
     this.$wrapper.classList.remove(styles['picker-in'])
   }
-  getValue(): unknown[] {
+  getValue(): (T | null)[] {
     return this._values
   }
-  setValue(val: unknown[]): void {
+  setValue(val: T[]): void {
     this._values = val
   }
-  render(options: PickerOpts): void {
+  render(options: PickerOpts<T>): void {
     const $wrapper = this.$wrapper
     const {
       radius = 170,
       scaleRatio,
       intervalAngle = 12,
-      pickerDataFactory
+      dataFactories
     } = options
 
     const html = `
@@ -62,10 +62,10 @@ class Picker extends Emitter {
     const $body = getEle(`[ref="picker-body"]`, $wrapper) as HTMLElement
     const $cancel = getEle(`[ref="picker-cancel"]`, $wrapper) as HTMLElement
     const $ensure = getEle(`[ref="picker-ensure"]`, $wrapper) as HTMLElement
-    const scrollerDataFactories = pickerDataFactory.getFactories()
+    const factories = dataFactories.create()
 
     // 初始化所有的 scroller
-    scrollerDataFactories.forEach(dataFactory => {
+    factories.forEach(dataFactory => {
       const scroller = new Scroller({
         el: $body,
         dataFactory,
@@ -82,14 +82,14 @@ class Picker extends Emitter {
 
     // 进行联动操作
     this._scrollers.forEach((scroller, index) => {
-      scroller.on('change', (data: unknown) => {
+      scroller.on('change', (data: T) => {
         this._tempValues[index] = data
 
         const nextIndex = index + 1
         const nextScroller = this._scrollers[nextIndex]
         if (!nextScroller) return
 
-        const nextDataFactory = (pickerDataFactory.change(
+        const nextDataFactory = (dataFactories.change(
           this._tempValues.slice(0, nextIndex)
         ) || [])[nextIndex]
         if (!nextDataFactory) return

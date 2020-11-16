@@ -1,2 +1,2 @@
-export { ScrollerDataFactory, PickerDataFactory } from './data';
-export { default as Picker } from './picker';
+export type { DataFactory, DataFactories } from './data'
+export { default as Picker } from './picker'

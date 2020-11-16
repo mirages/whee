@@ -1,15 +1,12 @@
-export interface ScrollerData {
-    _text: string;
-    [prop: string]: unknown;
+export interface BaseData {
+  _text: string
 }
-export declare abstract class ScrollerDataFactory {
-    createData(text: string): ScrollerData;
-    abstract getInit(): ScrollerData | null;
-    abstract getPrev(param: ScrollerData | null): ScrollerData | null;
-    abstract getNext(param: ScrollerData | null): ScrollerData | null;
+export interface DataFactory<T extends BaseData> {
+  getInit(): T | null
+  getPrev(param: T | null): T | null
+  getNext(param: T | null): T | null
 }
-export declare abstract class PickerDataFactory {
-    private _factories;
-    getFactories(): ScrollerDataFactory[];
-    abstract change(values: unknown[]): ScrollerDataFactory[] | void;
+export interface DataFactories<T extends BaseData> {
+  create(): DataFactory<T>[]
+  change(values: (T | null)[]): DataFactory<T>[] | void
 }

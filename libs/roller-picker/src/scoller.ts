@@ -1,5 +1,5 @@
 import Motion from 'js-motion'
-import { ScrollerDataFactory, ScrollerData } from './data'
+import { DataFactory, BaseData } from './data'
 import {
   angleToRadian,
   getEle,
@@ -9,30 +9,30 @@ import {
 } from './utils'
 import styles from './index.less'
 
-interface VItem {
+interface VItem<T extends BaseData> {
   wrapper: HTMLElement
   el: HTMLElement
-  data: ScrollerData | null
+  data: T | null
   angle: number
   y: number
 }
 
-export default class Scroller extends Emitter {
+export default class Scroller<T extends BaseData> extends Emitter {
   radius = 300
   perspective = 0
   intervalAngle = 10
   scaleRatio = 0.1
-  dataFactory: ScrollerDataFactory
+  dataFactory: DataFactory<T>
   styles: { item: string } = { item: '' }
   shouldEnd = false
   endEasing = false
 
-  private _items: VItem[] = []
-  private _currItem: VItem
+  private _items: VItem<T>[] = []
+  private _currItem: VItem<T>
 
   constructor(options: {
     el: HTMLElement | string
-    dataFactory: ScrollerDataFactory
+    dataFactory: DataFactory<T>
     radius?: number
     scaleRatio?: number
     intervalAngle?: number
@@ -130,11 +130,7 @@ export default class Scroller extends Emitter {
     $root.appendChild($wrapper)
   }
 
-  private _createItem(
-    data: ScrollerData | null,
-    y: number,
-    angle: number
-  ): VItem {
+  private _createItem(data: T | null, y: number, angle: number): VItem<T> {
     const wrapper = createEle('div', styles['scroller-item'])
     const el = createEle('div', this.styles.item)
 
@@ -262,7 +258,7 @@ export default class Scroller extends Emitter {
     this._items.forEach(item => this._renderItem(item))
   }
 
-  private _renderItem(item: VItem) {
+  private _renderItem(item: VItem<T>) {
     const scaleRatio = this.scaleRatio
     const perspective = this.perspective
     const y = item.y.toFixed(4)
@@ -317,14 +313,12 @@ export default class Scroller extends Emitter {
     this._update(scrollAngle)
   }
 
-  getCurrentData(): { [prop: string]: unknown } {
+  getCurrentData(): T | null {
     // eslint-disable-next-line
-    const { _text, ...data } = this._currItem.data || { _text: '' }
-
-    return data
+    return this._currItem.data
   }
 
-  changeDataFactory(dataFactory: ScrollerDataFactory): void {
+  changeDataFactory(dataFactory: DataFactory<T>): void {
     if (!dataFactory) return
 
     const len = this._items.length
