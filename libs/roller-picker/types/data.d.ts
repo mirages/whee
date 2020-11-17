@@ -8,5 +8,5 @@ export interface DataFactory<T extends BaseData> {
 }
 export interface DataFactories<T extends BaseData> {
   create(): DataFactory<T>[]
-  change(values: (T | null)[]): DataFactory<T>[] | void
+  change(values: (T | null)[]): DataFactory<T>[]
 }

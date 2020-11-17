@@ -12,10 +12,10 @@ declare class Picker<T extends BaseData> extends Emitter {
   private _tempValues
   private $wrapper
   constructor(options: PickerOpts<T>)
+  private render
   show(): void
   hide(): void
   getValue(): (T | null)[]
   setValue(val: T[]): void
-  render(options: PickerOpts<T>): void
 }
 export default Picker

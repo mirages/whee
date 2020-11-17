@@ -250,7 +250,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
   }
 
   private _emitChange() {
-    const data = this.getCurrentData()
+    const data = this.getValue()
     this.emit('change', data)
   }
 
@@ -313,9 +313,14 @@ export default class Scroller<T extends BaseData> extends Emitter {
     this._update(scrollAngle)
   }
 
-  getCurrentData(): T | null {
-    // eslint-disable-next-line
-    return this._currItem.data
+  getValue(): T | null {
+    let data: T | null = null
+
+    if (this._currItem.data) {
+      data = { ...this._currItem.data }
+    }
+
+    return data
   }
 
   changeDataFactory(dataFactory: DataFactory<T>): void {

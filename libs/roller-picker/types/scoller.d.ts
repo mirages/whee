@@ -41,6 +41,6 @@ export default class Scroller<T extends BaseData> extends Emitter {
    */
   scroll(distance: number): void
   scrollEnd(): void
-  getCurrentData(): T | null
+  getValue(): T | null
   changeDataFactory(dataFactory: DataFactory<T>): void
 }

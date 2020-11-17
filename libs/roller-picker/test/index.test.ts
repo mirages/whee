@@ -71,6 +71,7 @@ describe('lib-starter test', () => {
         },
         change() {
           // noop
+          return [new AlphabetFactory()]
         }
       }
     })

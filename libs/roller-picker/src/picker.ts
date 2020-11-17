@@ -1,4 +1,4 @@
-import { DataFactories, BaseData } from './data'
+import { DataFactories, BaseData, DataFactory } from './data'
 import Scroller from './scoller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
@@ -26,19 +26,7 @@ class Picker<T extends BaseData> extends Emitter {
     this.render(options)
   }
 
-  show(): void {
-    this.$wrapper.classList.add(styles['picker-in'])
-  }
-  hide(): void {
-    this.$wrapper.classList.remove(styles['picker-in'])
-  }
-  getValue(): (T | null)[] {
-    return this._values
-  }
-  setValue(val: T[]): void {
-    this._values = val
-  }
-  render(options: PickerOpts<T>): void {
+  private render(options: PickerOpts<T>): void {
     const $wrapper = this.$wrapper
     const {
       radius = 170,
@@ -73,7 +61,7 @@ class Picker<T extends BaseData> extends Emitter {
         scaleRatio,
         intervalAngle
       })
-      const data = scroller.getCurrentData()
+      const data = scroller.getValue()
 
       this._scrollers.push(scroller)
       this._values.push(data)
@@ -102,6 +90,8 @@ class Picker<T extends BaseData> extends Emitter {
       this._tempValues = [...this._values]
       this.hide()
       this.emit('cancel')
+      const factories = dataFactories.change(this._values)
+      this._scrollers[0].changeDataFactory(factories[0])
     })
     $ensure.addEventListener('click', () => {
       this._values = [...this._tempValues]
@@ -109,6 +99,19 @@ class Picker<T extends BaseData> extends Emitter {
       this.emit('ensure')
     })
     document.body.appendChild($wrapper)
+  }
+
+  show(): void {
+    this.$wrapper.classList.add(styles['picker-in'])
+  }
+  hide(): void {
+    this.$wrapper.classList.remove(styles['picker-in'])
+  }
+  getValue(): (T | null)[] {
+    return [...this._values]
+  }
+  setValue(val: T[]): void {
+    this._values = [...val]
   }
 }
 

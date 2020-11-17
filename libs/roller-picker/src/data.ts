@@ -1,6 +1,7 @@
 export interface BaseData {
   _text: string
 }
+
 export interface DataFactory<T extends BaseData> {
   getInit(): T | null
 
@@ -12,5 +13,5 @@ export interface DataFactory<T extends BaseData> {
 export interface DataFactories<T extends BaseData> {
   create(): DataFactory<T>[]
 
-  change(values: (T | null)[]): DataFactory<T>[] | void
+  change(values: (T | null)[]): DataFactory<T>[]
 }
