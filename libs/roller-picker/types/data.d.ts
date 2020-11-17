@@ -1,12 +1,12 @@
 export interface BaseData {
   _text: string
 }
+export declare type NullableData<T> = T | null
 export interface DataFactory<T extends BaseData> {
-  getInit(): T | null
-  getPrev(param: T | null): T | null
-  getNext(param: T | null): T | null
+  getInit: () => NullableData<T>
+  getPrev: (param: NullableData<T>) => NullableData<T>
+  getNext: (param: NullableData<T>) => NullableData<T>
 }
 export interface DataFactories<T extends BaseData> {
-  create(): DataFactory<T>[]
-  change(values: (T | null)[]): DataFactory<T>[]
+  create: (values?: NullableData<T>[]) => DataFactory<T>[]
 }

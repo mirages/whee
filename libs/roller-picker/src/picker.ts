@@ -1,4 +1,4 @@
-import { DataFactories, BaseData, DataFactory } from './data'
+import { DataFactories, BaseData, NullableData, DataFactory } from './data'
 import Scroller from './scoller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
@@ -12,9 +12,9 @@ interface PickerOpts<T extends BaseData> {
 
 class Picker<T extends BaseData> extends Emitter {
   private _scrollers: Scroller<T>[] = []
-  private _values: (T | null)[] = []
-  private _tempValues: (T | null)[] = []
-  private $wrapper: HTMLElement
+  private _values: NullableData<T>[] = []
+  private _tempValues: NullableData<T>[] = []
+  private $root: HTMLElement
 
   constructor(options: PickerOpts<T>) {
     super()
@@ -22,12 +22,12 @@ class Picker<T extends BaseData> extends Emitter {
       throw new Error('Picker: please assign the options.dataFactories')
     }
 
-    this.$wrapper = createEle('div', styles.picker)
+    this.$root = createEle('div', styles.picker)
     this.render(options)
   }
 
   private render(options: PickerOpts<T>): void {
-    const $wrapper = this.$wrapper
+    const $root = this.$root
     const {
       radius = 170,
       scaleRatio,
@@ -46,10 +46,10 @@ class Picker<T extends BaseData> extends Emitter {
 </div>
     `
 
-    $wrapper.innerHTML = html
-    const $body = getEle(`[ref="picker-body"]`, $wrapper) as HTMLElement
-    const $cancel = getEle(`[ref="picker-cancel"]`, $wrapper) as HTMLElement
-    const $ensure = getEle(`[ref="picker-ensure"]`, $wrapper) as HTMLElement
+    $root.innerHTML = html
+    const $body = getEle(`[ref="picker-body"]`, $root) as HTMLElement
+    const $cancel = getEle(`[ref="picker-cancel"]`, $root) as HTMLElement
+    const $ensure = getEle(`[ref="picker-ensure"]`, $root) as HTMLElement
     const factories = dataFactories.create()
 
     // 初始化所有的 scroller
@@ -77,7 +77,7 @@ class Picker<T extends BaseData> extends Emitter {
         const nextScroller = this._scrollers[nextIndex]
         if (!nextScroller) return
 
-        const nextDataFactory = (dataFactories.change(
+        const nextDataFactory = (dataFactories.create(
           this._tempValues.slice(0, nextIndex)
         ) || [])[nextIndex]
         if (!nextDataFactory) return
@@ -90,7 +90,7 @@ class Picker<T extends BaseData> extends Emitter {
       this._tempValues = [...this._values]
       this.hide()
       this.emit('cancel')
-      const factories = dataFactories.change(this._values)
+      const factories = dataFactories.create(this._values)
       this._scrollers[0].changeDataFactory(factories[0])
     })
     $ensure.addEventListener('click', () => {
@@ -98,18 +98,21 @@ class Picker<T extends BaseData> extends Emitter {
       this.hide()
       this.emit('ensure')
     })
-    document.body.appendChild($wrapper)
+    document.body.appendChild($root)
   }
 
   show(): void {
-    this.$wrapper.classList.add(styles['picker-in'])
+    this.$root.classList.add(styles['picker-in'])
   }
+
   hide(): void {
-    this.$wrapper.classList.remove(styles['picker-in'])
+    this.$root.classList.remove(styles['picker-in'])
   }
-  getValue(): (T | null)[] {
+
+  getValue(): NullableData<T>[] {
     return [...this._values]
   }
+
   setValue(val: T[]): void {
     this._values = [...val]
   }

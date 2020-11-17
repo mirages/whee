@@ -1,7 +1,6 @@
-import { Picker, DataFactory } from '../src/index'
+import { Picker, BaseData, DataFactory } from '../src/index'
 
-interface PickerData {
-  _text: string
+interface PickerData extends BaseData {
   id: number
 }
 
@@ -35,30 +34,25 @@ class AlphabetFactory implements DataFactory<PickerData> {
     'z'
   ]
   private initIndex = 10
+
+  createData(index: number): PickerData {
+    return {
+      _text: this.alphabet[index],
+      id: index
+    }
+  }
   getInit() {
-    const init = this.alphabet[this.initIndex]
-    return {
-      _text: init,
-      id: this.initIndex
-    }
+    return this.createData(this.initIndex)
   }
-  getPrev(data: PickerData) {
-    if (!data) return null
-    const index = data.id - 1
-    if (index < 0) return null
-    return {
-      _text: this.alphabet[index],
-      id: index
-    }
+  getPrev(data: PickerData | null): PickerData | null {
+    if (!data || data.id === 0) return null
+
+    return this.createData(data.id - 1)
   }
-  getNext(data: PickerData) {
-    if (!data) return null
-    const index = data.id + 1
-    if (index > 26) return null
-    return {
-      _text: this.alphabet[index],
-      id: index
-    }
+  getNext(data: PickerData | null) {
+    if (!data || data.id === this.alphabet.length - 1) return null
+
+    return this.createData(data.id + 1)
   }
 }
 
@@ -67,10 +61,6 @@ describe('lib-starter test', () => {
     const picker = new Picker({
       dataFactories: {
         create() {
-          return [new AlphabetFactory()]
-        },
-        change() {
-          // noop
           return [new AlphabetFactory()]
         }
       }

@@ -1,5 +1,5 @@
 import Motion from 'js-motion'
-import { DataFactory, BaseData } from './data'
+import { DataFactory, BaseData, NullableData } from './data'
 import {
   angleToRadian,
   getEle,
@@ -12,7 +12,7 @@ import styles from './index.less'
 interface VItem<T extends BaseData> {
   wrapper: HTMLElement
   el: HTMLElement
-  data: T | null
+  data: NullableData<T>
   angle: number
   y: number
 }
@@ -130,7 +130,11 @@ export default class Scroller<T extends BaseData> extends Emitter {
     $root.appendChild($wrapper)
   }
 
-  private _createItem(data: T | null, y: number, angle: number): VItem<T> {
+  private _createItem(
+    data: NullableData<T>,
+    y: number,
+    angle: number
+  ): VItem<T> {
     const wrapper = createEle('div', styles['scroller-item'])
     const el = createEle('div', this.styles.item)
 
@@ -313,8 +317,8 @@ export default class Scroller<T extends BaseData> extends Emitter {
     this._update(scrollAngle)
   }
 
-  getValue(): T | null {
-    let data: T | null = null
+  getValue(): NullableData<T> {
+    let data: NullableData<T> = null
 
     if (this._currItem.data) {
       data = { ...this._currItem.data }

@@ -1,4 +1,4 @@
-import { DataFactory, BaseData } from './data'
+import { DataFactory, BaseData, NullableData } from './data'
 import { Emitter } from './utils'
 export default class Scroller<T extends BaseData> extends Emitter {
   radius: number
@@ -41,6 +41,6 @@ export default class Scroller<T extends BaseData> extends Emitter {
    */
   scroll(distance: number): void
   scrollEnd(): void
-  getValue(): T | null
+  getValue(): NullableData<T>
   changeDataFactory(dataFactory: DataFactory<T>): void
 }
