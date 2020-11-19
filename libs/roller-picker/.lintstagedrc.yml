@@ -6,3 +6,6 @@
   # then prettier and eslint
   - prettier --write
   - eslint --fix
+# stylelint
+"*.{css,less,scss}":
+  - stylelint --fix

@@ -1,0 +1,82 @@
+extends:
+  - stylelint-config-standard
+plugins:
+  - stylelint-order
+rules:
+  # use `emptyLineBefore`
+  declaration-empty-line-before: null
+  order/order:
+    - custom-properties
+    - at-variables
+    - declarations
+  order/properties-order:
+    -
+      - content
+      -
+        groupName: position
+        emptyLineBefore: always
+        noEmptyLineBetween: true
+        properties:
+          - position
+          - top
+          - right
+          - bottom
+          - left
+          - z-index
+      -
+        groupName: display
+        emptyLineBefore: always
+        noEmptyLineBetween: true
+        properties:
+          - display
+          - align-items
+          - justify-content
+          - box-sizing
+          - overflow
+      -
+        groupName: size
+        emptyLineBefore: always
+        noEmptyLineBetween: true
+        properties:
+          - width
+          - max-width
+          - height
+          - max-height
+          - padding
+          - padding-top
+          - padding-right
+          - padding-bottom
+          - padding-left
+          - border
+          - border-top
+          - border-right
+          - border-bottom
+          - border-left
+          - margin
+          - margin-top
+          - margin-right
+          - margin-bottom
+          - margin-left
+      -
+        groupName: transform
+        emptyLineBefore: always
+        noEmptyLineBetween: true
+        properties:
+          - opacity
+          - transform
+          - transition
+      -
+        groupName: font
+        emptyLineBefore: always
+        noEmptyLineBetween: true
+        properties:
+          - color
+          - font
+          - font-family
+          - font-size
+          - font-weight
+          - line-height
+          - text-align
+    -
+      unspecified: bottomAlphabetical
+      emptyLineBeforeUnspecified: always
