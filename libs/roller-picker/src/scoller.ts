@@ -22,13 +22,13 @@ export default class Scroller<T extends BaseData> extends Emitter {
   perspective = 0
   intervalAngle = 10
   scaleRatio = 0.1
-  dataFactory: DataFactory<T>
   styles: { item: string } = { item: '' }
-  shouldEnd = false
-  endEasing = false
 
+  private _dataFactory: DataFactory<T>
   private _items: VItem<T>[] = []
   private _currItem: VItem<T>
+  private _shouldEnd = false
+  private _endEasing = false
 
   constructor(options: {
     el: HTMLElement | string
@@ -54,7 +54,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
       throw new Error("Scroller: can't find element by options.el")
     }
 
-    this.dataFactory = dataFactory
+    this._dataFactory = dataFactory
     this._currItem = this._createItem(dataFactory.getInit(), 0, 0)
     this._items = [this._currItem]
 
@@ -83,8 +83,8 @@ export default class Scroller<T extends BaseData> extends Emitter {
       const radian = angleToRadian(angle) // 弧度
       const y = this.radius * Math.sin(radian)
 
-      prevData = this.dataFactory.getPrev(prevData)
-      nextData = this.dataFactory.getNext(nextData)
+      prevData = this._dataFactory.getPrev(prevData)
+      nextData = this._dataFactory.getNext(nextData)
 
       // 向前添加一个元素
       items.unshift(this._createItem(prevData, -y, angle))
@@ -108,7 +108,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
       this.scroll(y)
     })
     motion.onTouchend(({ y }) => {
-      if (this.shouldEnd) {
+      if (this._shouldEnd) {
         // 已到达边界点
         this.scrollEnd()
         motion.clearInertiaScroll()
@@ -146,8 +146,8 @@ export default class Scroller<T extends BaseData> extends Emitter {
   private _scrollAngleDetection(angle: number) {
     const currData = this._currItem.data
     const boundary =
-      (angle > 0 && this.dataFactory.getPrev(currData) === null) ||
-      (angle < 0 && this.dataFactory.getNext(currData) === null)
+      (angle > 0 && this._dataFactory.getPrev(currData) === null) ||
+      (angle < 0 && this._dataFactory.getNext(currData) === null)
 
     if (boundary) {
       const intervalAngle = this.intervalAngle
@@ -158,7 +158,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
 
       if (currAngleAbs > intervalAngle * 0.6) {
         // 滚动到临界点角度
-        this.shouldEnd = true
+        this._shouldEnd = true
         angle = 0
       } else {
         angle = sign * easeAngle
@@ -173,8 +173,8 @@ export default class Scroller<T extends BaseData> extends Emitter {
     const currAngle = this._currItem.angle
     const currData = this._currItem.data
     const boundary =
-      (currAngle < 0 && this.dataFactory.getPrev(currData) === null) ||
-      (currAngle > 0 && this.dataFactory.getNext(currData) === null)
+      (currAngle < 0 && this._dataFactory.getPrev(currData) === null) ||
+      (currAngle > 0 && this._dataFactory.getNext(currData) === null)
     let angle = 0
 
     if (Math.abs(currAngle) < intervalAngle / 2 || boundary) {
@@ -230,14 +230,14 @@ export default class Scroller<T extends BaseData> extends Emitter {
       // 第一个元素转动的角度超过 90 度，将其放到最后一个（循环利用）。注意实际的 dom 元素顺序并未改变
       firstItem.angle = firstItem.angle - 180
       firstItem.y = -firstItem.y
-      firstItem.data = this.dataFactory.getNext(lastItem.data)
+      firstItem.data = this._dataFactory.getNext(lastItem.data)
       items.push(firstItem)
       items.shift()
     } else if (lastItem.angle < -90) {
       // 最后一个元素转动的角度超过 -90 度，将其放到第一个（循环利用）。注意实际的 dom 元素顺序并未改变
       lastItem.angle = lastItem.angle + 180
       lastItem.y = -lastItem.y
-      lastItem.data = this.dataFactory.getPrev(firstItem.data)
+      lastItem.data = this._dataFactory.getPrev(firstItem.data)
       items.unshift(lastItem)
       items.pop()
     }
@@ -278,7 +278,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
       -moz-transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle}deg) scale(${scale});
       transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle}deg) scale(${scale});`
 
-    if (this.endEasing) {
+    if (this._endEasing) {
       cssText += `transition: transform .25s ease-out 0s;`
     }
     item.wrapper.style.cssText = cssText
@@ -299,7 +299,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
     const angle = distanceToAngle(distance, this.radius) // 距离转换成角度
     const angles = this._angleDivision(angle) // 角度分割
 
-    this.endEasing = false
+    this._endEasing = false
     angles.forEach(angle => {
       const scrollAngle = this._scrollAngleDetection(angle)
 
@@ -311,8 +311,8 @@ export default class Scroller<T extends BaseData> extends Emitter {
   scrollEnd(): void {
     const scrollAngle = this._scrollEndAngleDetection()
 
-    this.shouldEnd = false
-    this.endEasing = true
+    this._shouldEnd = false
+    this._endEasing = true
     // 更新转动角度
     this._update(scrollAngle)
   }
@@ -335,14 +335,14 @@ export default class Scroller<T extends BaseData> extends Emitter {
     let prev = dataFactory.getInit()
     let next = prev
 
-    this.dataFactory = dataFactory
+    this._dataFactory = dataFactory
     this._items[index].data = prev
     this._currItem = this._items[index]
     index++
 
     while (index < len) {
-      prev = this.dataFactory.getPrev(prev)
-      next = this.dataFactory.getNext(next)
+      prev = this._dataFactory.getPrev(prev)
+      next = this._dataFactory.getNext(next)
 
       this._items[len - 1 - index].data = prev
       this._items[index].data = next

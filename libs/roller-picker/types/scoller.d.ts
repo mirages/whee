@@ -5,14 +5,14 @@ export default class Scroller<T extends BaseData> extends Emitter {
   perspective: number
   intervalAngle: number
   scaleRatio: number
-  dataFactory: DataFactory<T>
   styles: {
     item: string
   }
-  shouldEnd: boolean
-  endEasing: boolean
+  private _dataFactory
   private _items
   private _currItem
+  private _shouldEnd
+  private _endEasing
   constructor(options: {
     el: HTMLElement | string
     dataFactory: DataFactory<T>
