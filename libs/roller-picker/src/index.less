@@ -1,17 +1,20 @@
 @padding: 16px;
 @size-lg: 18px;
 @size-sm: 14px;
+
 // 橙色
 @color-orange: #ff6d38;
 // border颜色
 @border-color: #e5e5e5;
+
 // 高度
 @height-head: 44px;
 @height-body: 300px;
 @height-foot: 50px;
 @height-item: 36px;
 @height-mask: (@height-body - @height-item)/2;
-// 事件
+
+// 动画时间
 @time-transition: 0.2s;
 
 // mask
@@ -24,32 +27,43 @@
 
 .scroller {
   position: relative;
-  text-align: center;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  touch-action: none;
-  //transition: transform .1s linear 0s;
 
-  &:before, &:after {
+  overflow: hidden;
+
+  width: 100%;
+  height: 100%;
+
+  text-align: center;
+
+  touch-action: none;
+
+  &::before,
+  &::after {
     content: '';
-    display: block;
+
     position: absolute;
     left: 0;
-    height: @height-mask;
-    width: 100%;
     z-index: 2;
+
+    display: block;
+
+    width: 100%;
+    height: @height-mask;
   }
 
-  &:before {
+  &::before {
     top: 0;
+
     border-bottom: 1px solid @border-color;
+
     background: linear-gradient(@mask-deep 0%, @mask-deep 10%, @mask-light 100%);
   }
 
-  &:after {
+  &::after {
     bottom: 0;
+
     border-top: 1px solid @border-color;
+
     background: linear-gradient(@mask-light 0%, @mask-deep 90%, @mask-deep 100%);
   }
 }
@@ -58,72 +72,89 @@
   position: absolute;
   top: 0;
   left: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
   width: 100%;
   height: 100%;
+
   text-align: center;
+
+  backface-visibility: hidden;
 }
 
 .picker {
   position: fixed;
   top: 100%;
-  left: 0;
   right: 0;
-  height: 100%;
+  left: 0;
   z-index: -1;
-  opacity: 0;
-  background-color: rgba(0, 0, 0, .26);
 
+  height: 100%;
+
+  opacity: 0;
   transition: z-index @time-transition linear 0s, opacity @time-transition linear 0s, top 0s linear @time-transition;
 
+  background-color: rgba(0, 0, 0, 0.26);
+
   button {
-    color: #007AE6;
+    border: none;
+
+    color: #007ae6;
+
     background: none;
     outline: none;
-    border: none;
   }
 }
 
 // 内容区样式
 .picker-content {
   position: absolute;
-  left: 0;
   bottom: -100%;
-  width: 100%;
-  background-color: #fff;
+  left: 0;
   z-index: 2;
-  user-select: none;
+
+  width: 100%;
+
   transition: bottom @time-transition ease-in 0s;
+
+  background-color: #fff;
+  user-select: none;
 }
 
 .picker-in {
-  z-index: 999;
   top: 0;
+  z-index: 999;
+
   opacity: 1;
   transition: z-index @time-transition linear 0s, opacity @time-transition ease-out 0s;
 
   .picker-content {
     bottom: 0;
+
     transition: bottom @time-transition ease-out 0s;
   }
 }
 
 .picker-head {
-  height: @height-head;
-  padding: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  text-align: center;
+
+  height: @height-head;
+  padding: 5px;
   border-bottom: 1px solid @border-color;
+
+  text-align: center;
+
   background-color: #fff;
 
   button {
-    height: 100%;
     width: 55px;
+    height: 100%;
+
     font-size: 16px;
   }
 }
@@ -132,9 +163,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   height: @height-body;
-  //mask: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.3) 40%, rgba(0,0,0,1) 47%,rgba(0,0,0,1) 50%,rgba(0,0,0,1) 53%,rgba(0,0,0,.5) 60%,rgba(0,0,0,.3));
-  &>div {
+
+  & > div {
     flex: 1;
   }
 }
@@ -142,18 +174,21 @@
 .picker-foot {
   height: @height-foot;
   border-top: 1px solid #e5e5e5;
+
   text-align: center;
 
   button {
     height: 100%;
     padding: 0 10px;
+
     font-size: 17px;
   }
 }
 
 .picker-roller {
-  flex: 1;
   height: @height-item;
+
+  flex: 1;
 }
 
 .picker-date-item {

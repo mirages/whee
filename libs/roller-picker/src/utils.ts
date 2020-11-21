@@ -17,7 +17,7 @@ export function getEle(
   return typeof el === 'string' ? ancestorEle.querySelector(el) : el
 }
 
-export function createEle(tag: string, cls: string): HTMLElement {
+export function createEle(tag: string, cls?: string): HTMLElement {
   const el = document.createElement(tag)
 
   if (cls) el.className = cls

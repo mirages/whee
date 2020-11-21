@@ -8,7 +8,7 @@ export declare function getEle(
   el: string | HTMLElement,
   ancestorEle?: HTMLElement | Document
 ): HTMLElement | null
-export declare function createEle(tag: string, cls: string): HTMLElement
+export declare function createEle(tag: string, cls?: string): HTMLElement
 export declare class Emitter {
   private _events
   on(event: string, handler: (...rest: any[]) => void): void

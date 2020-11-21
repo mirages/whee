@@ -1,5 +1,5 @@
-import { DataFactories, BaseData, NullableData, DataFactory } from './data'
-import Scroller from './scoller'
+import { DataFactories, BaseData, NullableData } from './data'
+import Scroller from './scroller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
 

@@ -1,5 +1,11 @@
 import { DataFactory, BaseData, NullableData } from './data'
 import { Emitter } from './utils'
+interface VItem<T extends BaseData> {
+  wrapper: HTMLElement
+  el: HTMLElement
+  data: NullableData<T>
+  angle: number
+}
 export default class Scroller<T extends BaseData> extends Emitter {
   radius: number
   perspective: number
@@ -8,21 +14,26 @@ export default class Scroller<T extends BaseData> extends Emitter {
   styles: {
     item: string
   }
+  maxAngle: number
+  private _maxDiffAngle
+  private _dataChangeAngle
   private _dataFactory
   private _items
   private _currItem
   private _shouldEnd
-  private _endEasing
+  private _rafId
   constructor(options: {
     el: HTMLElement | string
     dataFactory: DataFactory<T>
     radius?: number
     scaleRatio?: number
     intervalAngle?: number
+    maxAngle?: number
     styles?: {
       item: string
     }
   })
+  private _getMaxDiffAngle
   private _init
   private _mount
   private _createItem
@@ -42,5 +53,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
   scroll(distance: number): void
   scrollEnd(): void
   getValue(): NullableData<T>
+  get items(): VItem<T>[]
   changeDataFactory(dataFactory: DataFactory<T>): void
 }
+export {}

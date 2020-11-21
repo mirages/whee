@@ -14,21 +14,23 @@ interface VItem<T extends BaseData> {
   el: HTMLElement
   data: NullableData<T>
   angle: number
-  y: number
 }
 
 export default class Scroller<T extends BaseData> extends Emitter {
-  radius = 300
+  radius = 200
   perspective = 0
   intervalAngle = 10
   scaleRatio = 0.1
   styles: { item: string } = { item: '' }
+  maxAngle = 50
 
+  private _maxDiffAngle = this._getMaxDiffAngle()
+  private _dataChangeAngle: number
   private _dataFactory: DataFactory<T>
   private _items: VItem<T>[] = []
   private _currItem: VItem<T>
   private _shouldEnd = false
-  private _endEasing = false
+  private _rafId = 0
 
   constructor(options: {
     el: HTMLElement | string
@@ -36,6 +38,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
     radius?: number
     scaleRatio?: number
     intervalAngle?: number
+    maxAngle?: number
     styles?: { item: string }
   }) {
     super()
@@ -43,9 +46,10 @@ export default class Scroller<T extends BaseData> extends Emitter {
       el,
       styles,
       dataFactory,
-      radius = 200,
-      intervalAngle = 10,
-      scaleRatio = 0.1
+      radius,
+      intervalAngle,
+      maxAngle,
+      scaleRatio
     } = options
 
     const $root = getEle(el)
@@ -55,7 +59,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
     }
 
     this._dataFactory = dataFactory
-    this._currItem = this._createItem(dataFactory.getInit(), 0, 0)
+    this._currItem = this._createItem(dataFactory.getInit(), 0)
     this._items = [this._currItem]
 
     if (radius) {
@@ -63,8 +67,11 @@ export default class Scroller<T extends BaseData> extends Emitter {
       this.perspective = radius
     }
     if (intervalAngle) this.intervalAngle = intervalAngle
+    if (maxAngle && maxAngle > 0 && maxAngle <= 90) this.maxAngle = maxAngle
     if (scaleRatio) this.scaleRatio = scaleRatio
     if (styles) this.styles = styles
+    this._maxDiffAngle = this._getMaxDiffAngle()
+    this._dataChangeAngle = this.intervalAngle * 0.7
 
     // 初始化
     this._init()
@@ -73,28 +80,31 @@ export default class Scroller<T extends BaseData> extends Emitter {
     this._mount($root)
   }
 
+  private _getMaxDiffAngle(): number {
+    return (
+      Math.floor((this.maxAngle - 0.0001) / this.intervalAngle) *
+      this.intervalAngle *
+      2
+    )
+  }
+
   private _init() {
     const items = this._items
     let prevData = this._currItem.data
     let nextData = prevData
     let angle = this.intervalAngle
 
-    while (angle <= 90) {
-      const radian = angleToRadian(angle) // 弧度
-      const y = this.radius * Math.sin(radian)
-
+    while (angle < this.maxAngle) {
       prevData = this._dataFactory.getPrev(prevData)
       nextData = this._dataFactory.getNext(nextData)
 
       // 向前添加一个元素
-      items.unshift(this._createItem(prevData, -y, angle))
+      items.unshift(this._createItem(prevData, angle))
       // 向后添加一个元素
-      items.push(this._createItem(nextData, y, -angle))
+      items.push(this._createItem(nextData, -angle))
 
       angle += this.intervalAngle // 角度递增
     }
-
-    // TODO 90 和 -90 重复，需要去重
   }
 
   private _mount($root: HTMLElement) {
@@ -130,17 +140,13 @@ export default class Scroller<T extends BaseData> extends Emitter {
     $root.appendChild($wrapper)
   }
 
-  private _createItem(
-    data: NullableData<T>,
-    y: number,
-    angle: number
-  ): VItem<T> {
+  private _createItem(data: NullableData<T>, angle: number): VItem<T> {
     const wrapper = createEle('div', styles['scroller-item'])
     const el = createEle('div', this.styles.item)
 
     wrapper.appendChild(el)
 
-    return { wrapper, el, data, y, angle }
+    return { wrapper, el, data, angle }
   }
 
   private _scrollAngleDetection(angle: number) {
@@ -156,7 +162,10 @@ export default class Scroller<T extends BaseData> extends Emitter {
       const easeAngle =
         Math.pow((intervalAngle - currAngleAbs) / intervalAngle, 3) * 1
 
-      if (currAngleAbs > intervalAngle * 0.6) {
+      if (
+        currAngleAbs > this._dataChangeAngle ||
+        currAngleAbs + easeAngle > this._dataChangeAngle
+      ) {
         // 滚动到临界点角度
         this._shouldEnd = true
         angle = 0
@@ -215,10 +224,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
     items.forEach(item => {
       const prevAngle = item.angle
       const currAngle = prevAngle - angle // 在原有基础上减去滚动角度，才是顺势变化
-      const currRadian = angleToRadian(currAngle)
-      const currY = -this.radius * Math.sin(currRadian)
 
-      item.y = currY
       item.angle = currAngle
     })
 
@@ -226,24 +232,22 @@ export default class Scroller<T extends BaseData> extends Emitter {
     const lastItem = items[len - 1]
 
     // 更新数组顺序（同时也是更新元素的 data 值）
-    if (firstItem.angle > 90) {
-      // 第一个元素转动的角度超过 90 度，将其放到最后一个（循环利用）。注意实际的 dom 元素顺序并未改变
-      firstItem.angle = firstItem.angle - 180
-      firstItem.y = -firstItem.y
+    if (angle < 0 && firstItem.angle > this.maxAngle) {
+      // 第一个元素转动的角度超过 this.maxAngle，将其放到最后一个（循环利用）
+      firstItem.angle = items[1].angle - this._maxDiffAngle
       firstItem.data = this._dataFactory.getNext(lastItem.data)
       items.push(firstItem)
       items.shift()
-    } else if (lastItem.angle < -90) {
-      // 最后一个元素转动的角度超过 -90 度，将其放到第一个（循环利用）。注意实际的 dom 元素顺序并未改变
-      lastItem.angle = lastItem.angle + 180
-      lastItem.y = -lastItem.y
+    } else if (angle > 0 && lastItem.angle < -this.maxAngle) {
+      // 最后一个元素转动的角度超过 -this.maxAngle，将其放到第一个（循环利用）
+      lastItem.angle = items[len - 2].angle + this._maxDiffAngle
       lastItem.data = this._dataFactory.getPrev(firstItem.data)
       items.unshift(lastItem)
       items.pop()
     }
 
     // 更新当前选中的值
-    if (Math.abs(this._currItem.angle) > this.intervalAngle - 0.01) {
+    if (Math.abs(this._currItem.angle) > this._dataChangeAngle) {
       this._currItem = items[(len - 1) / 2]
       // 触发 change 回调
       this._emitChange()
@@ -265,22 +269,17 @@ export default class Scroller<T extends BaseData> extends Emitter {
   private _renderItem(item: VItem<T>) {
     const scaleRatio = this.scaleRatio
     const perspective = this.perspective
-    const y = item.y.toFixed(4)
     const angle = item.angle.toFixed(4)
     const data = item.data
     const radian = angleToRadian(Number(angle))
+    const y = -(this.radius * Math.sin(radian)).toFixed(0)
     const scale = Math.abs(
       Math.cos((1 - Math.pow(scaleRatio, 3)) * radian)
     ).toFixed(4)
     const text = data === null ? '' : data._text
-    let cssText = `;
-      -webkit-transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle}deg) scale(${scale});
-      -moz-transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle}deg) scale(${scale});
+    const cssText = `;
       transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle}deg) scale(${scale});`
 
-    if (this._endEasing) {
-      cssText += `transition: transform .25s ease-out 0s;`
-    }
     item.wrapper.style.cssText = cssText
     item.el.textContent = text
     item.el.title = text
@@ -299,10 +298,11 @@ export default class Scroller<T extends BaseData> extends Emitter {
     const angle = distanceToAngle(distance, this.radius) // 距离转换成角度
     const angles = this._angleDivision(angle) // 角度分割
 
-    this._endEasing = false
+    cancelAnimationFrame(this._rafId)
     angles.forEach(angle => {
       const scrollAngle = this._scrollAngleDetection(angle)
 
+      if (!scrollAngle) return
       // 更新转动角度
       this._update(scrollAngle)
     })
@@ -312,9 +312,28 @@ export default class Scroller<T extends BaseData> extends Emitter {
     const scrollAngle = this._scrollEndAngleDetection()
 
     this._shouldEnd = false
-    this._endEasing = true
-    // 更新转动角度
-    this._update(scrollAngle)
+
+    if (!scrollAngle) return
+
+    const count = Math.ceil((80 * Math.abs(scrollAngle)) / this.intervalAngle)
+    let prevAngle = 0
+    let index = 1
+
+    const step = () => {
+      const currAngle =
+        (-scrollAngle / Math.pow(count, 2)) * Math.pow(index - count, 2) +
+        scrollAngle
+
+      this._update(currAngle - prevAngle)
+      prevAngle = currAngle
+      index++
+
+      if (index < count) {
+        this._rafId = window.requestAnimationFrame(step)
+      }
+    }
+
+    step()
   }
 
   getValue(): NullableData<T> {
@@ -325,6 +344,10 @@ export default class Scroller<T extends BaseData> extends Emitter {
     }
 
     return data
+  }
+
+  get items(): VItem<T>[] {
+    return this._items
   }
 
   changeDataFactory(dataFactory: DataFactory<T>): void {
