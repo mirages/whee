@@ -77,7 +77,8 @@ module.exports = function (config) {
         // custom ui, defined in required file above
         ui: 'bdd',
         timeout: 2000
-      }
+      },
+      captureConsole: false
     },
 
     // enable / disable colors in the output (reporters and logs)
@@ -92,7 +93,7 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

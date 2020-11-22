@@ -10,7 +10,7 @@ declare class Picker<T extends BaseData> extends Emitter {
   private _scrollers
   private _values
   private _tempValues
-  private $root
+  $root: HTMLElement
   constructor(options: PickerOpts<T>)
   private render
   show(): void

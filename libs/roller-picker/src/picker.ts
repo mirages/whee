@@ -14,7 +14,8 @@ class Picker<T extends BaseData> extends Emitter {
   private _scrollers: Scroller<T>[] = []
   private _values: NullableData<T>[] = []
   private _tempValues: NullableData<T>[] = []
-  private $root: HTMLElement
+
+  $root: HTMLElement
 
   constructor(options: PickerOpts<T>) {
     super()
@@ -96,7 +97,7 @@ class Picker<T extends BaseData> extends Emitter {
     $ensure.addEventListener('click', () => {
       this._values = [...this._tempValues]
       this.hide()
-      this.emit('ensure')
+      this.emit('ensure', this.getValue())
     })
     document.body.appendChild($root)
   }
