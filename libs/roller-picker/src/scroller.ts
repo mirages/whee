@@ -28,7 +28,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
   private _dataChangeAngle: number
   private _dataFactory: DataFactory<T>
   private _items: VItem<T>[] = []
-  private _currItem: VItem<T>
+  private _currItem!: VItem<T>
   private _shouldEnd = false
   private _rafId = 0
 
@@ -59,8 +59,6 @@ export default class Scroller<T extends BaseData> extends Emitter {
     }
 
     this._dataFactory = dataFactory
-    this._currItem = this._createItem(dataFactory.getInit(), 0)
-    this._items = [this._currItem]
 
     if (radius) {
       this.radius = radius
@@ -89,19 +87,24 @@ export default class Scroller<T extends BaseData> extends Emitter {
   }
 
   private _init() {
-    const items = this._items
-    let prevData = this._currItem.data
-    let nextData = prevData
+    const dataFactory = this._dataFactory
+    const currItem = this._createItem(dataFactory.getInit(), 0)
+
+    let prevData = currItem.data
+    let nextData = currItem.data
     let angle = this.intervalAngle
 
+    this._currItem = currItem
+    this._items = [currItem]
+
     while (angle < this.maxAngle) {
-      prevData = this._dataFactory.getPrev(prevData)
-      nextData = this._dataFactory.getNext(nextData)
+      prevData = dataFactory.getPrev(prevData)
+      nextData = dataFactory.getNext(nextData)
 
       // 向前添加一个元素
-      items.unshift(this._createItem(prevData, angle))
+      this._items.unshift(this._createItem(prevData, angle))
       // 向后添加一个元素
-      items.push(this._createItem(nextData, -angle))
+      this._items.push(this._createItem(nextData, -angle))
 
       angle += this.intervalAngle // 角度递增
     }
@@ -352,26 +355,8 @@ export default class Scroller<T extends BaseData> extends Emitter {
   changeDataFactory(dataFactory: DataFactory<T>): void {
     if (!dataFactory) return
 
-    const len = this._items.length
-    let index = (len - 1) / 2
-    let prev = dataFactory.getInit()
-    let next = prev
-
     this._dataFactory = dataFactory
-    this._items[index].data = prev
-    this._currItem = this._items[index]
-    index++
-
-    while (index < len) {
-      prev = this._dataFactory.getPrev(prev)
-      next = this._dataFactory.getNext(next)
-
-      this._items[len - 1 - index].data = prev
-      this._items[index].data = next
-
-      index++
-    }
-
+    this._init()
     this._emitChange()
     this._render()
   }
