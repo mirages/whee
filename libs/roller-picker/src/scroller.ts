@@ -269,16 +269,16 @@ export default class Scroller<T extends BaseData> extends Emitter {
   private _renderItem(item: VItem<T>) {
     const scaleRatio = this.scaleRatio
     const perspective = this.perspective
-    const angle = item.angle.toFixed(4)
+    const angle = item.angle
     const data = item.data
-    const radian = angleToRadian(Number(angle))
+    const radian = angleToRadian(angle)
     const y = -(this.radius * Math.sin(radian)).toFixed(0)
-    const scale = Math.abs(
-      Math.cos((1 - Math.pow(scaleRatio, 3)) * radian)
-    ).toFixed(4)
+    const scale = Math.abs(Math.cos((1 - Math.pow(scaleRatio, 3)) * radian))
     const text = data === null ? '' : data._text
     const cssText = `;
-      transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle}deg) scale(${scale});`
+      transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle.toFixed(
+      4
+    )}deg) scale(${scale.toFixed(4)});`
 
     item.wrapper.style.cssText = cssText
     item.el.textContent = text
@@ -315,18 +315,17 @@ export default class Scroller<T extends BaseData> extends Emitter {
 
     if (!scrollAngle) return
 
-    const count = Math.ceil((80 * Math.abs(scrollAngle)) / this.intervalAngle)
+    const count = Math.ceil((70 * Math.abs(scrollAngle)) / this.intervalAngle)
     let prevAngle = 0
-    let index = 1
+    let index = 0
 
     const step = () => {
       const currAngle =
-        (-scrollAngle / Math.pow(count, 2)) * Math.pow(index - count, 2) +
+        (-scrollAngle / Math.pow(count, 2)) * Math.pow(++index - count, 2) +
         scrollAngle
 
       this._update(currAngle - prevAngle)
       prevAngle = currAngle
-      index++
 
       if (index < count) {
         this._rafId = window.requestAnimationFrame(step)
