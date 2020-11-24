@@ -1,5 +1,8 @@
 // Karma configuration
 // Generated on Sat Nov 07 2020 21:05:42 GMT+0800 (GMT+08:00)
+const less = require('less')
+const postcss = require('postcss')
+const path = require('path')
 
 module.exports = function (config) {
   config.set({
@@ -11,7 +14,7 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai', 'karma-typescript'],
 
     // list of files / patterns to load in the browser
-    files: ['test/**/*.test.ts', 'src/**/*.ts'],
+    files: ['src/**/*.less', 'test/**/*.test.ts', 'src/**/*.ts'],
 
     // list of files / patterns to exclude
     exclude: [],
@@ -19,7 +22,8 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      '**/*.ts': ['karma-typescript'] // karma-typescript 预处理器，将 ts 转换成 js
+      '**/*.ts': ['karma-typescript'], // karma-typescript 预处理器，将 ts 转换成 js
+      '**/*.less': ['less']
     },
 
     karmaTypescriptConfig: {
@@ -48,6 +52,37 @@ module.exports = function (config) {
         },
         // 在控制台中输出测试报告概要，===== Coverage summary =====
         'text-summary': null
+      },
+      bundlerOptions: {
+        transforms: [
+          async (context, cb) => {
+            if (/\.(less|css)$/.test(context.filename)) {
+              let cssModuleJson = {}
+              const { css, imports } = await less.render(context.source, {
+                sourceMap: {}
+              })
+              await postcss([
+                require('postcss-modules')({
+                  generateScopedName: '[local]__[contenthash:base64:8]',
+                  getJSON(cssFilename, json) {
+                    // css module json
+                    cssModuleJson = json
+                  }
+                })
+              ]).process(css, {
+                from: context.filename,
+                map: {
+                  inline: true
+                }
+              })
+
+              context.source = JSON.stringify(cssModuleJson)
+              cb(undefined, true)
+            } else {
+              cb(undefined, false)
+            }
+          }
+        ]
       }
     },
 
@@ -93,7 +128,7 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeHeadless'],
+    browsers: ['Chrome'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -108,7 +143,49 @@ module.exports = function (config) {
       'karma-mocha-reporter',
       'karma-chai',
       'karma-typescript',
-      'karma-chrome-launcher'
+      'karma-chrome-launcher',
+      {
+        'preprocessor:less': [
+          'factory',
+          function () {
+            return async (content, file, next) => {
+              const outputFile = path.join(path.dirname(file.path), 'index.css')
+              const { css, map, imports } = await less.render(content, {
+                sourceMap: {
+                  outputSourceFiles: true,
+                  sourceMapURL: 'index.less',
+                  outputFilename: 'file.map',
+                  sourceMapInputFilename: 'index.less'
+                }
+              })
+              const result = await postcss([
+                require('postcss-modules')({
+                  generateScopedName: '[local]__[contenthash:base64:8]',
+                  getJSON(cssFilename, json) {
+                    // css module json
+                  }
+                })
+              ]).process(css, {
+                from: file.path,
+                to: outputFile,
+                map: {
+                  prev: map,
+                  inline: true
+                }
+              })
+
+              file.type = 'css' // karma serve as css file
+              file.path = outputFile
+              console.log(
+                '======== less preprocessor ========',
+                map,
+                typeof map
+              )
+              next(null, result.css)
+            }
+          }
+        ]
+      }
     ]
   })
 }
