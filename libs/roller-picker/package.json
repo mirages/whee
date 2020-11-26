@@ -46,6 +46,8 @@
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@rollup/plugin-typescript": "^6.1.0",
     "@types/chai": "^4.2.14",
+    "@types/karma": "^5.0.1",
+    "@types/less": "^3.0.1",
     "@types/mocha": "^8.0.3",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
@@ -73,6 +75,7 @@
     "stylelint": "^13.7.2",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-order": "^4.1.0",
+    "ts-node": "^9.0.0",
     "tslib": "^2.0.3",
     "typescript": "^4.0.5"
   },
