@@ -1,4 +1,4 @@
-import { DataFactories, BaseData, NullableData } from './data'
+import { DataFactories, BaseData, NullableData, DataFactory } from './data'
 import Scroller from './scroller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
@@ -14,6 +14,8 @@ class Picker<T extends BaseData> extends Emitter {
   private _scrollers: Scroller<T>[] = []
   private _values: NullableData<T>[] = []
   private _tempValues: NullableData<T>[] = []
+  private _dataFactories: DataFactories<T>
+  private _cacheFactories: NullableData<DataFactory<T>[]> = null // 缓存新创建的 dataFactories
 
   $root: HTMLElement
 
@@ -21,6 +23,8 @@ class Picker<T extends BaseData> extends Emitter {
     super()
     if (!options.dataFactories) {
       throw new Error('Picker: please assign the options.dataFactories')
+    } else {
+      this._dataFactories = options.dataFactories
     }
 
     this.$root = createEle('div', styles.picker)
@@ -52,6 +56,7 @@ class Picker<T extends BaseData> extends Emitter {
     const $cancel = getEle(`[ref="picker-cancel"]`, $root) as HTMLElement
     const $ensure = getEle(`[ref="picker-ensure"]`, $root) as HTMLElement
     const factories = dataFactories.create()
+    const length = factories.length
 
     // 初始化所有的 scroller
     factories.forEach(dataFactory => {
@@ -69,38 +74,45 @@ class Picker<T extends BaseData> extends Emitter {
       this._tempValues.push(data)
     })
 
-    // 进行联动操作
+    // 联动更新操作
     this._scrollers.forEach((scroller, index) => {
-      // TODO 联动效率优化
       scroller.on('change', (data: T) => {
         this._tempValues[index] = data
 
+        if (index === length - 1) {
+          // 最后一个 scroller 变化，不进行联动更新
+          this._cacheFactories = null
+          return
+        }
+        if (!this._cacheFactories) {
+          this._cacheFactories = dataFactories.create(this._tempValues.slice(0))
+        }
+        // 联动更新下一个 dataFactory
         const nextIndex = index + 1
+        const nextDataFactory = this._cacheFactories[nextIndex]
         const nextScroller = this._scrollers[nextIndex]
-        if (!nextScroller) return
-
-        const nextDataFactory = dataFactories.create(this._tempValues.slice(0))[
-          nextIndex
-        ]
-        if (!nextDataFactory) return
-
         nextScroller.changeDataFactory(nextDataFactory)
       })
     })
 
     $cancel.addEventListener('click', () => {
       this._tempValues = [...this._values]
+      this._resetDataFactories()
       this.hide()
       this.emit('cancel')
-      const factories = dataFactories.create(this._values)
-      this._scrollers[0].changeDataFactory(factories[0])
     })
     $ensure.addEventListener('click', () => {
       this._values = [...this._tempValues]
       this.hide()
-      this.emit('ensure', this.getValue())
+      this.emit('ensure', this.getValues())
     })
     document.body.appendChild($root)
+  }
+
+  private _resetDataFactories(): void {
+    const factories = this._dataFactories.create(this._values)
+    this._cacheFactories = factories
+    this._scrollers[0].changeDataFactory(factories[0])
   }
 
   show(): void {
@@ -111,12 +123,14 @@ class Picker<T extends BaseData> extends Emitter {
     this.$root.classList.remove(styles['picker-in'])
   }
 
-  getValue(): NullableData<T>[] {
+  getValues(): NullableData<T>[] {
     return [...this._values]
   }
 
-  setValue(val: T[]): void {
+  setValues(val: T[]): void {
     this._values = [...val]
+    this._tempValues = [...val]
+    this._resetDataFactories()
   }
 
   get scrollers(): Scroller<T>[] {

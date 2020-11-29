@@ -1,4 +1,3 @@
-import '../src/types'
 import { Picker, BaseData, DataFactory, NullableData } from '../src/index'
 import styles from '../src/index.less'
 import { angleToRadian, getEle } from '../src/utils'
@@ -199,20 +198,7 @@ class CityFactory extends BaseFactory {
 }
 
 describe('Picker', () => {
-  it('picker.show() should show the picker', () => {
-    const picker = new Picker({
-      dataFactories: {
-        create() {
-          return [new ProvinceFactory()]
-        }
-      }
-    })
-    picker.show()
-    console.log(picker.$root.className)
-    picker.$root.className.should.be.include(styles['picker-in'])
-  })
-
-  it('picker.hide() should hide the picker', () => {
+  it('picker.show() should show the picker, and picker.hide() should hide the picker', () => {
     const picker = new Picker({
       dataFactories: {
         create() {
@@ -235,17 +221,23 @@ describe('Picker', () => {
         }
       }
     })
+    const initValue = factory.getInit()
+    const scroller = picker.scrollers[0]
     const $ensure = getEle('[ref=picker-ensure]', picker.$root) as HTMLElement
 
+    // 滚动一段距离
+    scroller.scroll(-angleToRadian(scroller.intervalAngle) * scroller.radius)
+    const currValue = factory.getNext(initValue)
     chai.should().exist($ensure)
     picker.on('ensure', (data: PickerData[]) => {
-      data.should.be.an('array').and.deep.include(factory.getInit())
+      scroller.getValue()!.should.be.deep.equal(currValue)
+      data.should.be.an('array').and.deep.include(currValue)
       done()
     })
     $ensure.click()
   })
 
-  it('cancel button should be emit a cancel event', done => {
+  it('cancel button should be emit a cancel event, and reset the values', done => {
     const picker = new Picker({
       dataFactories: {
         create() {
@@ -253,16 +245,25 @@ describe('Picker', () => {
         }
       }
     })
+    const initValues = picker.getValues()
+    const scroller = picker.scrollers[0]
     const $cancel = getEle('[ref=picker-cancel]', picker.$root) as HTMLElement
+
+    // 滚动一段距离
+    scroller.scroll(
+      -angleToRadian(2 * scroller.intervalAngle) * scroller.radius
+    )
 
     chai.should().exist($cancel)
     picker.on('cancel', () => {
+      picker.getValues().should.be.deep.equal(initValues)
+      scroller.getValue()!.should.be.deep.equal(initValues[0])
       done()
     })
     $cancel.click()
   })
 
-  it('picker.getValue() return an array, and init value should be options.dataFactories init value', () => {
+  it('picker.getValues() return an array, and init value should be options.dataFactories init value', () => {
     const picker = new Picker({
       dataFactories: {
         create(initValues?: NullableData<PickerData>[]) {
@@ -281,7 +282,7 @@ describe('Picker', () => {
       }
     })
     picker
-      .getValue()
+      .getValues()
       .should.be.an('array')
       .and.deep.equal([
         {
@@ -297,6 +298,47 @@ describe('Picker', () => {
           _text: '西城区'
         }
       ])
+  })
+
+  it("picker.setValues() can set picker's value after created the picker", () => {
+    const picker = new Picker({
+      dataFactories: {
+        create(initValues?: NullableData<PickerData>[]) {
+          let initProv = ''
+          let initCity = ''
+
+          if (initValues) {
+            initProv = initValues[0] ? initValues[0].id : ''
+            initCity = initValues[1] ? initValues[1].id : ''
+          }
+          const provinceFactory = new ProvinceFactory(initProv)
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CityFactory(initProvince, initCity)
+          return [provinceFactory, cityFactory]
+        }
+      }
+    })
+    const scrollers = picker.scrollers
+    const setValue: PickerData[] = [
+      {
+        id: '020000',
+        value: '河南省',
+        index: 1,
+        _text: '河南省'
+      },
+      {
+        id: '020300',
+        value: '洛阳市',
+        index: 2,
+        _text: '洛阳市'
+      }
+    ]
+
+    picker.setValues(setValue)
+    picker.getValues().should.be.deep.equal(setValue)
+    ;[scrollers[0].getValue(), scrollers[1].getValue()].should.be.deep.equal(
+      setValue
+    )
   })
 
   it('picker.scrollers should be react in chain', done => {
