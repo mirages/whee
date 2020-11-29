@@ -37,7 +37,8 @@ const karmaTypescriptConfig: KarmaTypescriptConfig = {
   }
 }
 
-export default function (config: Config): void {
+// need export a function as commonjs
+export = function (config: Config): void {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',

@@ -1,89 +1,214 @@
-import { Picker, BaseData, DataFactory, NullableData } from '../src/index'
 import '../src/types'
+import { Picker, BaseData, DataFactory, NullableData } from '../src/index'
 import styles from '../src/index.less'
-import { getEle } from '../src/utils'
+import { angleToRadian, getEle } from '../src/utils'
 
-interface PickerData extends BaseData {
-  id: number
+interface AddrData {
+  id: string
+  value: string
 }
 
-class AlphabetFactory implements DataFactory<PickerData> {
-  private alphabet = [
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v',
-    'w',
-    'x',
-    'y',
-    'z'
-  ]
-  private initIndex = 10
+interface PickerData extends BaseData, AddrData {
+  index: number
+}
+
+class BaseFactory implements DataFactory<PickerData> {
+  protected list: AddrData[] = []
+  protected initIndex = 0
 
   createData(index: number): PickerData {
+    const data = this.list[index]
     return {
-      _text: this.alphabet[index],
-      id: index
+      _text: data.value,
+      index,
+      ...data
     }
   }
   getInit() {
     return this.createData(this.initIndex)
   }
   getPrev(data: NullableData<PickerData>): NullableData<PickerData> {
-    if (!data || data.id === 0) return null
+    if (!data || data.index === 0) return null
 
-    return this.createData(data.id - 1)
+    return this.createData(data.index - 1)
   }
   getNext(data: NullableData<PickerData>): NullableData<PickerData> {
-    if (!data || data.id === this.alphabet.length - 1) return null
+    if (!data || data.index === this.list.length - 1) return null
 
-    return this.createData(data.id + 1)
+    return this.createData(data.index + 1)
+  }
+}
+
+const ProviceData = [
+  {
+    id: '010000',
+    value: '北京市'
+  },
+  {
+    id: '020000',
+    value: '河南省'
+  },
+  {
+    id: '030000',
+    value: '河北省'
+  },
+  {
+    id: '040000',
+    value: '湖南省'
+  },
+  {
+    id: '050000',
+    value: '湖北省'
+  }
+]
+class ProvinceFactory extends BaseFactory {
+  constructor(initId?: string) {
+    super()
+    this.list = ProviceData
+    const index = this.list.findIndex(item => item.id === initId)
+    this.initIndex = index > -1 ? index : 0
+  }
+}
+
+const CityData: {
+  [prop: string]: {
+    id: string
+    value: string
+  }[]
+} = {
+  '010000': [
+    {
+      id: '010100',
+      value: '西城区'
+    },
+    {
+      id: '010200',
+      value: '东城区'
+    },
+    {
+      id: '010300',
+      value: '朝阳区'
+    },
+    {
+      id: '010400',
+      value: '海淀区'
+    },
+    {
+      id: '010500',
+      value: '石景山区'
+    }
+  ],
+  '020000': [
+    {
+      id: '020100',
+      value: '郑州市'
+    },
+    {
+      id: '020200',
+      value: '开封市'
+    },
+    {
+      id: '020300',
+      value: '洛阳市'
+    },
+    {
+      id: '020400',
+      value: '安阳市'
+    },
+    {
+      id: '020500',
+      value: '新乡市'
+    }
+  ],
+  '030000': [
+    {
+      id: '030100',
+      value: '石家庄市'
+    },
+    {
+      id: '030200',
+      value: '唐山市'
+    },
+    {
+      id: '030300',
+      value: '秦皇岛市'
+    },
+    {
+      id: '030400',
+      value: '邯郸市'
+    },
+    {
+      id: '030500',
+      value: '保定市'
+    }
+  ],
+  '040000': [
+    {
+      id: '040100',
+      value: '长沙市'
+    },
+    {
+      id: '040200',
+      value: '株洲市'
+    },
+    {
+      id: '040300',
+      value: '湘潭市'
+    },
+    {
+      id: '040400',
+      value: '衡阳市'
+    },
+    {
+      id: '040500',
+      value: '常德市'
+    }
+  ],
+  '050000': [
+    {
+      id: '050100',
+      value: '武汉市'
+    },
+    {
+      id: '050200',
+      value: '黄石市'
+    },
+    {
+      id: '050300',
+      value: '十堰市'
+    },
+    {
+      id: '050400',
+      value: '宜昌市'
+    },
+    {
+      id: '050500',
+      value: '襄樊市'
+    }
+  ]
+}
+class CityFactory extends BaseFactory {
+  constructor(firstId: string, initId?: string) {
+    super()
+    this.list = CityData[firstId] || CityData['010000']
+
+    const index = this.list.findIndex(item => item.id === initId)
+
+    this.initIndex = index > -1 ? index : 0
   }
 }
 
 describe('Picker', () => {
-  it('picker.getValue() return an array, and init value should be options.dataFactories init value', () => {
-    const alphabetFactory = new AlphabetFactory()
-    const picker = new Picker({
-      dataFactories: {
-        create() {
-          return [alphabetFactory]
-        }
-      }
-    })
-    picker
-      .getValue()
-      .should.be.an('array')
-      .and.deep.include(alphabetFactory.getInit())
-  })
-
   it('picker.show() should show the picker', () => {
     const picker = new Picker({
       dataFactories: {
         create() {
-          return [new AlphabetFactory()]
+          return [new ProvinceFactory()]
         }
       }
     })
     picker.show()
+    console.log(picker.$root.className)
     picker.$root.className.should.be.include(styles['picker-in'])
   })
 
@@ -91,7 +216,7 @@ describe('Picker', () => {
     const picker = new Picker({
       dataFactories: {
         create() {
-          return [new AlphabetFactory()]
+          return [new ProvinceFactory()]
         }
       }
     })
@@ -101,40 +226,123 @@ describe('Picker', () => {
     picker.$root.className.should.be.not.include(styles['picker-in'])
   })
 
-  it('ensure button should be emit a ensure event', done => {
-    const alphabetFactory = new AlphabetFactory()
+  it('ensure button should be emit a ensure event, and callback current data', done => {
+    const factory = new ProvinceFactory()
     const picker = new Picker({
       dataFactories: {
         create() {
-          return [alphabetFactory]
+          return [factory]
         }
       }
     })
-    const $ensure = getEle('[ref=picker-ensure]', picker.$root)
+    const $ensure = getEle('[ref=picker-ensure]', picker.$root) as HTMLElement
 
     chai.should().exist($ensure)
     picker.on('ensure', (data: PickerData[]) => {
-      data.should.be.an('array').and.deep.include(alphabetFactory.getInit())
+      data.should.be.an('array').and.deep.include(factory.getInit())
       done()
     })
-    $ensure!.click()
+    $ensure.click()
   })
 
   it('cancel button should be emit a cancel event', done => {
-    const alphabetFactory = new AlphabetFactory()
     const picker = new Picker({
       dataFactories: {
         create() {
-          return [alphabetFactory]
+          return [new ProvinceFactory()]
         }
       }
     })
-    const $cancel = getEle('[ref=picker-cancel]', picker.$root)
+    const $cancel = getEle('[ref=picker-cancel]', picker.$root) as HTMLElement
 
     chai.should().exist($cancel)
     picker.on('cancel', () => {
       done()
     })
-    $cancel!.click()
+    $cancel.click()
+  })
+
+  it('picker.getValue() return an array, and init value should be options.dataFactories init value', () => {
+    const picker = new Picker({
+      dataFactories: {
+        create(initValues?: NullableData<PickerData>[]) {
+          let initProv = ''
+          let initCity = ''
+
+          if (initValues) {
+            initProv = initValues[0] ? initValues[0].id : ''
+            initCity = initValues[1] ? initValues[1].id : ''
+          }
+          const provinceFactory = new ProvinceFactory(initProv)
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CityFactory(initProvince, initCity)
+          return [provinceFactory, cityFactory]
+        }
+      }
+    })
+    picker
+      .getValue()
+      .should.be.an('array')
+      .and.deep.equal([
+        {
+          id: '010000',
+          value: '北京市',
+          index: 0,
+          _text: '北京市'
+        },
+        {
+          id: '010100',
+          value: '西城区',
+          index: 0,
+          _text: '西城区'
+        }
+      ])
+  })
+
+  it('picker.scrollers should be react in chain', done => {
+    const picker = new Picker({
+      radius: 200,
+      intervalAngle: 15,
+      dataFactories: {
+        create(initValues?: NullableData<PickerData>[]) {
+          let initProv = ''
+          let initCity = ''
+
+          if (initValues) {
+            initProv = initValues[0] ? initValues[0].id : ''
+            initCity = initValues[1] ? initValues[1].id : ''
+          }
+          const provinceFactory = new ProvinceFactory(initProv)
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CityFactory(initProvince, initCity)
+          return [provinceFactory, cityFactory]
+        }
+      }
+    })
+    const provinceScroller = picker.scrollers[0]
+    provinceScroller.scroll(
+      -angleToRadian(provinceScroller.intervalAngle) * provinceScroller.radius
+    )
+
+    const $ensure = getEle('[ref=picker-ensure]', picker.$root) as HTMLElement
+    picker.on('ensure', (data: PickerData[]) => {
+      console.log(data)
+      data.should.be.an('array').and.deep.equal([
+        {
+          id: '020000',
+          value: '河南省',
+          index: 1,
+          _text: '河南省'
+        },
+        {
+          id: '020100',
+          value: '郑州市',
+          index: 0,
+          _text: '郑州市'
+        }
+      ])
+      done()
+    })
+    $ensure.click()
   })
 })

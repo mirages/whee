@@ -71,6 +71,7 @@ class Picker<T extends BaseData> extends Emitter {
 
     // 进行联动操作
     this._scrollers.forEach((scroller, index) => {
+      // TODO 联动效率优化
       scroller.on('change', (data: T) => {
         this._tempValues[index] = data
 
@@ -78,9 +79,9 @@ class Picker<T extends BaseData> extends Emitter {
         const nextScroller = this._scrollers[nextIndex]
         if (!nextScroller) return
 
-        const nextDataFactory = (dataFactories.create(
-          this._tempValues.slice(0, nextIndex)
-        ) || [])[nextIndex]
+        const nextDataFactory = dataFactories.create(this._tempValues.slice(0))[
+          nextIndex
+        ]
         if (!nextDataFactory) return
 
         nextScroller.changeDataFactory(nextDataFactory)
@@ -116,6 +117,10 @@ class Picker<T extends BaseData> extends Emitter {
 
   setValue(val: T[]): void {
     this._values = [...val]
+  }
+
+  get scrollers(): Scroller<T>[] {
+    return this._scrollers
   }
 }
 

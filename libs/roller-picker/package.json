@@ -19,7 +19,7 @@
     "cm": "cz",
     "clean": "rimraf dist && rimraf types",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "lint:ts": "eslint --f codeframe {src,test}/**/*.ts",
+    "lint:ts": "eslint --f codeframe {src,test,plugins}/**/*.ts",
     "test": "karma start",
     "build": "npm run clean && rollup -c"
   },

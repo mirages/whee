@@ -1,3 +1,5 @@
+// eslint-disable-next-line
+/// <reference path="./typings/postcss-modules/index.d.ts" />
 import type { InlinePluginDef } from 'karma'
 import path = require('path')
 import less = require('less')
@@ -20,7 +22,10 @@ function createCsspreprocessor() {
     file: File,
     next: (err: Error | null, c?: string) => void
   ) => {
-    const outputFile = path.join(path.dirname(file.path), 'index.css')
+    // fix: karma serve file 404 on windows platform, because of the '\\'
+    const outputFile = path
+      .join(path.dirname(file.path), 'index.css')
+      .replace(/\\/g, '/')
     const { css, map } = await less.render(content, {
       sourceMap: {
         sourceMapFileInline: true,
