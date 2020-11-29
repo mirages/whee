@@ -1,5 +1,7 @@
 // Karma configuration
-// Generated on Sat Nov 07 2020 21:05:42 GMT+0800 (GMT+08:00)
+// eslint-disable-next-line
+/// <reference path="./global.d.ts" />
+
 import type { Config, ConfigOptions } from 'karma'
 import type { KarmaTypescriptConfig } from 'karma-typescript'
 import createCsspreprocessor from './plugins/karma-css-preprocessor'

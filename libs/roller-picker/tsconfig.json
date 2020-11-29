@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // Target latest version of ECMAScript.
-    "target": "es5",
+    "target": "ES5",
     // Search under node_modules for non-relative imports.
     "moduleResolution": "node",
     // Process & infer types from .js files.
@@ -16,7 +16,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts", "global.d.ts"
   ],
   "exclude": [
     "node_modules/**",

@@ -1,5 +1,3 @@
-// eslint-disable-next-line
-/// <reference path="./typings/postcss-modules/index.d.ts" />
 import type { Transform, TransformContext } from 'karma-typescript'
 import less = require('less')
 import postcss from 'postcss'

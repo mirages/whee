@@ -1,5 +1,3 @@
-// eslint-disable-next-line
-/// <reference path="./typings/postcss-modules/index.d.ts" />
 import type { InlinePluginDef } from 'karma'
 import path = require('path')
 import less = require('less')
