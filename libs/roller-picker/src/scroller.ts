@@ -352,12 +352,29 @@ export default class Scroller<T extends BaseData> extends Emitter {
     return this._items
   }
 
-  changeDataFactory(dataFactory: DataFactory<T>): void {
+  changeDataFactory(dataFactory: DataFactory<T>, emitChange = true): void {
     if (!dataFactory) return
 
+    const len = this._items.length
+    const currData = dataFactory.getInit()
+    let index = (len - 1) / 2
+    let prev = currData
+    let next = currData
+
     this._dataFactory = dataFactory
-    this._init()
-    this._emitChange()
+    this._items[index].data = currData
+
+    while (++index < len) {
+      prev = this._dataFactory.getPrev(prev)
+      next = this._dataFactory.getNext(next)
+
+      this._items[len - 1 - index].data = prev
+      this._items[index].data = next
+    }
+
     this._render()
+    if (emitChange) {
+      this._emitChange()
+    }
   }
 }

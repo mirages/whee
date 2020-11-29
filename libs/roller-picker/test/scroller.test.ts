@@ -331,10 +331,14 @@ describe('Scroller', () => {
       intervalAngle: 15,
       dataFactory
     })
+    const firstItemWrapper = scroller.items[0].wrapper
 
     scroller.getValue()!.should.be.deep.equal(dataFactory.getInit())
     dataFactory = new SimpleDataFactory(5)
     scroller.on('change', data => {
+      // dom 元素复用
+      scroller.items[0].wrapper.should.be.equal(firstItemWrapper)
+      // value 值更新
       data.should.be.deep.equal(dataFactory.getInit())
       done()
     })
