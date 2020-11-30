@@ -1,4 +1,4 @@
-import { Picker, BaseData, DataFactory, NullableData } from '../src/index'
+import { Picker, DataFactory, NullableData } from '../src/index'
 import styles from '../src/index.less'
 import { angleToRadian, getEle } from '../src/utils'
 
@@ -7,7 +7,7 @@ interface AddrData {
   value: string
 }
 
-interface PickerData extends BaseData, AddrData {
+interface PickerData extends AddrData {
   index: number
 }
 
@@ -18,7 +18,6 @@ class BaseFactory implements DataFactory<PickerData> {
   createData(index: number): PickerData {
     const data = this.list[index]
     return {
-      _text: data.value,
       index,
       ...data
     }
@@ -35,6 +34,10 @@ class BaseFactory implements DataFactory<PickerData> {
     if (!data || data.index === this.list.length - 1) return null
 
     return this.createData(data.index + 1)
+  }
+  getText(data: NullableData<PickerData>): string {
+    if (data === null) return ''
+    return this.list[data.index].value
   }
 }
 
@@ -288,14 +291,12 @@ describe('Picker', () => {
         {
           id: '010000',
           value: '北京市',
-          index: 0,
-          _text: '北京市'
+          index: 0
         },
         {
           id: '010100',
           value: '西城区',
-          index: 0,
-          _text: '西城区'
+          index: 0
         }
       ])
   })
@@ -323,14 +324,12 @@ describe('Picker', () => {
       {
         id: '020000',
         value: '河南省',
-        index: 1,
-        _text: '河南省'
+        index: 1
       },
       {
         id: '020300',
         value: '洛阳市',
-        index: 2,
-        _text: '洛阳市'
+        index: 2
       }
     ]
 
@@ -373,14 +372,12 @@ describe('Picker', () => {
         {
           id: '020000',
           value: '河南省',
-          index: 1,
-          _text: '河南省'
+          index: 1
         },
         {
           id: '020100',
           value: '郑州市',
-          index: 0,
-          _text: '郑州市'
+          index: 0
         }
       ])
       done()

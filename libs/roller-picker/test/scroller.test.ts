@@ -2,7 +2,6 @@ import { Scroller, DataFactory, NullableData } from '../src/index'
 import { angleToRadian, createEle } from '../src/utils'
 
 interface ScrollerData {
-  _text: string
   index: number
 }
 const list: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
@@ -15,7 +14,6 @@ class SimpleDataFactory implements DataFactory<ScrollerData> {
   createData(index: number): NullableData<ScrollerData> {
     if (index < 0 || index > list.length - 1) return null
     return {
-      _text: list[index],
       index
     }
   }
@@ -29,6 +27,10 @@ class SimpleDataFactory implements DataFactory<ScrollerData> {
   getNext(currData: NullableData<ScrollerData>): NullableData<ScrollerData> {
     if (!currData) return null
     return this.createData(currData.index + 1)
+  }
+  getText(currData: NullableData<ScrollerData>): string {
+    if (currData === null) return ''
+    return list[currData.index]
   }
 }
 
@@ -94,6 +96,9 @@ describe('Scroller', () => {
         },
         getNext() {
           return null
+        },
+        getText() {
+          return ''
         }
       }
     })

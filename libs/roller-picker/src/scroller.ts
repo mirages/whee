@@ -1,5 +1,5 @@
 import Motion from 'js-motion'
-import { DataFactory, BaseData, NullableData } from './data'
+import { DataFactory, NullableData } from './factories/data'
 import {
   angleToRadian,
   getEle,
@@ -9,14 +9,14 @@ import {
 } from './utils'
 import styles from './index.less'
 
-interface VItem<T extends BaseData> {
+interface VItem<T> {
   wrapper: HTMLElement
   el: HTMLElement
   data: NullableData<T>
   angle: number
 }
 
-export default class Scroller<T extends BaseData> extends Emitter {
+export default class Scroller<T> extends Emitter {
   radius = 200
   perspective = 0
   intervalAngle = 10
@@ -277,7 +277,7 @@ export default class Scroller<T extends BaseData> extends Emitter {
     const radian = angleToRadian(angle)
     const y = -(this.radius * Math.sin(radian)).toFixed(0)
     const scale = Math.abs(Math.cos((1 - Math.pow(scaleRatio, 3)) * radian))
-    const text = data === null ? '' : data._text
+    const text = this._dataFactory.getText(data)
     const cssText = `;
       transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle.toFixed(
       4

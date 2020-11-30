@@ -1,16 +1,16 @@
-import { DataFactories, BaseData, NullableData, DataFactory } from './data'
+import { DataFactories, NullableData, DataFactory } from './factories/data'
 import Scroller from './scroller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
 
-interface PickerOpts<T extends BaseData> {
+interface PickerOpts<T> {
   radius?: number
   scaleRatio?: number
   intervalAngle?: number
   dataFactories: DataFactories<T>
 }
 
-class Picker<T extends BaseData> extends Emitter {
+class Picker<T> extends Emitter {
   private _scrollers: Scroller<T>[] = []
   private _values: NullableData<T>[] = []
   private _tempValues: NullableData<T>[] = []

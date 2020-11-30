@@ -1,12 +1,12 @@
-import { DataFactory, BaseData, NullableData } from './data'
+import { DataFactory, NullableData } from './factories/data'
 import { Emitter } from './utils'
-interface VItem<T extends BaseData> {
+interface VItem<T> {
   wrapper: HTMLElement
   el: HTMLElement
   data: NullableData<T>
   angle: number
 }
-export default class Scroller<T extends BaseData> extends Emitter {
+export default class Scroller<T> extends Emitter {
   radius: number
   perspective: number
   intervalAngle: number
@@ -54,6 +54,6 @@ export default class Scroller<T extends BaseData> extends Emitter {
   scrollEnd(): void
   getValue(): NullableData<T>
   get items(): VItem<T>[]
-  changeDataFactory(dataFactory: DataFactory<T>): void
+  changeDataFactory(dataFactory: DataFactory<T>, emitChange?: boolean): void
 }
 export {}
