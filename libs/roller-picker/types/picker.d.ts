@@ -1,4 +1,4 @@
-import { DataSourceFactory, NullableData } from './factories/data'
+import { DataSourceFactory, NullableData } from './factory/data'
 import Scroller from './scroller'
 import { Emitter } from './utils'
 interface PickerOpts<T> {

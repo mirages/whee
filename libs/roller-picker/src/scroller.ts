@@ -1,5 +1,5 @@
 import Motion from 'js-motion'
-import { DataSource, NullableData } from './factories/data'
+import { DataSource, NullableData } from './factory/data'
 import {
   angleToRadian,
   getEle,

@@ -1,4 +1,4 @@
-import { DataSourceFactory, NullableData, DataSource } from './factories/data'
+import { DataSourceFactory, NullableData, DataSource } from './factory/data'
 import Scroller from './scroller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'

@@ -1,4 +1,4 @@
-import { DataSource, NullableData } from './factories/data'
+import { DataSource, NullableData } from './factory/data'
 import { Emitter } from './utils'
 interface VItem<T> {
   wrapper: HTMLElement

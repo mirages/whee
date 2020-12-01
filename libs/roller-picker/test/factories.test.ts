@@ -1,7 +1,7 @@
 import {
   SimpleDataSource,
   SimpleDataSourceFactory
-} from '../src/factories/simple'
+} from '../src/factory/simple'
 
 describe('SimpleDataSource', () => {
   it('getInit() should be return the init data', () => {
