@@ -5,29 +5,44 @@ import commonjs from '@rollup/plugin-commonjs'
 import postcss from 'rollup-plugin-postcss'
 
 const pkg = require('./package.json')
-const banner = `
+const inputs = [
+  { index: 'src/index.ts' },
+  { 'factory/simple': 'src/factory/simple.ts' }
+]
+const bannerMap = {
+  index: pkg.name,
+  'factory/simple': `${pkg.name}-factory-simple`
+}
+const nameMap = {
+  index: pkg.name,
+  'factory/simple': `${pkg.name}/factory/simple`
+}
+const banner = input => `
 /*!
- * ${pkg.name}
+ * ${bannerMap[Object.keys(input)[0]]}
  * v${pkg.version}
  * by ${pkg.author}
  */
 `
+const globalName = input => nameMap[Object.keys(input)[0]]
 
-export default {
-  input: 'src/index.ts',
+// Rollup doesn't support multi entry for umd and iif output.
+// Related issue: https://github.com/rollup/rollup/issues/2935
+export default inputs.map(input => ({
+  input,
   output: [
     {
       dir: "./",
       entryFileNames: 'dist/[name].umd.js',
       format: 'umd',
-      name: pkg.name,
-      banner
+      name: globalName(input),
+      banner: banner(input)
     },
     {
       dir: "./",
       entryFileNames: 'dist/[name].esm.js',
       format: 'es',
-      banner
+      banner: banner(input)
     }
   ],
   plugins: [
@@ -40,18 +55,18 @@ export default {
       declarationDir: 'types/',
       rootDir: 'src/'
     }),
-    terser({
-      output: {
-        comments: (node, comment) => {
-          const text = comment.value
-          const type = comment.type
-          if (type == 'comment2') {
-            // multiline comment
-            return /^!/.test(text)
-          }
-        }
-      }
-    }),
+    // terser({
+    //   output: {
+    //     comments: (node, comment) => {
+    //       const text = comment.value
+    //       const type = comment.type
+    //       if (type == 'comment2') {
+    //         // multiline comment
+    //         return /^!/.test(text) && !/Copyright/.test(text)
+    //       }
+    //     }
+    //   }
+    // }),
     postcss({
       // css module
       extensions: ['.css', '.less'],
@@ -63,4 +78,4 @@ export default {
       minimize: true
     })
   ]
-}
+}))

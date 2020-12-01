@@ -163,7 +163,7 @@ export default class Scroller<T> extends Emitter {
       const currAngleAbs = Math.abs(this._currItem.angle)
       const sign = angle > 0 ? 1 : -1
       const easeAngle =
-        Math.pow((intervalAngle - currAngleAbs) / intervalAngle, 3) * 1
+        Math.pow((intervalAngle - currAngleAbs) / intervalAngle, 2) * 1
 
       if (
         currAngleAbs > this._dataChangeAngle ||
@@ -318,7 +318,7 @@ export default class Scroller<T> extends Emitter {
 
     if (!scrollAngle) return
 
-    const count = Math.ceil((70 * Math.abs(scrollAngle)) / this.intervalAngle)
+    const count = Math.ceil((60 * Math.abs(scrollAngle)) / this.intervalAngle)
     let prevAngle = 0
     let index = 0
 
