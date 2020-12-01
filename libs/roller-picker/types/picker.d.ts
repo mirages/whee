@@ -1,22 +1,22 @@
-import { DataFactories, NullableData } from './factories/data'
+import { DataSourceFactory, NullableData } from './factories/data'
 import Scroller from './scroller'
 import { Emitter } from './utils'
 interface PickerOpts<T> {
   radius?: number
   scaleRatio?: number
   intervalAngle?: number
-  dataFactories: DataFactories<T>
+  dataSourceFactory: DataSourceFactory<T>
 }
 declare class Picker<T> extends Emitter {
   private _scrollers
   private _values
   private _tempValues
-  private _dataFactories
-  private _cacheFactories
+  private _dataSourceFactory
+  private _cacheDataSources
   $root: HTMLElement
   constructor(options: PickerOpts<T>)
   private render
-  private _resetDataFactories
+  private _resetDataSources
   show(): void
   hide(): void
   getValues(): NullableData<T>[]

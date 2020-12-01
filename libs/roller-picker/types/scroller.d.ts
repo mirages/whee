@@ -1,4 +1,4 @@
-import { DataFactory, NullableData } from './factories/data'
+import { DataSource, NullableData } from './factories/data'
 import { Emitter } from './utils'
 interface VItem<T> {
   wrapper: HTMLElement
@@ -17,14 +17,14 @@ export default class Scroller<T> extends Emitter {
   maxAngle: number
   private _maxDiffAngle
   private _dataChangeAngle
-  private _dataFactory
+  private _dataSource
   private _items
   private _currItem
   private _shouldEnd
   private _rafId
   constructor(options: {
     el: HTMLElement | string
-    dataFactory: DataFactory<T>
+    dataSource: DataSource<T>
     radius?: number
     scaleRatio?: number
     intervalAngle?: number
@@ -54,6 +54,6 @@ export default class Scroller<T> extends Emitter {
   scrollEnd(): void
   getValue(): NullableData<T>
   get items(): VItem<T>[]
-  changeDataFactory(dataFactory: DataFactory<T>, emitChange?: boolean): void
+  changeDataSource(dataSource: DataSource<T>, emitChange?: boolean): void
 }
 export {}

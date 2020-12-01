@@ -1,4 +1,4 @@
-import { Picker, DataFactory, NullableData } from '../src/index'
+import { Picker, DataSource, NullableData } from '../src/index'
 import styles from '../src/index.less'
 import { angleToRadian, getEle } from '../src/utils'
 
@@ -11,7 +11,7 @@ interface PickerData extends AddrData {
   index: number
 }
 
-class BaseFactory implements DataFactory<PickerData> {
+class BaseFactory implements DataSource<PickerData> {
   protected list: AddrData[] = []
   protected initIndex = 0
 
@@ -203,7 +203,7 @@ class CityFactory extends BaseFactory {
 describe('Picker', () => {
   it('picker.show() should show the picker, and picker.hide() should hide the picker', () => {
     const picker = new Picker({
-      dataFactories: {
+      dataSourceFactory: {
         create() {
           return [new ProvinceFactory()]
         }
@@ -218,7 +218,7 @@ describe('Picker', () => {
   it('ensure button should be emit a ensure event, and callback current data', done => {
     const factory = new ProvinceFactory()
     const picker = new Picker({
-      dataFactories: {
+      dataSourceFactory: {
         create() {
           return [factory]
         }
@@ -242,7 +242,7 @@ describe('Picker', () => {
 
   it('cancel button should be emit a cancel event, and reset the values', done => {
     const picker = new Picker({
-      dataFactories: {
+      dataSourceFactory: {
         create() {
           return [new ProvinceFactory()]
         }
@@ -266,9 +266,9 @@ describe('Picker', () => {
     $cancel.click()
   })
 
-  it('picker.getValues() return an array, and init value should be options.dataFactories init value', () => {
+  it('picker.getValues() return an array, and init value should be options.dataSourceFactory init value', () => {
     const picker = new Picker({
-      dataFactories: {
+      dataSourceFactory: {
         create(initValues?: NullableData<PickerData>[]) {
           let initProv = ''
           let initCity = ''
@@ -303,7 +303,7 @@ describe('Picker', () => {
 
   it("picker.setValues() can set picker's value after created the picker", () => {
     const picker = new Picker({
-      dataFactories: {
+      dataSourceFactory: {
         create(initValues?: NullableData<PickerData>[]) {
           let initProv = ''
           let initCity = ''
@@ -344,7 +344,7 @@ describe('Picker', () => {
     const picker = new Picker({
       radius: 200,
       intervalAngle: 15,
-      dataFactories: {
+      dataSourceFactory: {
         create(initValues?: NullableData<PickerData>[]) {
           let initProv = ''
           let initCity = ''

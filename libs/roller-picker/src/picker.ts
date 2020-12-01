@@ -1,4 +1,4 @@
-import { DataFactories, NullableData, DataFactory } from './factories/data'
+import { DataSourceFactory, NullableData, DataSource } from './factories/data'
 import Scroller from './scroller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
@@ -7,24 +7,24 @@ interface PickerOpts<T> {
   radius?: number
   scaleRatio?: number
   intervalAngle?: number
-  dataFactories: DataFactories<T>
+  dataSourceFactory: DataSourceFactory<T>
 }
 
 class Picker<T> extends Emitter {
   private _scrollers: Scroller<T>[] = []
   private _values: NullableData<T>[] = []
   private _tempValues: NullableData<T>[] = []
-  private _dataFactories: DataFactories<T>
-  private _cacheFactories: NullableData<DataFactory<T>[]> = null // 缓存新创建的 dataFactories
+  private _dataSourceFactory: DataSourceFactory<T>
+  private _cacheDataSources: NullableData<DataSource<T>[]> = null // 缓存新创建的 data source
 
   $root: HTMLElement
 
   constructor(options: PickerOpts<T>) {
     super()
-    if (!options.dataFactories) {
-      throw new Error('Picker: please assign the options.dataFactories')
+    if (!options.dataSourceFactory) {
+      throw new Error('Picker: please assign the options.dataSourceFactory')
     } else {
-      this._dataFactories = options.dataFactories
+      this._dataSourceFactory = options.dataSourceFactory
     }
 
     this.$root = createEle('div', styles.picker)
@@ -37,7 +37,7 @@ class Picker<T> extends Emitter {
       radius = 170,
       scaleRatio,
       intervalAngle = 12,
-      dataFactories
+      dataSourceFactory
     } = options
 
     const html = `
@@ -55,14 +55,14 @@ class Picker<T> extends Emitter {
     const $body = getEle(`[ref="picker-body"]`, $root) as HTMLElement
     const $cancel = getEle(`[ref="picker-cancel"]`, $root) as HTMLElement
     const $ensure = getEle(`[ref="picker-ensure"]`, $root) as HTMLElement
-    const factories = dataFactories.create()
-    const length = factories.length
+    const dataSources = dataSourceFactory.create()
+    const length = dataSources.length
 
     // 初始化所有的 scroller
-    factories.forEach(dataFactory => {
+    dataSources.forEach(dataSource => {
       const scroller = new Scroller({
         el: $body,
-        dataFactory,
+        dataSource,
         radius,
         scaleRatio,
         intervalAngle
@@ -81,23 +81,25 @@ class Picker<T> extends Emitter {
 
         if (index === length - 1) {
           // 最后一个 scroller 变化，不进行联动更新
-          this._cacheFactories = null
+          this._cacheDataSources = null
           return
         }
-        if (!this._cacheFactories) {
-          this._cacheFactories = dataFactories.create(this._tempValues.slice(0))
+        if (!this._cacheDataSources) {
+          this._cacheDataSources = dataSourceFactory.create(
+            this._tempValues.slice(0)
+          )
         }
-        // 联动更新下一个 dataFactory
+        // 联动更新下一个 dataSource
         const nextIndex = index + 1
-        const nextDataFactory = this._cacheFactories[nextIndex]
+        const nextDataSource = this._cacheDataSources[nextIndex]
         const nextScroller = this._scrollers[nextIndex]
-        nextScroller.changeDataFactory(nextDataFactory)
+        nextScroller.changeDataSource(nextDataSource)
       })
     })
 
     $cancel.addEventListener('click', () => {
       this._tempValues = [...this._values]
-      this._resetDataFactories()
+      this._resetDataSources()
       this.hide()
       this.emit('cancel')
     })
@@ -109,10 +111,10 @@ class Picker<T> extends Emitter {
     document.body.appendChild($root)
   }
 
-  private _resetDataFactories(): void {
-    const factories = this._dataFactories.create(this._values)
-    this._cacheFactories = factories
-    this._scrollers[0].changeDataFactory(factories[0])
+  private _resetDataSources(): void {
+    const dataSources = this._dataSourceFactory.create(this._values)
+    this._cacheDataSources = dataSources
+    this._scrollers[0].changeDataSource(dataSources[0])
   }
 
   show(): void {
@@ -130,7 +132,7 @@ class Picker<T> extends Emitter {
   setValues(val: T[]): void {
     this._values = [...val]
     this._tempValues = [...val]
-    this._resetDataFactories()
+    this._resetDataSources()
   }
 
   get scrollers(): Scroller<T>[] {

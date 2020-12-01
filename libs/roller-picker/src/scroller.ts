@@ -1,5 +1,5 @@
 import Motion from 'js-motion'
-import { DataFactory, NullableData } from './factories/data'
+import { DataSource, NullableData } from './factories/data'
 import {
   angleToRadian,
   getEle,
@@ -26,7 +26,7 @@ export default class Scroller<T> extends Emitter {
 
   private _maxDiffAngle = this._getMaxDiffAngle()
   private _dataChangeAngle: number
-  private _dataFactory: DataFactory<T>
+  private _dataSource: DataSource<T>
   private _items: VItem<T>[] = []
   private _currItem!: VItem<T>
   private _shouldEnd = false
@@ -34,7 +34,7 @@ export default class Scroller<T> extends Emitter {
 
   constructor(options: {
     el: HTMLElement | string
-    dataFactory: DataFactory<T>
+    dataSource: DataSource<T>
     radius?: number
     scaleRatio?: number
     intervalAngle?: number
@@ -45,7 +45,7 @@ export default class Scroller<T> extends Emitter {
     const {
       el,
       styles,
-      dataFactory,
+      dataSource,
       radius,
       intervalAngle,
       maxAngle,
@@ -58,7 +58,7 @@ export default class Scroller<T> extends Emitter {
       throw new Error("Scroller: can't find element by options.el")
     }
 
-    this._dataFactory = dataFactory
+    this._dataSource = dataSource
 
     if (radius) {
       this.radius = radius
@@ -87,8 +87,8 @@ export default class Scroller<T> extends Emitter {
   }
 
   private _init() {
-    const dataFactory = this._dataFactory
-    const currItem = this._createItem(dataFactory.getInit(), 0)
+    const dataSource = this._dataSource
+    const currItem = this._createItem(dataSource.getInit(), 0)
 
     let prevData = currItem.data
     let nextData = currItem.data
@@ -98,8 +98,8 @@ export default class Scroller<T> extends Emitter {
     this._items = [currItem]
 
     while (angle < this.maxAngle) {
-      prevData = dataFactory.getPrev(prevData)
-      nextData = dataFactory.getNext(nextData)
+      prevData = dataSource.getPrev(prevData)
+      nextData = dataSource.getNext(nextData)
 
       // 向前添加一个元素
       this._items.unshift(this._createItem(prevData, angle))
@@ -155,8 +155,8 @@ export default class Scroller<T> extends Emitter {
   private _scrollAngleDetection(angle: number) {
     const currData = this._currItem.data
     const boundary =
-      (angle > 0 && this._dataFactory.getPrev(currData) === null) ||
-      (angle < 0 && this._dataFactory.getNext(currData) === null)
+      (angle > 0 && this._dataSource.getPrev(currData) === null) ||
+      (angle < 0 && this._dataSource.getNext(currData) === null)
 
     if (boundary) {
       const intervalAngle = this.intervalAngle
@@ -185,8 +185,8 @@ export default class Scroller<T> extends Emitter {
     const currAngle = this._currItem.angle
     const currData = this._currItem.data
     const boundary =
-      (currAngle < 0 && this._dataFactory.getPrev(currData) === null) ||
-      (currAngle > 0 && this._dataFactory.getNext(currData) === null)
+      (currAngle < 0 && this._dataSource.getPrev(currData) === null) ||
+      (currAngle > 0 && this._dataSource.getNext(currData) === null)
     let angle = 0
 
     if (Math.abs(currAngle) < intervalAngle / 2 || boundary) {
@@ -238,13 +238,13 @@ export default class Scroller<T> extends Emitter {
     if (angle < 0 && firstItem.angle > this.maxAngle) {
       // 第一个元素转动的角度超过 this.maxAngle，将其放到最后一个（循环利用）
       firstItem.angle = items[1].angle - this._maxDiffAngle
-      firstItem.data = this._dataFactory.getNext(lastItem.data)
+      firstItem.data = this._dataSource.getNext(lastItem.data)
       items.push(firstItem)
       items.shift()
     } else if (angle > 0 && lastItem.angle < -this.maxAngle) {
       // 最后一个元素转动的角度超过 -this.maxAngle，将其放到第一个（循环利用）
       lastItem.angle = items[len - 2].angle + this._maxDiffAngle
-      lastItem.data = this._dataFactory.getPrev(firstItem.data)
+      lastItem.data = this._dataSource.getPrev(firstItem.data)
       items.unshift(lastItem)
       items.pop()
     }
@@ -277,7 +277,7 @@ export default class Scroller<T> extends Emitter {
     const radian = angleToRadian(angle)
     const y = -(this.radius * Math.sin(radian)).toFixed(0)
     const scale = Math.abs(Math.cos((1 - Math.pow(scaleRatio, 3)) * radian))
-    const text = this._dataFactory.getText(data)
+    const text = this._dataSource.getText(data)
     const cssText = `;
       transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle.toFixed(
       4
@@ -352,21 +352,21 @@ export default class Scroller<T> extends Emitter {
     return this._items
   }
 
-  changeDataFactory(dataFactory: DataFactory<T>, emitChange = true): void {
-    if (!dataFactory) return
+  changeDataSource(dataSource: DataSource<T>, emitChange = true): void {
+    if (!dataSource) return
 
     const len = this._items.length
-    const currData = dataFactory.getInit()
+    const currData = dataSource.getInit()
     let index = (len - 1) / 2
     let prev = currData
     let next = currData
 
-    this._dataFactory = dataFactory
+    this._dataSource = dataSource
     this._items[index].data = currData
 
     while (++index < len) {
-      prev = this._dataFactory.getPrev(prev)
-      next = this._dataFactory.getNext(next)
+      prev = this._dataSource.getPrev(prev)
+      next = this._dataSource.getNext(next)
 
       this._items[len - 1 - index].data = prev
       this._items[index].data = next

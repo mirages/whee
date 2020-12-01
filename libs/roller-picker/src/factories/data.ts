@@ -1,6 +1,11 @@
 export type NullableData<T> = T | null
 
-export interface DataFactory<T> {
+export interface IndexableData<T> {
+  index: number
+  value: T
+}
+
+export interface DataSource<T> {
   getInit: () => NullableData<T>
 
   getPrev: (param: NullableData<T>) => NullableData<T>
@@ -10,6 +15,6 @@ export interface DataFactory<T> {
   getText: (param: NullableData<T>) => string
 }
 
-export interface DataFactories<T> {
-  create: (values?: NullableData<T>[]) => DataFactory<T>[]
+export interface DataSourceFactory<T> {
+  create: (values?: NullableData<T>[]) => DataSource<T>[]
 }

@@ -1,4 +1,4 @@
-import { Scroller, DataFactory, NullableData } from '../src/index'
+import { Scroller, DataSource, NullableData } from '../src/index'
 import { angleToRadian, createEle } from '../src/utils'
 
 interface ScrollerData {
@@ -6,7 +6,7 @@ interface ScrollerData {
 }
 const list: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
 
-class SimpleDataFactory implements DataFactory<ScrollerData> {
+class SimpleDataSource implements DataSource<ScrollerData> {
   init: number
   constructor(init: number) {
     this.init = init
@@ -35,22 +35,22 @@ class SimpleDataFactory implements DataFactory<ScrollerData> {
 }
 
 const $root = createEle('div')
-const dataFactory = new SimpleDataFactory(0)
+const dataSource = new SimpleDataSource(0)
 
 describe('Scroller', () => {
   it('options.el should be a real element', () => {
     (() => {
-      new Scroller({ el: '#none-el', dataFactory })
+      new Scroller({ el: '#none-el', dataSource })
     }).should.be.throw()
     ;(() => {
-      new Scroller({ el: createEle('div'), dataFactory })
+      new Scroller({ el: createEle('div'), dataSource })
     }).should.not.be.throw()
   })
 
   it('options.maxAngle has a default number value, should be greater than 0 and less than 90', () => {
     let scroller = new Scroller({
       el: $root,
-      dataFactory
+      dataSource
     })
 
     scroller.maxAngle.should.be
@@ -60,7 +60,7 @@ describe('Scroller', () => {
 
     scroller = new Scroller({
       el: $root,
-      dataFactory,
+      dataSource,
       maxAngle: 0
     })
 
@@ -68,7 +68,7 @@ describe('Scroller', () => {
 
     scroller = new Scroller({
       el: $root,
-      dataFactory,
+      dataSource,
       maxAngle: 100
     })
 
@@ -78,16 +78,16 @@ describe('Scroller', () => {
   it('options.scaleRadio has a default number value', () => {
     const scroller = new Scroller({
       el: $root,
-      dataFactory
+      dataSource
     })
 
     scroller.scaleRatio.should.be.an('number')
   })
 
-  it('scroller.getValue() should be null when the dataFactory return a null value', () => {
+  it('scroller.getValue() should be null when the dataSource return a null value', () => {
     const scroller = new Scroller({
       el: $root,
-      dataFactory: {
+      dataSource: {
         getInit(): null {
           return null
         },
@@ -110,7 +110,7 @@ describe('Scroller', () => {
     const intervalAngle = 15
     const scroller = new Scroller({
       el: $root,
-      dataFactory,
+      dataSource,
       intervalAngle,
       scaleRatio: 0.2
     })
@@ -127,7 +127,7 @@ describe('Scroller', () => {
     const maxAngle = 60
     const scroller = new Scroller({
       el: $root,
-      dataFactory,
+      dataSource,
       maxAngle
     })
 
@@ -137,7 +137,7 @@ describe('Scroller', () => {
   it("move down along y-axis, scroller item's angle should be reduce", () => {
     const scroller = new Scroller({
       el: $root,
-      dataFactory
+      dataSource
     })
 
     const prevAngle = scroller.items[0].angle
@@ -148,7 +148,7 @@ describe('Scroller', () => {
   it("move up along y-axis, scroller item's angle should be increase", () => {
     const scroller = new Scroller({
       el: $root,
-      dataFactory
+      dataSource
     })
 
     const prevAngle = scroller.items[0].angle
@@ -158,27 +158,27 @@ describe('Scroller', () => {
 
   it('move cross over options.intervalAngle, emit change event.', () => {
     const initIndex = 3
-    const dataFactory = new SimpleDataFactory(initIndex)
+    const dataSource = new SimpleDataSource(initIndex)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
 
     const y = angleToRadian(scroller.intervalAngle) * scroller.radius
     scroller.scroll(y)
     scroller
       .getValue()!
-      .should.be.deep.equal(dataFactory.createData(initIndex - 1))
+      .should.be.deep.equal(dataSource.createData(initIndex - 1))
     scroller.scroll(-y)
-    scroller.getValue()!.should.be.deep.equal(dataFactory.createData(initIndex))
+    scroller.getValue()!.should.be.deep.equal(dataSource.createData(initIndex))
   })
 
   it("conn't move down when there is no prev data", () => {
     const scroller = new Scroller({
       el: $root,
-      dataFactory
+      dataSource
     })
     const currValue = scroller.getValue()
 
@@ -198,18 +198,18 @@ describe('Scroller', () => {
 
   it('move down to prev when end angle more than half options.intervalAngle, and has prev data.', done => {
     const initIndex = 3
-    const dataFactory = new SimpleDataFactory(initIndex)
+    const dataSource = new SimpleDataSource(initIndex)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
 
     const y = angleToRadian(scroller.intervalAngle / 2 + 1) * scroller.radius
 
     scroller.on('change', (data: ScrollerData) => {
-      data.should.be.deep.equal(dataFactory.createData(initIndex - 1))
+      data.should.be.deep.equal(dataSource.createData(initIndex - 1))
       done()
     })
     scroller.scroll(y)
@@ -218,18 +218,18 @@ describe('Scroller', () => {
 
   it('move up to next when end angle more than half options.intervalAngle, and has next data.', done => {
     const initIndex = 3
-    const dataFactory = new SimpleDataFactory(initIndex)
+    const dataSource = new SimpleDataSource(initIndex)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
 
     const y = angleToRadian(scroller.intervalAngle / 2 + 1) * scroller.radius
 
     scroller.on('change', (data: ScrollerData) => {
-      data.should.be.deep.equal(dataFactory.createData(initIndex + 1))
+      data.should.be.deep.equal(dataSource.createData(initIndex + 1))
       done()
     })
     scroller.scroll(-y)
@@ -238,12 +238,12 @@ describe('Scroller', () => {
 
   it('move up back to current when end angle more than half options.intervalAngle, but has no prev data.', done => {
     const initIndex = 0
-    const dataFactory = new SimpleDataFactory(initIndex)
+    const dataSource = new SimpleDataSource(initIndex)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
 
     let index = 0
@@ -255,19 +255,19 @@ describe('Scroller', () => {
     setTimeout(() => {
       scroller
         .getValue()!
-        .should.be.deep.equal(dataFactory.createData(initIndex))
+        .should.be.deep.equal(dataSource.createData(initIndex))
       done()
     }, 1500)
   })
 
   it('move down back to current when end angle more than half options.intervalAngle, but has no next data.', done => {
     const initIndex = list.length - 1
-    const dataFactory = new SimpleDataFactory(initIndex)
+    const dataSource = new SimpleDataSource(initIndex)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
 
     let index = 0
@@ -279,19 +279,19 @@ describe('Scroller', () => {
     setTimeout(() => {
       scroller
         .getValue()!
-        .should.be.deep.equal(dataFactory.createData(initIndex))
+        .should.be.deep.equal(dataSource.createData(initIndex))
       done()
     }, 1500)
   })
 
   it('move up back to current when end angle less than half options.intervalAngle', done => {
     const initIndex = 3
-    const dataFactory = new SimpleDataFactory(initIndex)
+    const dataSource = new SimpleDataSource(initIndex)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
 
     const y = angleToRadian(scroller.intervalAngle / 2 - 1) * scroller.radius
@@ -301,19 +301,19 @@ describe('Scroller', () => {
     setTimeout(() => {
       scroller
         .getValue()!
-        .should.be.deep.equal(dataFactory.createData(initIndex))
+        .should.be.deep.equal(dataSource.createData(initIndex))
       done()
     }, 1500)
   })
 
   it('move down back to current when end angle less than half options.intervalAngle', done => {
     const initIndex = list.length - 1
-    const dataFactory = new SimpleDataFactory(initIndex)
+    const dataSource = new SimpleDataSource(initIndex)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
 
     const y = angleToRadian(scroller.intervalAngle / 2 - 1) * scroller.radius
@@ -323,30 +323,30 @@ describe('Scroller', () => {
     setTimeout(() => {
       scroller
         .getValue()!
-        .should.be.deep.equal(dataFactory.createData(initIndex))
+        .should.be.deep.equal(dataSource.createData(initIndex))
       done()
     }, 1500)
   })
 
-  it('scroller.changeDataFactory() can set a new data factory, and emit a change event', done => {
-    let dataFactory = new SimpleDataFactory(0)
+  it('scroller.changeDataSource() can set a new data factory, and emit a change event', done => {
+    let dataSource = new SimpleDataSource(0)
     const scroller = new Scroller({
       el: $root,
       maxAngle: 46,
       intervalAngle: 15,
-      dataFactory
+      dataSource
     })
     const firstItemWrapper = scroller.items[0].wrapper
 
-    scroller.getValue()!.should.be.deep.equal(dataFactory.getInit())
-    dataFactory = new SimpleDataFactory(5)
+    scroller.getValue()!.should.be.deep.equal(dataSource.getInit())
+    dataSource = new SimpleDataSource(5)
     scroller.on('change', data => {
       // dom 元素复用
       scroller.items[0].wrapper.should.be.equal(firstItemWrapper)
       // value 值更新
-      data.should.be.deep.equal(dataFactory.getInit())
+      data.should.be.deep.equal(dataSource.getInit())
       done()
     })
-    scroller.changeDataFactory(dataFactory)
+    scroller.changeDataSource(dataSource)
   })
 })
