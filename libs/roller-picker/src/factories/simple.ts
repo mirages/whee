@@ -1,13 +1,15 @@
-import { DataFactory, NullableData } from './data'
+import {
+  DataSource,
+  DataSourceFactory,
+  NullableData,
+  IndexableData
+} from './data'
 
-interface IndexableData<T> {
-  index: number
-  value: T
-}
-export class SimpleDataFactory<T extends string>
-  implements DataFactory<IndexableData<T>> {
+export class SimpleDataSource<
+  T extends string | number | { text: string | number }
+> implements DataSource<IndexableData<T>> {
   private list: T[] = []
-  private initIndex: number
+  private initIndex = 0
   private length: number
   private loop: boolean
 
@@ -23,11 +25,12 @@ export class SimpleDataFactory<T extends string>
   ) {
     this.list = data
     this.length = this.list.length
-    this.initIndex = this.fixInitIndex(options.initIndex || 0)
     this.loop = options.loop || false
+    this.setInit(options.initIndex)
   }
 
-  private fixInitIndex(index: number): number {
+  private fixInitIndex(index?: number): number {
+    index = index || 0
     if (!Number(index) || index < 0 || index > this.length - 1) {
       return 0
     } else {
@@ -50,6 +53,10 @@ export class SimpleDataFactory<T extends string>
         }
   }
 
+  setInit(initIndex?: number): void {
+    this.initIndex = this.fixInitIndex(initIndex)
+  }
+
   getInit(): NullableData<IndexableData<T>> {
     return this.createData(this.initIndex)
   }
@@ -70,6 +77,43 @@ export class SimpleDataFactory<T extends string>
 
   getText(data: NullableData<IndexableData<T>>): string {
     if (data === null) return ''
-    return this.list[data.index]
+
+    // Here must redefine `value` type as `string | number | { text: string | number }`.
+    // Because generics extending unions cannot be narrowed currently.
+    // Related issues: https://github.com/microsoft/TypeScript/issues/13995.
+    const value: string | number | { text: string | number } = this.list[
+      data.index
+    ]
+
+    return typeof value === 'object' ? String(value.text) : String(value)
+  }
+}
+
+export class SimpleDataSourceFactory<
+  T extends string | number | { text: string | number }
+> implements DataSourceFactory<IndexableData<T>> {
+  private list: T[] = []
+  private dataSource: SimpleDataSource<T>
+
+  constructor(
+    dataList: T[],
+    options: {
+      initIndex?: number
+      loop?: boolean
+    } = {
+      initIndex: 0,
+      loop: false
+    }
+  ) {
+    this.dataSource = new SimpleDataSource(dataList, options)
+  }
+
+  create(
+    init?: NullableData<IndexableData<T>>[]
+  ): DataSource<IndexableData<T>>[] {
+    if (init) {
+      this.dataSource.setInit(init[0]?.index)
+    }
+    return [this.dataSource]
   }
 }
