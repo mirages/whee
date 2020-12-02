@@ -55,18 +55,18 @@ export default inputs.map(input => ({
       declarationDir: 'types/',
       rootDir: 'src/'
     }),
-    // terser({
-    //   output: {
-    //     comments: (node, comment) => {
-    //       const text = comment.value
-    //       const type = comment.type
-    //       if (type == 'comment2') {
-    //         // multiline comment
-    //         return /^!/.test(text) && !/Copyright/.test(text)
-    //       }
-    //     }
-    //   }
-    // }),
+    terser({
+      output: {
+        comments: (node, comment) => {
+          const text = comment.value
+          const type = comment.type
+          if (type == 'comment2') {
+            // multiline comment
+            return /^!/.test(text) && !/Copyright/.test(text)
+          }
+        }
+      }
+    }),
     postcss({
       // css module
       extensions: ['.css', '.less'],

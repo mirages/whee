@@ -5,6 +5,7 @@ import styles from './index.less'
 
 interface PickerOpts<T> {
   radius?: number
+  maxAngle?: number
   scaleRatio?: number
   intervalAngle?: number
   dataSourceFactory: DataSourceFactory<T>
@@ -33,12 +34,7 @@ class Picker<T> extends Emitter {
 
   private render(options: PickerOpts<T>): void {
     const $root = this.$root
-    const {
-      radius = 170,
-      scaleRatio,
-      intervalAngle = 12,
-      dataSourceFactory
-    } = options
+    const { dataSourceFactory, ...scrollerOpts } = options
 
     const html = `
 <div class="${styles['picker-content']}">
@@ -63,9 +59,7 @@ class Picker<T> extends Emitter {
       const scroller = new Scroller({
         el: $body,
         dataSource,
-        radius,
-        scaleRatio,
-        intervalAngle
+        ...scrollerOpts
       })
       const data = scroller.getValue()
 

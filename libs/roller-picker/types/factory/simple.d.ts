@@ -2,16 +2,12 @@ import type {
   DataSource,
   DataSourceFactory,
   NullableData,
-  IndexableData
+  IndexableData,
+  CascadeData,
+  SimpleData
 } from './data'
-export declare class SimpleDataSource<
-  T extends
-    | string
-    | number
-    | {
-        text: string | number
-      }
-> implements DataSource<IndexableData<T>> {
+export declare class SimpleDataSource<T extends SimpleData>
+  implements DataSource<IndexableData<T>> {
   private list
   private initIndex
   private length
@@ -31,24 +27,35 @@ export declare class SimpleDataSource<
   getNext(data: NullableData<IndexableData<T>>): NullableData<IndexableData<T>>
   getText(data: NullableData<IndexableData<T>>): string
 }
-export declare class SimpleDataSourceFactory<
-  T extends
-    | string
-    | number
-    | {
-        text: string | number
-      }
-> implements DataSourceFactory<IndexableData<T>> {
-  private list
-  private dataSource
+export declare class SimpleDataSourceFactory<T extends SimpleData>
+  implements DataSourceFactory<IndexableData<T>> {
+  private dataSources
   constructor(
-    dataList: T[],
+    dataLists: T[][],
     options?: {
       initIndex?: number
       loop?: boolean
-    }
+    }[]
   )
   create(
-    init?: NullableData<IndexableData<T>>[]
+    inits?: NullableData<IndexableData<T>>[]
+  ): DataSource<IndexableData<T>>[]
+}
+export declare class CascadeDataSourceFactory<
+  T extends {
+    text: string
+  }
+> implements DataSourceFactory<IndexableData<T>> {
+  private list
+  private options
+  constructor(
+    dataList: CascadeData<T>[],
+    options?: {
+      initIndex?: number
+      loop?: boolean
+    }[]
+  )
+  create(
+    inits?: NullableData<IndexableData<T>>[]
   ): DataSource<IndexableData<T>>[]
 }

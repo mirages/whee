@@ -2,12 +2,13 @@ import type {
   DataSource,
   DataSourceFactory,
   NullableData,
-  IndexableData
+  IndexableData,
+  CascadeData,
+  SimpleData
 } from './data'
 
-export class SimpleDataSource<
-  T extends string | number | { text: string | number }
-> implements DataSource<IndexableData<T>> {
+export class SimpleDataSource<T extends SimpleData>
+  implements DataSource<IndexableData<T>> {
   private list: T[] = []
   private initIndex = 0
   private length: number
@@ -78,42 +79,99 @@ export class SimpleDataSource<
   getText(data: NullableData<IndexableData<T>>): string {
     if (data === null) return ''
 
-    // Here must redefine `value` type as `string | number | { text: string | number }`.
+    // Here must redefine `value` type as `SimpleData`.
     // Because generics extending unions cannot be narrowed currently.
     // Related issues: https://github.com/microsoft/TypeScript/issues/13995.
-    const value: string | number | { text: string | number } = this.list[
-      data.index
-    ]
+    const value: SimpleData = this.list[data.index]
 
     return typeof value === 'object' ? String(value.text) : String(value)
   }
 }
 
-export class SimpleDataSourceFactory<
-  T extends string | number | { text: string | number }
-> implements DataSourceFactory<IndexableData<T>> {
-  private list: T[] = []
-  private dataSource: SimpleDataSource<T>
+export class SimpleDataSourceFactory<T extends SimpleData>
+  implements DataSourceFactory<IndexableData<T>> {
+  private dataSources: SimpleDataSource<T>[] = []
 
   constructor(
-    dataList: T[],
+    dataLists: T[][],
     options: {
       initIndex?: number
       loop?: boolean
-    } = {
-      initIndex: 0,
-      loop: false
-    }
+    }[] = [
+      {
+        initIndex: 0,
+        loop: false
+      }
+    ]
   ) {
-    this.dataSource = new SimpleDataSource(dataList, options)
+    dataLists.forEach((col, index) => {
+      this.dataSources.push(new SimpleDataSource(col, options[index]))
+    })
   }
 
   create(
-    init?: NullableData<IndexableData<T>>[]
+    inits?: NullableData<IndexableData<T>>[]
   ): DataSource<IndexableData<T>>[] {
-    if (init) {
-      this.dataSource.setInit(init[0]?.index)
+    if (inits) {
+      inits.forEach((init, index) => {
+        this.dataSources[index].setInit(init?.index)
+      })
     }
-    return [this.dataSource]
+    return this.dataSources
+  }
+}
+
+export class CascadeDataSourceFactory<T extends { text: string }>
+  implements DataSourceFactory<IndexableData<T>> {
+  private list: CascadeData<T>[] = []
+  private options: { initIndex?: number; loop?: boolean }[] = []
+
+  constructor(
+    dataList: CascadeData<T>[],
+    options: {
+      initIndex?: number
+      loop?: boolean
+    }[] = [
+      {
+        initIndex: 0,
+        loop: false
+      }
+    ]
+  ) {
+    this.list = dataList
+    this.options = options
+  }
+
+  create(
+    inits?: NullableData<IndexableData<T>>[]
+  ): DataSource<IndexableData<T>>[] {
+    const dataSources: SimpleDataSource<T>[] = []
+    let options: { initIndex?: number; loop?: boolean }[] = []
+
+    if (inits) {
+      inits.forEach((init, idx) => {
+        options.push({
+          initIndex: init ? init.index : 0,
+          loop: this.options[idx].loop
+        })
+      })
+    } else {
+      options = this.options
+    }
+
+    let idx = 0
+    let list: CascadeData<T>[] | undefined = this.list
+
+    while (list) {
+      const ds: SimpleDataSource<CascadeData<T>> = new SimpleDataSource(
+        list,
+        options[idx]
+      )
+      const prevData = ds.getInit()
+      idx++
+      list = list[prevData ? prevData.index : 0].children
+    }
+
+    return dataSources
   }
 }

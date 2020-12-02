@@ -1,5 +1,13 @@
 export type NullableData<T> = T | null
 
+export type SimpleData = string | number | { text: string | number }
+
+export type CascadeData<T extends Record<string, unknown>> = {
+  [P in keyof T]: T[P]
+} & {
+  children?: CascadeData<T>[]
+}
+
 export interface IndexableData<T> {
   index: number
   value: T

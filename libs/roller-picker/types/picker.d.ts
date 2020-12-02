@@ -3,6 +3,7 @@ import Scroller from './scroller'
 import { Emitter } from './utils'
 interface PickerOpts<T> {
   radius?: number
+  maxAngle?: number
   scaleRatio?: number
   intervalAngle?: number
   dataSourceFactory: DataSourceFactory<T>

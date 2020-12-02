@@ -141,7 +141,7 @@ describe('SimpleDataSource', () => {
 })
 describe('SimpleDataSourceFactory', () => {
   it("simpleDataSourceFactory.create() should be return an list of SimpleDataSource's instance", () => {
-    const factory = new SimpleDataSourceFactory([1, 2, 3, 4])
+    const factory = new SimpleDataSourceFactory([[1, 2, 3, 4]])
     const dataSource = factory.create()
 
     dataSource.should.be.an('array')
@@ -150,7 +150,7 @@ describe('SimpleDataSourceFactory', () => {
   it('simpleDataSourceFactory.create() can also be set a init value', () => {
     const data = [{ text: 'a' }, { text: 'b' }, { text: 'c' }]
     let initIndex = 0
-    const factory = new SimpleDataSourceFactory(data, { initIndex })
+    const factory = new SimpleDataSourceFactory([data], [{ initIndex }])
 
     factory.create()[0].getInit()!.should.be.deep.equal({
       index: initIndex,
@@ -162,5 +162,41 @@ describe('SimpleDataSourceFactory', () => {
       value: data[initIndex]
     }
     factory.create([initData])[0].getInit()!.should.be.deep.equal(initData)
+  })
+  it('SimpleDataSourceFactory can create non-cascade data source factory', () => {
+    const data1 = [1, 2, 3, 4, 5, 6, 7]
+    const data2 = ['a', 'b', 'c']
+    const factory = new SimpleDataSourceFactory<string | number>(
+      [data1, data2],
+      [
+        {
+          initIndex: 3,
+          loop: true
+        },
+        {
+          initIndex: 1
+        }
+      ]
+    )
+    let [ds1, ds2] = factory.create()
+    const ds1Init = ds1.getInit()
+    const ds2Init = ds2.getInit()
+    ds1Init!.should.be.deep.equal({
+      index: 3,
+      value: 4
+    })
+    ds2Init!.should.be.deep.equal({
+      index: 1,
+      value: 'b'
+    })
+    ;[ds1, ds2] = factory.create([ds1.getPrev(ds1Init), ds2.getNext(ds2Init)])
+    ds1.getInit()!.should.be.deep.equal({
+      index: 2,
+      value: 3
+    })
+    ds2.getInit()!.should.be.deep.equal({
+      index: 2,
+      value: 'c'
+    })
   })
 })
