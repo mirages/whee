@@ -206,6 +206,9 @@ describe('Picker', () => {
       dataSourceFactory: {
         create() {
           return [new ProvinceFactory()]
+        },
+        change() {
+          return [new ProvinceFactory()]
         }
       }
     })
@@ -220,6 +223,9 @@ describe('Picker', () => {
     const picker = new Picker({
       dataSourceFactory: {
         create() {
+          return [factory]
+        },
+        change() {
           return [factory]
         }
       }
@@ -245,6 +251,9 @@ describe('Picker', () => {
       dataSourceFactory: {
         create() {
           return [new ProvinceFactory()]
+        },
+        change() {
+          return [new ProvinceFactory()]
         }
       }
     })
@@ -269,14 +278,16 @@ describe('Picker', () => {
   it('picker.getValues() return an array, and init value should be options.dataSourceFactory init value', () => {
     const picker = new Picker({
       dataSourceFactory: {
-        create(initValues?: NullableData<PickerData>[]) {
-          let initProv = ''
-          let initCity = ''
+        create() {
+          const provinceFactory = new ProvinceFactory()
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CityFactory(initProvince)
+          return [provinceFactory, cityFactory]
+        },
+        change(initValues: NullableData<PickerData>[]) {
+          const initProv = initValues[0] ? initValues[0].id : ''
+          const initCity = initValues[1] ? initValues[1].id : ''
 
-          if (initValues) {
-            initProv = initValues[0] ? initValues[0].id : ''
-            initCity = initValues[1] ? initValues[1].id : ''
-          }
           const provinceFactory = new ProvinceFactory(initProv)
           const initProvince = provinceFactory.getInit().id
           const cityFactory = new CityFactory(initProvince, initCity)
@@ -304,14 +315,16 @@ describe('Picker', () => {
   it("picker.setValues() can set picker's value after created the picker", () => {
     const picker = new Picker({
       dataSourceFactory: {
-        create(initValues?: NullableData<PickerData>[]) {
-          let initProv = ''
-          let initCity = ''
+        create() {
+          const provinceFactory = new ProvinceFactory()
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CityFactory(initProvince)
+          return [provinceFactory, cityFactory]
+        },
+        change(initValues: NullableData<PickerData>[]) {
+          const initProv = initValues[0] ? initValues[0].id : ''
+          const initCity = initValues[1] ? initValues[1].id : ''
 
-          if (initValues) {
-            initProv = initValues[0] ? initValues[0].id : ''
-            initCity = initValues[1] ? initValues[1].id : ''
-          }
           const provinceFactory = new ProvinceFactory(initProv)
           const initProvince = provinceFactory.getInit().id
           const cityFactory = new CityFactory(initProvince, initCity)
@@ -340,19 +353,22 @@ describe('Picker', () => {
     )
   })
 
-  it('picker.scrollers should be react in chain', done => {
+  it('picker.scrollers can update in chain if the dataSourceFactory is cascadable', done => {
     const picker = new Picker({
       radius: 200,
       intervalAngle: 15,
       dataSourceFactory: {
-        create(initValues?: NullableData<PickerData>[]) {
-          let initProv = ''
-          let initCity = ''
+        cascadable: true,
+        create() {
+          const provinceFactory = new ProvinceFactory()
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CityFactory(initProvince)
+          return [provinceFactory, cityFactory]
+        },
+        change(initValues: NullableData<PickerData>[]) {
+          const initProv = initValues[0] ? initValues[0].id : ''
+          const initCity = initValues[1] ? initValues[1].id : ''
 
-          if (initValues) {
-            initProv = initValues[0] ? initValues[0].id : ''
-            initCity = initValues[1] ? initValues[1].id : ''
-          }
           const provinceFactory = new ProvinceFactory(initProv)
           const initProvince = provinceFactory.getInit().id
           const cityFactory = new CityFactory(initProvince, initCity)

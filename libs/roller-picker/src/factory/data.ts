@@ -13,6 +13,10 @@ export interface IndexableData<T> {
   value: T
 }
 
+export type IdxCascadeData<T extends Record<string, unknown>> = IndexableData<
+  CascadeData<T>
+>
+
 export interface DataSource<T> {
   getInit: () => NullableData<T>
 
@@ -24,5 +28,11 @@ export interface DataSource<T> {
 }
 
 export interface DataSourceFactory<T> {
-  create: (values?: NullableData<T>[]) => DataSource<T>[]
+  // data is cascadable
+  cascadable?: boolean
+  // create init dataSource list
+  create: () => DataSource<T>[]
+  // indexed data changed need to update relevant dataSource
+  // if index === -1, should update all dataSource
+  change: (values: NullableData<T>[], index: number) => DataSource<T>[]
 }

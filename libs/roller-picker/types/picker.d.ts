@@ -18,6 +18,8 @@ declare class Picker<T> extends Emitter {
   constructor(options: PickerOpts<T>)
   private render
   private _resetDataSources
+  private _changedIndependently
+  private _changedCascade
   show(): void
   hide(): void
   getValues(): NullableData<T>[]

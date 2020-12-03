@@ -4,7 +4,8 @@ import type {
   NullableData,
   IndexableData,
   CascadeData,
-  SimpleData
+  SimpleData,
+  IdxCascadeData
 } from './data'
 export declare class SimpleDataSource<T extends SimpleData>
   implements DataSource<IndexableData<T>> {
@@ -21,7 +22,8 @@ export declare class SimpleDataSource<T extends SimpleData>
   )
   private fixInitIndex
   private createData
-  setInit(initIndex?: number): void
+  setInitIndex(initIndex?: number): void
+  setDataList(list: T[], initIndex?: number): void
   getInit(): NullableData<IndexableData<T>>
   getPrev(data: NullableData<IndexableData<T>>): NullableData<IndexableData<T>>
   getNext(data: NullableData<IndexableData<T>>): NullableData<IndexableData<T>>
@@ -29,6 +31,7 @@ export declare class SimpleDataSource<T extends SimpleData>
 }
 export declare class SimpleDataSourceFactory<T extends SimpleData>
   implements DataSourceFactory<IndexableData<T>> {
+  cascadable: boolean
   private dataSources
   constructor(
     dataLists: T[][],
@@ -37,25 +40,30 @@ export declare class SimpleDataSourceFactory<T extends SimpleData>
       loop?: boolean
     }[]
   )
-  create(
-    inits?: NullableData<IndexableData<T>>[]
+  create(): DataSource<IndexableData<T>>[]
+  change(
+    inits: NullableData<IndexableData<T>>[]
   ): DataSource<IndexableData<T>>[]
 }
 export declare class CascadeDataSourceFactory<
   T extends {
     text: string
   }
-> implements DataSourceFactory<IndexableData<T>> {
-  private list
+> implements DataSourceFactory<IdxCascadeData<T>> {
+  cascadable: boolean
+  private cascadeList
   private options
+  private dataSources
   constructor(
-    dataList: CascadeData<T>[],
+    cascadeList: CascadeData<T>[],
     options?: {
       initIndex?: number
       loop?: boolean
     }[]
   )
-  create(
-    inits?: NullableData<IndexableData<T>>[]
-  ): DataSource<IndexableData<T>>[]
+  create(): DataSource<IdxCascadeData<T>>[]
+  change(
+    inits: NullableData<IdxCascadeData<T>>[],
+    index: number
+  ): DataSource<IdxCascadeData<T>>[]
 }

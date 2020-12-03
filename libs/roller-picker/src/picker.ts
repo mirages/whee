@@ -52,7 +52,6 @@ class Picker<T> extends Emitter {
     const $cancel = getEle(`[ref="picker-cancel"]`, $root) as HTMLElement
     const $ensure = getEle(`[ref="picker-ensure"]`, $root) as HTMLElement
     const dataSources = dataSourceFactory.create()
-    const length = dataSources.length
 
     // 初始化所有的 scroller
     dataSources.forEach(dataSource => {
@@ -68,28 +67,21 @@ class Picker<T> extends Emitter {
       this._tempValues.push(data)
     })
 
-    // 联动更新操作
-    this._scrollers.forEach((scroller, index) => {
-      scroller.on('change', (data: T) => {
-        this._tempValues[index] = data
-
-        if (index === length - 1) {
-          // 最后一个 scroller 变化，不进行联动更新
-          this._cacheDataSources = null
-          return
-        }
-        if (!this._cacheDataSources) {
-          this._cacheDataSources = dataSourceFactory.create(
-            this._tempValues.slice(0)
-          )
-        }
-        // 联动更新下一个 dataSource
-        const nextIndex = index + 1
-        const nextDataSource = this._cacheDataSources[nextIndex]
-        const nextScroller = this._scrollers[nextIndex]
-        nextScroller.changeDataSource(nextDataSource)
+    if (dataSourceFactory.cascadable) {
+      // 需要联动更新
+      this._scrollers.forEach((scroller, index) => {
+        scroller.on('change', (data: T) => {
+          this._changedCascade(data, index)
+        })
       })
-    })
+    } else {
+      // 独立更新
+      this._scrollers.forEach((scroller, index) => {
+        scroller.on('change', (data: T) => {
+          this._changedIndependently(data, index)
+        })
+      })
+    }
 
     $cancel.addEventListener('click', () => {
       this._tempValues = [...this._values]
@@ -106,9 +98,37 @@ class Picker<T> extends Emitter {
   }
 
   private _resetDataSources(): void {
-    const dataSources = this._dataSourceFactory.create(this._values)
-    this._cacheDataSources = dataSources
-    this._scrollers[0].changeDataSource(dataSources[0])
+    const dataSources = this._dataSourceFactory.change(this._values, -1)
+
+    this._scrollers.forEach((scroller, index) => {
+      scroller.changeDataSource(dataSources[index], false)
+      this._tempValues[index] = scroller.getValue()
+    })
+  }
+
+  private _changedIndependently(data: T, index: number): void {
+    this._tempValues[index] = data
+  }
+
+  private _changedCascade(data: T, index: number): void {
+    this._tempValues[index] = data
+
+    if (index === this._scrollers.length - 1) {
+      // 最后一个 scroller 变化，不进行联动更新
+      this._cacheDataSources = null
+      return
+    }
+    if (!this._cacheDataSources) {
+      this._cacheDataSources = this._dataSourceFactory.change(
+        this._tempValues.slice(0),
+        index
+      )
+    }
+    // 联动更新下一个 dataSource
+    const nextIndex = index + 1
+    const nextDataSource = this._cacheDataSources[nextIndex]
+    const nextScroller = this._scrollers[nextIndex]
+    nextScroller.changeDataSource(nextDataSource)
   }
 
   show(): void {

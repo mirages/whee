@@ -161,7 +161,7 @@ describe('SimpleDataSourceFactory', () => {
       index: initIndex,
       value: data[initIndex]
     }
-    factory.create([initData])[0].getInit()!.should.be.deep.equal(initData)
+    factory.change([initData])[0].getInit()!.should.be.deep.equal(initData)
   })
   it('SimpleDataSourceFactory can create non-cascade data source factory', () => {
     const data1 = [1, 2, 3, 4, 5, 6, 7]
@@ -189,7 +189,7 @@ describe('SimpleDataSourceFactory', () => {
       index: 1,
       value: 'b'
     })
-    ;[ds1, ds2] = factory.create([ds1.getPrev(ds1Init), ds2.getNext(ds2Init)])
+    ;[ds1, ds2] = factory.change([ds1.getPrev(ds1Init), ds2.getNext(ds2Init)])
     ds1.getInit()!.should.be.deep.equal({
       index: 2,
       value: 3
