@@ -5,44 +5,49 @@ import commonjs from '@rollup/plugin-commonjs'
 import postcss from 'rollup-plugin-postcss'
 
 const pkg = require('./package.json')
-const inputs = [
-  { index: 'src/index.ts' },
-  { 'factory/simple': 'src/factory/simple.ts' }
-]
-const bannerMap = {
-  index: pkg.name,
-  'factory/simple': `${pkg.name}-factory-simple`
-}
-const nameMap = {
-  index: pkg.name,
-  'factory/simple': `${pkg.name}/factory/simple`
-}
-const banner = input => `
+const banner = name => `
 /*!
- * ${bannerMap[Object.keys(input)[0]]}
+ * ${name}
  * v${pkg.version}
  * by ${pkg.author}
  */
 `
-const globalName = input => nameMap[Object.keys(input)[0]]
+
+const LIST = [
+  {
+    input: { index: 'src/index.ts' },
+    bannerName: pkg.name,
+    globalName: pkg.name
+  },
+  {
+    input: { 'factory/simple': 'src/factory/simple.ts' },
+    bannerName: `${pkg.name}-factory-simple`,
+    globalName: `${pkg.name}/factory/simple`
+  },
+  {
+    input: { 'factory/datetime': 'src/factory/datetime.ts' },
+    bannerName: `${pkg.name}-factory-datetime`,
+    globalName: `${pkg.name}/factory/datetime`
+  }
+]
 
 // Rollup doesn't support multi entry for umd and iif output.
 // Related issue: https://github.com/rollup/rollup/issues/2935
-export default inputs.map(input => ({
-  input,
+export default LIST.map(item => ({
+  input: item.input,
   output: [
     {
       dir: "./",
       entryFileNames: 'dist/[name].umd.js',
       format: 'umd',
-      name: globalName(input),
-      banner: banner(input)
+      name: item.globalName,
+      banner: banner(item.bannerName)
     },
     {
       dir: "./",
       entryFileNames: 'dist/[name].esm.js',
       format: 'es',
-      banner: banner(input)
+      banner: banner(item.bannerName)
     }
   ],
   plugins: [

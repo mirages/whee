@@ -113,7 +113,7 @@ export class SimpleDataSourceFactory<T extends SimpleData>
   }
 
   create(): DataSource<Indexable<T>>[] {
-    return [...this.dataSources]
+    return this.dataSources
   }
 
   // update all dataSource
@@ -121,7 +121,7 @@ export class SimpleDataSourceFactory<T extends SimpleData>
     inits.forEach((init, index) => {
       this.dataSources[index].setInitIndex(init?.index)
     })
-    return [...this.dataSources]
+    return this.dataSources
   }
 }
 
@@ -166,7 +166,7 @@ export class CascadeDataSourceFactory<
       list = list[prevData ? prevData.index : 0].children
     }
 
-    return [...this.dataSources]
+    return this.dataSources
   }
 
   // update as cascade
@@ -185,6 +185,6 @@ export class CascadeDataSourceFactory<
       list && this.dataSources[index].setDataList(list, inits[index]?.index)
     } while (list)
 
-    return [...this.dataSources]
+    return this.dataSources
   }
 }

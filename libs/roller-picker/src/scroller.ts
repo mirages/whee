@@ -339,13 +339,7 @@ export default class Scroller<T> extends Emitter {
   }
 
   getValue(): Nullable<T> {
-    let data: Nullable<T> = null
-
-    if (this._currItem.data) {
-      data = { ...this._currItem.data }
-    }
-
-    return data
+    return this._currItem.data
   }
 
   get items(): VItem<T>[] {
