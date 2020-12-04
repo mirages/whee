@@ -1,4 +1,4 @@
-import { DataSourceFactory, NullableData } from './factory/data'
+import { DataSourceFactory, Nullable } from './factory/data'
 import Scroller from './scroller'
 import { Emitter } from './utils'
 interface PickerOpts<T> {
@@ -22,7 +22,7 @@ declare class Picker<T> extends Emitter {
   private _changedCascade
   show(): void
   hide(): void
-  getValues(): NullableData<T>[]
+  getValues(): Nullable<T>[]
   setValues(val: T[]): void
   get scrollers(): Scroller<T>[]
 }

@@ -1,15 +1,15 @@
 import type {
   DataSource,
   DataSourceFactory,
-  NullableData,
-  IndexableData,
-  CascadeData,
+  Nullable,
+  Indexable,
+  Cascadable,
   SimpleData,
-  IdxCascadeData
+  IdxCascadable
 } from './data'
 
 export class SimpleDataSource<T extends SimpleData>
-  implements DataSource<IndexableData<T>> {
+  implements DataSource<Indexable<T>> {
   private list: T[] = []
   private initIndex = 0
   private length = 0
@@ -38,7 +38,7 @@ export class SimpleDataSource<T extends SimpleData>
     }
   }
 
-  private createData(index: number): NullableData<IndexableData<T>> {
+  private createData(index: number): Nullable<Indexable<T>> {
     if (index < 0 && this.loop) {
       index = this.length + index
     } else if (index > this.length - 1 && this.loop) {
@@ -63,25 +63,21 @@ export class SimpleDataSource<T extends SimpleData>
     this.setInitIndex(initIndex)
   }
 
-  getInit(): NullableData<IndexableData<T>> {
+  getInit(): Nullable<Indexable<T>> {
     return this.createData(this.initIndex)
   }
 
-  getPrev(
-    data: NullableData<IndexableData<T>>
-  ): NullableData<IndexableData<T>> {
+  getPrev(data: Nullable<Indexable<T>>): Nullable<Indexable<T>> {
     if (data === null) return null
     return this.createData(data.index - 1)
   }
 
-  getNext(
-    data: NullableData<IndexableData<T>>
-  ): NullableData<IndexableData<T>> {
+  getNext(data: Nullable<Indexable<T>>): Nullable<Indexable<T>> {
     if (data === null) return null
     return this.createData(data.index + 1)
   }
 
-  getText(data: NullableData<IndexableData<T>>): string {
+  getText(data: Nullable<Indexable<T>>): string {
     if (data === null) return ''
 
     // Here must redefine `value` type as `SimpleData`.
@@ -94,9 +90,10 @@ export class SimpleDataSource<T extends SimpleData>
 }
 
 export class SimpleDataSourceFactory<T extends SimpleData>
-  implements DataSourceFactory<IndexableData<T>> {
-  public cascadable = false
+  implements DataSourceFactory<Indexable<T>> {
   private dataSources: SimpleDataSource<T>[] = []
+
+  readonly cascadable = false
 
   constructor(
     dataLists: T[][],
@@ -115,14 +112,12 @@ export class SimpleDataSourceFactory<T extends SimpleData>
     })
   }
 
-  create(): DataSource<IndexableData<T>>[] {
+  create(): DataSource<Indexable<T>>[] {
     return [...this.dataSources]
   }
 
   // update all dataSource
-  change(
-    inits: NullableData<IndexableData<T>>[]
-  ): DataSource<IndexableData<T>>[] {
+  change(inits: Nullable<Indexable<T>>[]): DataSource<Indexable<T>>[] {
     inits.forEach((init, index) => {
       this.dataSources[index].setInitIndex(init?.index)
     })
@@ -130,15 +125,17 @@ export class SimpleDataSourceFactory<T extends SimpleData>
   }
 }
 
-export class CascadeDataSourceFactory<T extends { text: string }>
-  implements DataSourceFactory<IdxCascadeData<T>> {
-  public cascadable = true
-  private cascadeList: CascadeData<T>[] = []
+export class CascadeDataSourceFactory<
+  T extends Exclude<SimpleData, string | number>
+> implements DataSourceFactory<IdxCascadable<T>> {
+  private cascadeList: Cascadable<T>[] = []
   private options: { initIndex?: number; loop?: boolean }[] = []
-  private dataSources: SimpleDataSource<CascadeData<T>>[] = []
+  private dataSources: SimpleDataSource<Cascadable<T>>[] = []
+
+  readonly cascadable = true
 
   constructor(
-    cascadeList: CascadeData<T>[],
+    cascadeList: Cascadable<T>[],
     options: {
       initIndex?: number
       loop?: boolean
@@ -153,12 +150,12 @@ export class CascadeDataSourceFactory<T extends { text: string }>
     this.options = options
   }
 
-  create(): DataSource<IdxCascadeData<T>>[] {
+  create(): DataSource<IdxCascadable<T>>[] {
     let idx = 0
-    let list: CascadeData<T>[] | undefined = this.cascadeList
+    let list: Cascadable<T>[] | undefined = this.cascadeList
 
     while (list) {
-      const ds: SimpleDataSource<CascadeData<T>> = new SimpleDataSource(
+      const ds: SimpleDataSource<Cascadable<T>> = new SimpleDataSource(
         list,
         this.options[idx]
       )
@@ -174,14 +171,14 @@ export class CascadeDataSourceFactory<T extends { text: string }>
 
   // update as cascade
   change(
-    inits: NullableData<IdxCascadeData<T>>[],
+    inits: Nullable<IdxCascadable<T>>[],
     index: number
-  ): DataSource<IdxCascadeData<T>>[] {
+  ): DataSource<IdxCascadable<T>>[] {
     if (index < 0) index = 0 // index may be -1
     // change dataSources[index] init index
     this.dataSources[index].setInitIndex(inits[index]?.index)
     // cascade down data source
-    let list: CascadeData<T>[] | undefined
+    let list: Cascadable<T>[] | undefined
 
     do {
       list = this.dataSources[index++].getInit()?.value.children

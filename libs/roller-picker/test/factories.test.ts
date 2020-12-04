@@ -3,7 +3,7 @@ import {
   SimpleDataSourceFactory,
   CascadeDataSourceFactory
 } from '../src/factory/simple'
-import type { CascadeData, IdxCascadeData } from '../src'
+import type { IdxCascadable } from '../src'
 
 describe('SimpleDataSource', () => {
   it('getInit() should be return the init data', () => {
@@ -417,7 +417,7 @@ describe('CascadeDataSourceFactory', () => {
     })
 
     dsFactory.change(
-      [{ index: 1 }, { index: 2 }, { index: 3 }] as IdxCascadeData<{
+      [{ index: 1 }, { index: 2 }, { index: 3 }] as IdxCascadable<{
         id: string
         text: string
       }>[],
@@ -438,7 +438,7 @@ describe('CascadeDataSourceFactory', () => {
     })
 
     dsFactory.change(
-      [null, { index: 3 }, { index: 2 }] as IdxCascadeData<{
+      [null, { index: 3 }, { index: 2 }] as IdxCascadable<{
         id: string
         text: string
       }>[],

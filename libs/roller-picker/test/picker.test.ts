@@ -1,4 +1,4 @@
-import { Picker, DataSource, NullableData } from '../src/index'
+import { Picker, DataSource, Nullable } from '../src/index'
 import styles from '../src/index.less'
 import { angleToRadian, getEle } from '../src/utils'
 
@@ -25,17 +25,17 @@ class BaseFactory implements DataSource<PickerData> {
   getInit() {
     return this.createData(this.initIndex)
   }
-  getPrev(data: NullableData<PickerData>): NullableData<PickerData> {
+  getPrev(data: Nullable<PickerData>): Nullable<PickerData> {
     if (!data || data.index === 0) return null
 
     return this.createData(data.index - 1)
   }
-  getNext(data: NullableData<PickerData>): NullableData<PickerData> {
+  getNext(data: Nullable<PickerData>): Nullable<PickerData> {
     if (!data || data.index === this.list.length - 1) return null
 
     return this.createData(data.index + 1)
   }
-  getText(data: NullableData<PickerData>): string {
+  getText(data: Nullable<PickerData>): string {
     if (data === null) return ''
     return this.list[data.index].value
   }
@@ -284,7 +284,7 @@ describe('Picker', () => {
           const cityFactory = new CityFactory(initProvince)
           return [provinceFactory, cityFactory]
         },
-        change(initValues: NullableData<PickerData>[]) {
+        change(initValues: Nullable<PickerData>[]) {
           const initProv = initValues[0] ? initValues[0].id : ''
           const initCity = initValues[1] ? initValues[1].id : ''
 
@@ -321,7 +321,7 @@ describe('Picker', () => {
           const cityFactory = new CityFactory(initProvince)
           return [provinceFactory, cityFactory]
         },
-        change(initValues: NullableData<PickerData>[]) {
+        change(initValues: Nullable<PickerData>[]) {
           const initProv = initValues[0] ? initValues[0].id : ''
           const initCity = initValues[1] ? initValues[1].id : ''
 
@@ -365,7 +365,7 @@ describe('Picker', () => {
           const cityFactory = new CityFactory(initProvince)
           return [provinceFactory, cityFactory]
         },
-        change(initValues: NullableData<PickerData>[]) {
+        change(initValues: Nullable<PickerData>[]) {
           const initProv = initValues[0] ? initValues[0].id : ''
           const initCity = initValues[1] ? initValues[1].id : ''
 

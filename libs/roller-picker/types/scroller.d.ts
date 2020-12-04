@@ -1,9 +1,9 @@
-import { DataSource, NullableData } from './factory/data'
+import { DataSource, Nullable } from './factory/data'
 import { Emitter } from './utils'
 interface VItem<T> {
   wrapper: HTMLElement
   el: HTMLElement
-  data: NullableData<T>
+  data: Nullable<T>
   angle: number
 }
 export default class Scroller<T> extends Emitter {
@@ -52,7 +52,7 @@ export default class Scroller<T> extends Emitter {
    */
   scroll(distance: number): void
   scrollEnd(): void
-  getValue(): NullableData<T>
+  getValue(): Nullable<T>
   get items(): VItem<T>[]
   changeDataSource(dataSource: DataSource<T>, emitChange?: boolean): void
 }

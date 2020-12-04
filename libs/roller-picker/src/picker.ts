@@ -1,4 +1,4 @@
-import { DataSourceFactory, NullableData, DataSource } from './factory/data'
+import { DataSourceFactory, Nullable, DataSource } from './factory/data'
 import Scroller from './scroller'
 import { Emitter, getEle, createEle } from './utils'
 import styles from './index.less'
@@ -13,10 +13,10 @@ interface PickerOpts<T> {
 
 class Picker<T> extends Emitter {
   private _scrollers: Scroller<T>[] = []
-  private _values: NullableData<T>[] = []
-  private _tempValues: NullableData<T>[] = []
+  private _values: Nullable<T>[] = []
+  private _tempValues: Nullable<T>[] = []
   private _dataSourceFactory: DataSourceFactory<T>
-  private _cacheDataSources: NullableData<DataSource<T>[]> = null // 缓存新创建的 data source
+  private _cacheDataSources: Nullable<DataSource<T>[]> = null // 缓存新创建的 data source
 
   $root: HTMLElement
 
@@ -139,7 +139,7 @@ class Picker<T> extends Emitter {
     this.$root.classList.remove(styles['picker-in'])
   }
 
-  getValues(): NullableData<T>[] {
+  getValues(): Nullable<T>[] {
     return [...this._values]
   }
 

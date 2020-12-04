@@ -1,4 +1,4 @@
-import { Scroller, IndexableData } from '../src/index'
+import { Scroller, Indexable } from '../src/index'
 import { angleToRadian, createEle } from '../src/utils'
 import { SimpleDataSource } from '../src/factory/simple'
 
@@ -178,7 +178,7 @@ describe('Scroller', () => {
 
     const y = angleToRadian(scroller.intervalAngle / 2 + 1) * scroller.radius
 
-    scroller.on('change', (data: IndexableData<string>) => {
+    scroller.on('change', (data: Indexable<string>) => {
       data.should.be.deep.equal(dataSource.getPrev(initData))
       done()
     })
@@ -199,7 +199,7 @@ describe('Scroller', () => {
 
     const y = angleToRadian(scroller.intervalAngle / 2 + 1) * scroller.radius
 
-    scroller.on('change', (data: IndexableData<string>) => {
+    scroller.on('change', (data: Indexable<string>) => {
       data.should.be.deep.equal(dataSource.getNext(initData))
       done()
     })

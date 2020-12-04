@@ -1,4 +1,4 @@
-import type { DataSource, DataSourceFactory, NullableData } from './data'
+import type { DataSource, DataSourceFactory, Nullable } from './data'
 
 interface BaseOptions {
   max: number
@@ -15,7 +15,7 @@ abstract class BaseSource implements DataSource<number> {
     this._options = this.validateOptions(options)
   }
 
-  private createData(value: number): NullableData<number> {
+  private createData(value: number): Nullable<number> {
     let _value: number | null
     if (value < this._options.min) {
       _value = this._options.loop ? this._options.max : null
@@ -37,18 +37,18 @@ abstract class BaseSource implements DataSource<number> {
     })
   }
 
-  getInit(): NullableData<number> {
+  getInit(): Nullable<number> {
     return this._options.init
   }
-  getPrev(value: NullableData<number>): NullableData<number> {
+  getPrev(value: Nullable<number>): Nullable<number> {
     if (value === null) return null
     return this.createData(value - 1)
   }
-  getNext(value: NullableData<number>): NullableData<number> {
+  getNext(value: Nullable<number>): Nullable<number> {
     if (value === null) return null
     return this.createData(value + 1)
   }
-  getText(value: NullableData<number>): string {
+  getText(value: Nullable<number>): string {
     return value === null ? '' : String(value) + this._options.unit
   }
 }

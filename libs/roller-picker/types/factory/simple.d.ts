@@ -1,14 +1,14 @@
 import type {
   DataSource,
   DataSourceFactory,
-  NullableData,
-  IndexableData,
-  CascadeData,
+  Nullable,
+  Indexable,
+  Cascadable,
   SimpleData,
-  IdxCascadeData
+  IdxCascadable
 } from './data'
 export declare class SimpleDataSource<T extends SimpleData>
-  implements DataSource<IndexableData<T>> {
+  implements DataSource<Indexable<T>> {
   private list
   private initIndex
   private length
@@ -24,15 +24,15 @@ export declare class SimpleDataSource<T extends SimpleData>
   private createData
   setInitIndex(initIndex?: number): void
   setDataList(list: T[], initIndex?: number): void
-  getInit(): NullableData<IndexableData<T>>
-  getPrev(data: NullableData<IndexableData<T>>): NullableData<IndexableData<T>>
-  getNext(data: NullableData<IndexableData<T>>): NullableData<IndexableData<T>>
-  getText(data: NullableData<IndexableData<T>>): string
+  getInit(): Nullable<Indexable<T>>
+  getPrev(data: Nullable<Indexable<T>>): Nullable<Indexable<T>>
+  getNext(data: Nullable<Indexable<T>>): Nullable<Indexable<T>>
+  getText(data: Nullable<Indexable<T>>): string
 }
 export declare class SimpleDataSourceFactory<T extends SimpleData>
-  implements DataSourceFactory<IndexableData<T>> {
-  cascadable: boolean
+  implements DataSourceFactory<Indexable<T>> {
   private dataSources
+  readonly cascadable = false
   constructor(
     dataLists: T[][],
     options?: {
@@ -40,30 +40,26 @@ export declare class SimpleDataSourceFactory<T extends SimpleData>
       loop?: boolean
     }[]
   )
-  create(): DataSource<IndexableData<T>>[]
-  change(
-    inits: NullableData<IndexableData<T>>[]
-  ): DataSource<IndexableData<T>>[]
+  create(): DataSource<Indexable<T>>[]
+  change(inits: Nullable<Indexable<T>>[]): DataSource<Indexable<T>>[]
 }
 export declare class CascadeDataSourceFactory<
-  T extends {
-    text: string
-  }
-> implements DataSourceFactory<IdxCascadeData<T>> {
-  cascadable: boolean
+  T extends Exclude<SimpleData, string | number>
+> implements DataSourceFactory<IdxCascadable<T>> {
   private cascadeList
   private options
   private dataSources
+  readonly cascadable = true
   constructor(
-    cascadeList: CascadeData<T>[],
+    cascadeList: Cascadable<T>[],
     options?: {
       initIndex?: number
       loop?: boolean
     }[]
   )
-  create(): DataSource<IdxCascadeData<T>>[]
+  create(): DataSource<IdxCascadable<T>>[]
   change(
-    inits: NullableData<IdxCascadeData<T>>[],
+    inits: Nullable<IdxCascadable<T>>[],
     index: number
-  ): DataSource<IdxCascadeData<T>>[]
+  ): DataSource<IdxCascadable<T>>[]
 }

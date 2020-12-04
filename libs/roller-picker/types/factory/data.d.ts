@@ -1,30 +1,32 @@
-export declare type NullableData<T> = T | null
+export declare type Nullable<T> = T | null
 export declare type SimpleData =
   | string
   | number
   | {
       text: string | number
     }
-export declare type CascadeData<T extends Record<string, unknown>> = {
+export declare type Cascadable<
+  T extends Exclude<SimpleData, string | number>
+> = {
   [P in keyof T]: T[P]
 } & {
-  children?: CascadeData<T>[]
+  children?: Cascadable<T>[]
 }
-export interface IndexableData<T> {
+export declare type Indexable<T> = {
   index: number
   value: T
 }
-export declare type IdxCascadeData<
-  T extends Record<string, unknown>
-> = IndexableData<CascadeData<T>>
+export declare type IdxCascadable<
+  T extends Exclude<SimpleData, string | number>
+> = Indexable<Cascadable<T>>
 export interface DataSource<T> {
-  getInit: () => NullableData<T>
-  getPrev: (param: NullableData<T>) => NullableData<T>
-  getNext: (param: NullableData<T>) => NullableData<T>
-  getText: (param: NullableData<T>) => string
+  getInit: () => Nullable<T>
+  getPrev: (param: Nullable<T>) => Nullable<T>
+  getNext: (param: Nullable<T>) => Nullable<T>
+  getText: (param: Nullable<T>) => string
 }
 export interface DataSourceFactory<T> {
-  cascadable?: boolean
+  readonly cascadable?: boolean
   create: () => DataSource<T>[]
-  change: (values: NullableData<T>[], index: number) => DataSource<T>[]
+  change: (values: Nullable<T>[], index: number) => DataSource<T>[]
 }
