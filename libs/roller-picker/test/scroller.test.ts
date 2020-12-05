@@ -1,4 +1,4 @@
-import { Scroller, Indexable } from '../src/index'
+import { Scroller, Indexable, Nullable } from '../src/index'
 import { angleToRadian, createEle } from '../src/utils'
 import { SimpleDataSource } from '../src/factory/simple'
 
@@ -101,29 +101,89 @@ describe('Scroller', () => {
       maxAngle
     })
 
-    scroller.firstItem.angle.should.be.lessThan(maxAngle)
+    let item: Nullable<typeof scroller.firstItem> = scroller.firstItem
+    while (item) {
+      chai.expect(Math.abs(item.angle)).to.be.lessThan(maxAngle)
+      item = item.next
+    }
   })
 
-  it("move down along y-axis, scroller item's angle should be reduce", () => {
-    const scroller = new Scroller({
+  it('move down along y-axis, scroller should be get prev data', () => {
+    const scroller = new Scroller<number>({
       el: $root,
-      dataSource
+      maxAngle: 40,
+      intervalAngle: 15,
+      // 初始值：3, 4, 5, 6, 7
+      dataSource: {
+        getInit() {
+          return 5
+        },
+        getPrev(data) {
+          if (data === null) return null
+          return data - 1
+        },
+        getNext(data) {
+          if (data === null) return null
+          return data + 1
+        },
+        getText(data) {
+          return data === null ? '' : String(data)
+        }
+      }
     })
 
-    const prevAngle = scroller.firstItem.angle
-    scroller.scroll(5)
-    scroller.firstItem.angle.should.be.lessThan(prevAngle)
+    let y = 0
+    let first = 3
+    let last = 7
+    let index = 10
+
+    while (index--) {
+      scroller.scroll(y)
+      scroller.firstItem.data!.should.be.equal(first)
+      scroller.lastItem.data!.should.be.equal(last)
+      y = angleToRadian(scroller.intervalAngle) * scroller.radius
+      first--
+      last--
+    }
   })
 
-  it("move up along y-axis, scroller item's angle should be increase", () => {
-    const scroller = new Scroller({
+  it('move up along y-axis, scroller should be get next data', () => {
+    const scroller = new Scroller<number>({
       el: $root,
-      dataSource
+      maxAngle: 40,
+      intervalAngle: 15,
+      // 初始值：3, 4, 5, 6, 7
+      dataSource: {
+        getInit() {
+          return 5
+        },
+        getPrev(data) {
+          if (data === null) return null
+          return data - 1
+        },
+        getNext(data) {
+          if (data === null) return null
+          return data + 1
+        },
+        getText(data) {
+          return data === null ? '' : String(data)
+        }
+      }
     })
 
-    const prevAngle = scroller.firstItem.angle
-    scroller.scroll(-5)
-    scroller.firstItem.angle.should.be.greaterThan(prevAngle)
+    let y = 0
+    let first = 3
+    let last = 7
+    let index = 10
+
+    while (index--) {
+      scroller.scroll(y)
+      scroller.firstItem.data!.should.be.equal(first)
+      scroller.lastItem.data!.should.be.equal(last)
+      y = -angleToRadian(scroller.intervalAngle) * scroller.radius
+      first++
+      last++
+    }
   })
 
   it('move cross over options.intervalAngle, emit change event.', () => {

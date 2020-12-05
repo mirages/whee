@@ -263,8 +263,9 @@ export default class Scroller<T> extends Emitter {
       // 建立新连接
       firstItem.prev = lastItem
       lastItem.next = firstItem
-      // 更新第一个元素
+      // 更新指针
       this._firstItem = secItem
+      this._lastItem = firstItem
     } else if (angle > 0 && lastItem.angle < -this.maxAngle) {
       // 最后一个元素转动的角度超过 -this.maxAngle，将其放到第一个
       const secToLast = lastItem.prev!
@@ -276,8 +277,9 @@ export default class Scroller<T> extends Emitter {
       // 建立新连接
       lastItem.next = firstItem
       firstItem.prev = lastItem
-      // 更新最后一个元素
+      // 更新指针
       this._firstItem = lastItem
+      this._lastItem = secToLast
     }
 
     // 更新当前选中的值
@@ -378,6 +380,10 @@ export default class Scroller<T> extends Emitter {
 
   get firstItem(): VItem<T> {
     return this._firstItem
+  }
+
+  get lastItem(): VItem<T> {
+    return this._lastItem
   }
 
   changeDataSource(dataSource: DataSource<T>, emitChange = true): void {

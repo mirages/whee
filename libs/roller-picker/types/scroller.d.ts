@@ -58,6 +58,7 @@ export default class Scroller<T> extends Emitter {
   scrollEnd(): void
   getValue(): Nullable<T>
   get firstItem(): VItem<T>
+  get lastItem(): VItem<T>
   changeDataSource(dataSource: DataSource<T>, emitChange?: boolean): void
 }
 export {}
