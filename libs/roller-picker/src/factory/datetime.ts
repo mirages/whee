@@ -8,20 +8,18 @@ interface BaseOptions {
   unit: string
 }
 
+type InputOpts = {
+  maxDate: number[]
+  minDate: number[]
+  init: number
+  loop: boolean
+  unit: string
+}
+
 abstract class BaseSource implements DataSource<number> {
   protected nowDate = new Date()
-  protected minDate: Date
-  protected maxDate: Date
   protected abstract options: BaseOptions
 
-  constructor(minDate?: Date, maxDate?: Date) {
-    this.minDate = minDate || new Date(1900, 0, 1, 0, 0, 0, 0)
-    this.maxDate = maxDate || this.nowDate
-
-    if (this.maxDate < this.minDate) {
-      throw new Error('BaseSource: maxDate must not be less than minDate')
-    }
-  }
   private createData(value: number): Nullable<number> {
     let _value: number | null
     if (value < this.options.min) {
@@ -35,10 +33,7 @@ abstract class BaseSource implements DataSource<number> {
     return _value
   }
 
-  abstract setOptions(
-    options: Partial<BaseOptions>,
-    parents?: Nullable<number>[]
-  ): void
+  abstract setOptions(options: InputOpts, parents?: Nullable<number>[]): void
 
   getInit(): Nullable<number> {
     return this.options.init
@@ -59,58 +54,46 @@ abstract class BaseSource implements DataSource<number> {
   }
 }
 
-type InputOpts = Omit<BaseOptions, 'min' | 'max'> & {
-  maxDate: Date
-  minDate: Date
-}
-
 function fixInit(init: number, min: number, max: number): number {
   return init > max ? max : init < min ? min : init
 }
 
 class YearSource extends BaseSource {
   protected options!: BaseOptions
-  constructor(options: Partial<InputOpts> = {}) {
-    super(options.minDate, options.maxDate)
+  constructor(options: InputOpts) {
+    super()
     this.setOptions(options)
   }
 
-  setOptions(options: Partial<InputOpts>): void {
-    const max = this.maxDate.getFullYear()
-    const min = this.minDate.getFullYear()
-    const loop = !!options.loop
-    const unit = options.unit || '年'
-    let init = options.init ?? this.nowDate.getFullYear()
+  setOptions(options: InputOpts): void {
+    const max = options.maxDate[0]
+    const min = options.minDate[0]
+    const loop = options.loop
+    const unit = options.unit
+    const init = options.init
 
-    init = fixInit(init, min, max)
     this.options = { min, max, init, loop, unit }
   }
 }
 
 class MonthSource extends BaseSource {
   protected options!: BaseOptions
-  constructor(options: Partial<InputOpts>, parents: Nullable<number>[]) {
-    super(options.minDate, options.maxDate)
+  constructor(options: InputOpts, parents: number[]) {
+    super()
     this.setOptions(options, parents)
   }
 
-  setOptions(options: Partial<InputOpts>, parents: Nullable<number>[]): void {
-    const year = parents[0] ?? this.nowDate.getFullYear()
-    const minYear = this.minDate.getFullYear()
-    const minMon = this.minDate.getMonth()
-    const maxYear = this.maxDate.getFullYear()
-    const maxMon = this.maxDate.getMonth()
-    const loop = !!options.loop
-    const unit = options.unit || '月'
+  setOptions(options: InputOpts, parents: number[]): void {
+    const [year] = parents
+    const [minYear, minMon] = options.minDate
+    const [maxYear, maxMon] = options.maxDate
+    const loop = options.loop
+    const unit = options.unit
     let max = 11
     let min = 0
-    let init = options.init ?? this.nowDate.getMonth()
+    let init = options.init
 
-    if (year < minYear || year > maxYear) {
-      throw new Error(
-        'MonthSource.setOptions - initValue must not be less than options.minDate, and must not be greater than options.maxDate'
-      )
-    } else if (year === minYear && min < minMon) {
+    if (year === minYear && min < minMon) {
       min = minMon
     } else if (year === maxYear && max > maxMon) {
       max = maxMon
@@ -126,36 +109,22 @@ class MonthSource extends BaseSource {
 
 class DaySource extends BaseSource {
   protected options!: BaseOptions
-  constructor(options: Partial<InputOpts>, parents: Nullable<number>[]) {
-    super(options.minDate, options.maxDate)
+  constructor(options: InputOpts, parents: number[]) {
+    super()
     this.setOptions(options, parents)
   }
 
-  setOptions(options: Partial<InputOpts>, parents: Nullable<number>[]): void {
-    const year = parents[0] ?? this.nowDate.getFullYear()
-    const month = parents[1] ?? this.nowDate.getMonth()
-    const minYear = this.minDate.getFullYear()
-    const minMon = this.minDate.getMonth()
-    const minDay = this.minDate.getDate()
-    const maxYear = this.maxDate.getFullYear()
-    const maxMon = this.maxDate.getMonth()
-    const maxDay = this.maxDate.getDate()
-    const loop = !!options.loop
-    const unit = options.unit || '日'
+  setOptions(options: InputOpts, parents: number[]): void {
+    const [year, month] = parents
+    const [minYear, minMon, minDay] = options.minDate
+    const [maxYear, maxMon, maxDay] = options.maxDate
+    const loop = options.loop
+    const unit = options.unit
     let max = this.getMonthDays(year, month)
     let min = 1
-    let init = options.init ?? this.nowDate.getDate()
+    let init = options.init
 
-    if (
-      year < minYear ||
-      year > maxYear ||
-      (year === minYear && month < minMon) ||
-      (year === maxYear && month > maxMon)
-    ) {
-      throw new Error(
-        'DaySource.setOptions - initValue must not be less than options.minDate, and must not be greater than options.maxDate'
-      )
-    } else if (year === minYear && month === minMon && min < minDay) {
+    if (year === minYear && month === minMon && min < minDay) {
       min = minDay
     } else if (year === maxYear && month === maxMon && max > maxDay) {
       max = maxDay
@@ -179,22 +148,69 @@ class DaySource extends BaseSource {
 
 export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
   readonly cascadable = true
-  protected options
+  readonly minDate: number[] = []
+  readonly maxDate: number[] = []
+  readonly initDate: number[] = []
+  readonly units: string[] = []
+  readonly loop: boolean
   protected dataSources: BaseSource[] = []
 
   constructor(
     options: {
       minDate?: Date
       maxDate?: Date
+      initDate?: Date
       loop?: boolean
     } = {}
   ) {
-    this.options = options
+    const now = new Date()
+    const {
+      minDate = new Date(1900, 0, 1, 0, 0, 0, 0),
+      maxDate = now,
+      initDate = now,
+      loop = false
+    } = options
+
+    let _initDate = initDate
+    if (maxDate < minDate) {
+      throw new Error(
+        'DatetimeDataSourceFactory: options.maxDate must not be less than options.minDate'
+      )
+    } else if (initDate > maxDate) {
+      _initDate = maxDate
+    } else if (initDate < minDate) {
+      _initDate = minDate
+    }
+
+    this.minDate = this.dateToArray(minDate)
+    this.maxDate = this.dateToArray(maxDate)
+    this.initDate = this.dateToArray(_initDate)
+    this.units = ['年', '月', '日', '时', '分', '秒']
+    this.loop = loop
+  }
+  protected dateToArray(date: Date): number[] {
+    return [
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds()
+    ]
+  }
+  protected createOption(index: number, prevInit?: number) {
+    return {
+      loop: this.loop,
+      unit: this.units[index],
+      maxDate: this.maxDate.slice(0, index + 1),
+      minDate: this.minDate.slice(0, index + 1),
+      init: prevInit ?? this.initDate[index]
+    }
   }
   create(): BaseSource[] {
-    const years = new YearSource(this.options)
-    const months = new MonthSource(this.options, [years.getInit()!])
-    const days = new DaySource(this.options, [
+    const years = new YearSource(this.createOption(0))
+    const months = new MonthSource(this.createOption(1), [years.getInit()!])
+    const days = new DaySource(this.createOption(2), [
       years.getInit()!,
       months.getInit()!
     ])
@@ -209,10 +225,7 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
 
     while (++index < length) {
       this.dataSources[index].setOptions(
-        {
-          ...this.options,
-          init: values[index]!
-        },
+        this.createOption(index, values[index]!),
         parents
       )
       parents.push(this.dataSources[index].getInit())

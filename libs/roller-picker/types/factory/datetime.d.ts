@@ -6,17 +6,18 @@ interface BaseOptions {
   loop: boolean
   unit: string
 }
+declare type InputOpts = {
+  maxDate: number[]
+  minDate: number[]
+  init: number
+  loop: boolean
+  unit: string
+}
 declare abstract class BaseSource implements DataSource<number> {
   protected nowDate: Date
-  protected minDate: Date
-  protected maxDate: Date
   protected abstract options: BaseOptions
-  constructor(minDate?: Date, maxDate?: Date)
   private createData
-  abstract setOptions(
-    options: Partial<BaseOptions>,
-    parents?: Nullable<number>[]
-  ): void
+  abstract setOptions(options: InputOpts, parents?: Nullable<number>[]): void
   getInit(): Nullable<number>
   getPrev(value: Nullable<number>): Nullable<number>
   getNext(value: Nullable<number>): Nullable<number>
@@ -26,13 +27,29 @@ declare abstract class BaseSource implements DataSource<number> {
 export declare class DatetimeDataSourceFactory
   implements DataSourceFactory<number> {
   readonly cascadable = true
-  protected options: {
-    minDate?: Date | undefined
-    maxDate?: Date | undefined
-    loop?: boolean | undefined
-  }
+  readonly minDate: number[]
+  readonly maxDate: number[]
+  readonly initDate: number[]
+  readonly units: string[]
+  readonly loop: boolean
   protected dataSources: BaseSource[]
-  constructor(options?: { minDate?: Date; maxDate?: Date; loop?: boolean })
+  constructor(options?: {
+    minDate?: Date
+    maxDate?: Date
+    initDate?: Date
+    loop?: boolean
+  })
+  protected dateToArray(date: Date): number[]
+  protected createOption(
+    index: number,
+    prevInit?: number
+  ): {
+    loop: boolean
+    unit: string
+    maxDate: number[]
+    minDate: number[]
+    init: number
+  }
   create(): BaseSource[]
   change(values: Nullable<number>[], index: number): BaseSource[]
 }
