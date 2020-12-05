@@ -13,6 +13,7 @@ export declare class SimpleDataSource<T extends SimpleData>
   private initIndex
   private length
   private loop
+  private createData
   constructor(
     data: T[],
     options?: {
@@ -21,10 +22,11 @@ export declare class SimpleDataSource<T extends SimpleData>
     }
   )
   private fixInitIndex
-  private createData
+  private _createData
+  private _createDataLoop
   setInitIndex(initIndex?: number): void
   setDataList(list: T[], initIndex?: number): void
-  getInit(): Nullable<Indexable<T>>
+  getInit(): Indexable<T>
   getPrev(data: Nullable<Indexable<T>>): Nullable<Indexable<T>>
   getNext(data: Nullable<Indexable<T>>): Nullable<Indexable<T>>
   getText(data: Nullable<Indexable<T>>): string
@@ -41,7 +43,7 @@ export declare class SimpleDataSourceFactory<T extends SimpleData>
     }[]
   )
   create(): DataSource<Indexable<T>>[]
-  change(inits: Nullable<Indexable<T>>[]): DataSource<Indexable<T>>[]
+  change(inits: Indexable<T>[]): DataSource<Indexable<T>>[]
 }
 export declare class CascadeDataSourceFactory<
   T extends Exclude<SimpleData, string | number>
@@ -59,7 +61,7 @@ export declare class CascadeDataSourceFactory<
   )
   create(): DataSource<IdxCascadable<T>>[]
   change(
-    inits: Nullable<IdxCascadable<T>>[],
+    inits: IdxCascadable<T>[],
     index: number
   ): DataSource<IdxCascadable<T>>[]
 }

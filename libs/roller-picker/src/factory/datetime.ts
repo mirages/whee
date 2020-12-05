@@ -35,7 +35,7 @@ abstract class BaseSource implements DataSource<number> {
 
   abstract setOptions(options: InputOpts, parents?: Nullable<number>[]): void
 
-  getInit(): Nullable<number> {
+  getInit(): number {
     return this.options.init
   }
   getPrev(value: Nullable<number>): Nullable<number> {
@@ -188,6 +188,7 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
     this.units = ['年', '月', '日', '时', '分', '秒']
     this.loop = loop
   }
+
   protected dateToArray(date: Date): number[] {
     return [
       date.getFullYear(),
@@ -198,34 +199,39 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
       date.getSeconds()
     ]
   }
-  protected createOption(index: number, prevInit?: number) {
+
+  protected createOptions(index: number, prevInit: number): InputOpts {
     return {
       loop: this.loop,
       unit: this.units[index],
       maxDate: this.maxDate.slice(0, index + 1),
       minDate: this.minDate.slice(0, index + 1),
-      init: prevInit ?? this.initDate[index]
+      init: prevInit
     }
   }
+
   create(): BaseSource[] {
-    const years = new YearSource(this.createOption(0))
-    const months = new MonthSource(this.createOption(1), [years.getInit()!])
-    const days = new DaySource(this.createOption(2), [
-      years.getInit()!,
-      months.getInit()!
+    const years = new YearSource(this.createOptions(0, this.initDate[0]))
+    const months = new MonthSource(this.createOptions(1, this.initDate[1]), [
+      years.getInit()
+    ])
+    const days = new DaySource(this.createOptions(2, this.initDate[2]), [
+      years.getInit(),
+      months.getInit()
     ])
 
     this.dataSources = [years, months, days]
 
     return this.dataSources
   }
-  change(values: Nullable<number>[], index: number): BaseSource[] {
+
+  change(values: number[], index: number): BaseSource[] {
     const length = values.length
     const parents = values.slice(0, index + 1)
 
     while (++index < length) {
       this.dataSources[index].setOptions(
-        this.createOption(index, values[index]!),
+        this.createOptions(index, values[index]),
         parents
       )
       parents.push(this.dataSources[index].getInit())

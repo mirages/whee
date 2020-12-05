@@ -56,7 +56,7 @@ export default class Scroller<T> extends Emitter {
    */
   scroll(distance: number): void
   scrollEnd(): void
-  getValue(): Nullable<T>
+  getValue(): T
   get firstItem(): VItem<T>
   get lastItem(): VItem<T>
   changeDataSource(dataSource: DataSource<T>, emitChange?: boolean): void

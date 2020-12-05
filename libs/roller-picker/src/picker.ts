@@ -13,8 +13,8 @@ interface PickerOpts<T> {
 
 class Picker<T> extends Emitter {
   private _scrollers: Scroller<T>[] = []
-  private _values: Nullable<T>[] = []
-  private _tempValues: Nullable<T>[] = []
+  private _values: T[] = []
+  private _tempValues: T[] = []
   private _dataSourceFactory: DataSourceFactory<T>
   private _cacheDataSources: Nullable<DataSource<T>[]> = null // 缓存新创建的 data source
 
@@ -139,7 +139,7 @@ class Picker<T> extends Emitter {
     this.$root.classList.remove(styles['picker-in'])
   }
 
-  getValues(): Nullable<T>[] {
+  getValues(): T[] {
     return [...this._values]
   }
 

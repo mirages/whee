@@ -10,25 +10,25 @@ describe('SimpleDataSource', () => {
     const data = [1, 2, 3]
     let initIndex = 0
     let dataSource = new SimpleDataSource(data)
-    dataSource.getInit()!.should.be.deep.equal({
+    dataSource.getInit().should.be.deep.equal({
       index: initIndex,
       value: data[initIndex]
     })
     initIndex = -1
     dataSource = new SimpleDataSource(data, { initIndex })
-    dataSource.getInit()!.should.be.deep.equal({
+    dataSource.getInit().should.be.deep.equal({
       index: 0,
       value: data[0]
     })
     initIndex = 2
     dataSource = new SimpleDataSource(data, { initIndex })
-    dataSource.getInit()!.should.be.deep.equal({
+    dataSource.getInit().should.be.deep.equal({
       index: initIndex,
       value: data[initIndex]
     })
     initIndex = 3
     dataSource = new SimpleDataSource(data, { initIndex })
-    dataSource.getInit()!.should.be.deep.equal({
+    dataSource.getInit().should.be.deep.equal({
       index: 0,
       value: data[0]
     })
@@ -154,7 +154,7 @@ describe('SimpleDataSourceFactory', () => {
     let initIndex = 0
     const factory = new SimpleDataSourceFactory([data], [{ initIndex }])
 
-    factory.create()[0].getInit()!.should.be.deep.equal({
+    factory.create()[0].getInit().should.be.deep.equal({
       index: initIndex,
       value: data[initIndex]
     })
@@ -163,7 +163,7 @@ describe('SimpleDataSourceFactory', () => {
       index: initIndex,
       value: data[initIndex]
     }
-    factory.change([initData])[0].getInit()!.should.be.deep.equal(initData)
+    factory.change([initData])[0].getInit().should.be.deep.equal(initData)
   })
   it('SimpleDataSourceFactory can create non-cascade data source factory', () => {
     const data1 = [1, 2, 3, 4, 5, 6, 7]
@@ -183,20 +183,20 @@ describe('SimpleDataSourceFactory', () => {
     let [ds1, ds2] = factory.create()
     const ds1Init = ds1.getInit()
     const ds2Init = ds2.getInit()
-    ds1Init!.should.be.deep.equal({
+    ds1Init.should.be.deep.equal({
       index: 3,
       value: 4
     })
-    ds2Init!.should.be.deep.equal({
+    ds2Init.should.be.deep.equal({
       index: 1,
       value: 'b'
     })
-    ;[ds1, ds2] = factory.change([ds1.getPrev(ds1Init), ds2.getNext(ds2Init)])
-    ds1.getInit()!.should.be.deep.equal({
+    ;[ds1, ds2] = factory.change([ds1.getPrev(ds1Init)!, ds2.getNext(ds2Init)!])
+    ds1.getInit().should.be.deep.equal({
       index: 2,
       value: 3
     })
-    ds2.getInit()!.should.be.deep.equal({
+    ds2.getInit().should.be.deep.equal({
       index: 2,
       value: 'c'
     })
@@ -403,15 +403,15 @@ describe('CascadeDataSourceFactory', () => {
     }>(cascadeData, [{ initIndex: 0 }, { initIndex: 1 }, { initIndex: 2 }])
     const dataSources = dsFactory.create()
 
-    dataSources[0].getInit()!.should.be.deep.equal({
+    dataSources[0].getInit().should.be.deep.equal({
       index: 0,
       value: cascadeData[0]
     })
-    dataSources[1].getInit()!.should.be.deep.equal({
+    dataSources[1].getInit().should.be.deep.equal({
       index: 1,
       value: cascadeData[0].children[1]
     })
-    dataSources[2].getInit()!.should.be.deep.equal({
+    dataSources[2].getInit().should.be.deep.equal({
       index: 2,
       value: cascadeData[0].children[1].children[2]
     })
@@ -424,15 +424,15 @@ describe('CascadeDataSourceFactory', () => {
       -1
     )
 
-    dataSources[0].getInit()!.should.be.deep.equal({
+    dataSources[0].getInit().should.be.deep.equal({
       index: 1,
       value: cascadeData[1]
     })
-    dataSources[1].getInit()!.should.be.deep.equal({
+    dataSources[1].getInit().should.be.deep.equal({
       index: 2,
       value: cascadeData[1].children[2]
     })
-    dataSources[2].getInit()!.should.be.deep.equal({
+    dataSources[2].getInit().should.be.deep.equal({
       index: 3,
       value: cascadeData[1].children[2].children[3]
     })
@@ -446,15 +446,15 @@ describe('CascadeDataSourceFactory', () => {
     )
 
     // dataSources[0] keep last change status
-    dataSources[0].getInit()!.should.be.deep.equal({
+    dataSources[0].getInit().should.be.deep.equal({
       index: 1,
       value: cascadeData[1]
     })
-    dataSources[1].getInit()!.should.be.deep.equal({
+    dataSources[1].getInit().should.be.deep.equal({
       index: 3,
       value: cascadeData[1].children[3]
     })
-    dataSources[2].getInit()!.should.be.deep.equal({
+    dataSources[2].getInit().should.be.deep.equal({
       index: 2,
       value: cascadeData[1].children[3].children[2]
     })

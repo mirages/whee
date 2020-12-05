@@ -14,6 +14,7 @@ export class SimpleDataSource<T extends SimpleData>
   private initIndex = 0
   private length = 0
   private loop: boolean
+  private createData: (index: number) => Nullable<Indexable<T>>
 
   constructor(
     data: T[],
@@ -27,6 +28,7 @@ export class SimpleDataSource<T extends SimpleData>
   ) {
     this.setDataList(data, options.initIndex)
     this.loop = options.loop || false
+    this.createData = this.loop ? this._createDataLoop : this._createData
   }
 
   private fixInitIndex(index?: number): number {
@@ -38,19 +40,24 @@ export class SimpleDataSource<T extends SimpleData>
     }
   }
 
-  private createData(index: number): Nullable<Indexable<T>> {
-    if (index < 0 && this.loop) {
-      index = this.length + index
-    } else if (index > this.length - 1 && this.loop) {
-      index = index - this.length
-    }
-
+  private _createData(index: number): Nullable<Indexable<T>> {
     return index < 0 || index > this.length - 1
       ? null
       : {
           index,
           value: this.list[index]
         }
+  }
+  private _createDataLoop(index: number): Indexable<T> {
+    if (index < 0) {
+      index = this.length + index
+    } else if (index > this.length - 1) {
+      index = index - this.length
+    }
+    return {
+      index,
+      value: this.list[index]
+    }
   }
 
   setInitIndex(initIndex?: number): void {
@@ -63,8 +70,8 @@ export class SimpleDataSource<T extends SimpleData>
     this.setInitIndex(initIndex)
   }
 
-  getInit(): Nullable<Indexable<T>> {
-    return this.createData(this.initIndex)
+  getInit(): Indexable<T> {
+    return this.createData(this.initIndex)!
   }
 
   getPrev(data: Nullable<Indexable<T>>): Nullable<Indexable<T>> {
@@ -117,9 +124,9 @@ export class SimpleDataSourceFactory<T extends SimpleData>
   }
 
   // update all dataSource
-  change(inits: Nullable<Indexable<T>>[]): DataSource<Indexable<T>>[] {
+  change(inits: Indexable<T>[]): DataSource<Indexable<T>>[] {
     inits.forEach((init, index) => {
-      this.dataSources[index].setInitIndex(init?.index)
+      this.dataSources[index].setInitIndex(init.index)
     })
     return this.dataSources
   }
@@ -163,7 +170,7 @@ export class CascadeDataSourceFactory<
 
       this.dataSources.push(ds)
       idx++
-      list = list[prevData ? prevData.index : 0].children
+      list = list[prevData.index].children
     }
 
     return this.dataSources
@@ -171,18 +178,18 @@ export class CascadeDataSourceFactory<
 
   // update as cascade
   change(
-    inits: Nullable<IdxCascadable<T>>[],
+    inits: IdxCascadable<T>[],
     index: number
   ): DataSource<IdxCascadable<T>>[] {
     if (index < 0) index = 0 // index may be -1
     // change dataSources[index] init index
-    this.dataSources[index].setInitIndex(inits[index]?.index)
+    this.dataSources[index].setInitIndex(inits[index].index)
     // cascade down data source
     let list: Cascadable<T>[] | undefined
 
     do {
-      list = this.dataSources[index++].getInit()?.value.children
-      list && this.dataSources[index].setDataList(list, inits[index]?.index)
+      list = this.dataSources[index++].getInit().value.children
+      list && this.dataSources[index].setDataList(list, inits[index].index)
     } while (list)
 
     return this.dataSources

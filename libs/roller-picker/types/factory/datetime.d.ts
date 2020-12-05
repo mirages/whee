@@ -18,7 +18,7 @@ declare abstract class BaseSource implements DataSource<number> {
   protected abstract options: BaseOptions
   private createData
   abstract setOptions(options: InputOpts, parents?: Nullable<number>[]): void
-  getInit(): Nullable<number>
+  getInit(): number
   getPrev(value: Nullable<number>): Nullable<number>
   getNext(value: Nullable<number>): Nullable<number>
   getText(value: Nullable<number>): string
@@ -40,17 +40,8 @@ export declare class DatetimeDataSourceFactory
     loop?: boolean
   })
   protected dateToArray(date: Date): number[]
-  protected createOption(
-    index: number,
-    prevInit?: number
-  ): {
-    loop: boolean
-    unit: string
-    maxDate: number[]
-    minDate: number[]
-    init: number
-  }
+  protected createOptions(index: number, prevInit: number): InputOpts
   create(): BaseSource[]
-  change(values: Nullable<number>[], index: number): BaseSource[]
+  change(values: number[], index: number): BaseSource[]
 }
 export {}

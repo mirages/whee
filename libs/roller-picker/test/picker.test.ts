@@ -239,7 +239,7 @@ describe('Picker', () => {
     const currValue = factory.getNext(initValue)
     chai.should().exist($ensure)
     picker.on('ensure', (data: PickerData[]) => {
-      scroller.getValue()!.should.be.deep.equal(currValue)
+      scroller.getValue().should.be.deep.equal(currValue)
       data.should.be.an('array').and.deep.include(currValue)
       done()
     })
@@ -269,7 +269,7 @@ describe('Picker', () => {
     chai.should().exist($cancel)
     picker.on('cancel', () => {
       picker.getValues().should.be.deep.equal(initValues)
-      scroller.getValue()!.should.be.deep.equal(initValues[0])
+      scroller.getValue().should.be.deep.equal(initValues[0])
       done()
     })
     $cancel.click()
@@ -284,9 +284,9 @@ describe('Picker', () => {
           const cityFactory = new CityFactory(initProvince)
           return [provinceFactory, cityFactory]
         },
-        change(initValues: Nullable<PickerData>[]) {
-          const initProv = initValues[0] ? initValues[0].id : ''
-          const initCity = initValues[1] ? initValues[1].id : ''
+        change(initValues: PickerData[]) {
+          const initProv = initValues[0].id
+          const initCity = initValues[1].id
 
           const provinceFactory = new ProvinceFactory(initProv)
           const initProvince = provinceFactory.getInit().id
@@ -321,9 +321,9 @@ describe('Picker', () => {
           const cityFactory = new CityFactory(initProvince)
           return [provinceFactory, cityFactory]
         },
-        change(initValues: Nullable<PickerData>[]) {
-          const initProv = initValues[0] ? initValues[0].id : ''
-          const initCity = initValues[1] ? initValues[1].id : ''
+        change(initValues: PickerData[]) {
+          const initProv = initValues[0].id
+          const initCity = initValues[1].id
 
           const provinceFactory = new ProvinceFactory(initProv)
           const initProvince = provinceFactory.getInit().id
@@ -365,9 +365,9 @@ describe('Picker', () => {
           const cityFactory = new CityFactory(initProvince)
           return [provinceFactory, cityFactory]
         },
-        change(initValues: Nullable<PickerData>[]) {
-          const initProv = initValues[0] ? initValues[0].id : ''
-          const initCity = initValues[1] ? initValues[1].id : ''
+        change(initValues: PickerData[]) {
+          const initProv = initValues[0].id
+          const initCity = initValues[1].id
 
           const provinceFactory = new ProvinceFactory(initProv)
           const initProvince = provinceFactory.getInit().id

@@ -20,7 +20,7 @@ export declare type IdxCascadable<
   T extends Exclude<SimpleData, string | number>
 > = Indexable<Cascadable<T>>
 export interface DataSource<T> {
-  getInit: () => Nullable<T>
+  getInit: () => T
   getPrev: (param: Nullable<T>) => Nullable<T>
   getNext: (param: Nullable<T>) => Nullable<T>
   getText: (param: Nullable<T>) => string
@@ -28,5 +28,5 @@ export interface DataSource<T> {
 export interface DataSourceFactory<T> {
   readonly cascadable?: boolean
   create: () => DataSource<T>[]
-  change: (values: Nullable<T>[], index: number) => DataSource<T>[]
+  change: (values: T[], index: number) => DataSource<T>[]
 }

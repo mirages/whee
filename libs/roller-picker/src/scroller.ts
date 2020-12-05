@@ -374,8 +374,8 @@ export default class Scroller<T> extends Emitter {
     step()
   }
 
-  getValue(): Nullable<T> {
-    return this._currItem.data
+  getValue(): T {
+    return this._currItem.data!
   }
 
   get firstItem(): VItem<T> {

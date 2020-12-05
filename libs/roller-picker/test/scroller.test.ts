@@ -199,9 +199,9 @@ describe('Scroller', () => {
 
     const y = angleToRadian(scroller.intervalAngle) * scroller.radius
     scroller.scroll(y)
-    scroller.getValue()!.should.be.deep.equal(dataSource.getPrev(initData))
+    scroller.getValue().should.be.deep.equal(dataSource.getPrev(initData))
     scroller.scroll(-y)
-    scroller.getValue()!.should.be.deep.equal(initData)
+    scroller.getValue().should.be.deep.equal(initData)
   })
 
   it("conn't move down when there is no prev data", () => {
@@ -221,7 +221,7 @@ describe('Scroller', () => {
       scroller.scroll(30)
     }
     times.should.be.equal(0)
-    scroller.getValue()!.should.be.deep.equal(currValue)
+    scroller.getValue().should.be.deep.equal(currValue)
     console.log(scroller.firstItem)
   })
 
@@ -285,7 +285,7 @@ describe('Scroller', () => {
     scroller.scrollEnd()
 
     setTimeout(() => {
-      scroller.getValue()!.should.be.deep.equal(initData)
+      scroller.getValue().should.be.deep.equal(initData)
       done()
     }, 1500)
   })
@@ -308,7 +308,7 @@ describe('Scroller', () => {
     scroller.scrollEnd()
 
     setTimeout(() => {
-      scroller.getValue()!.should.be.deep.equal(initData)
+      scroller.getValue().should.be.deep.equal(initData)
       done()
     }, 1500)
   })
@@ -329,7 +329,7 @@ describe('Scroller', () => {
     scroller.scrollEnd()
 
     setTimeout(() => {
-      scroller.getValue()!.should.be.deep.equal(initData)
+      scroller.getValue().should.be.deep.equal(initData)
       done()
     }, 1500)
   })
@@ -350,7 +350,7 @@ describe('Scroller', () => {
     scroller.scrollEnd()
 
     setTimeout(() => {
-      scroller.getValue()!.should.be.deep.equal(initData)
+      scroller.getValue().should.be.deep.equal(initData)
       done()
     }, 1500)
   })
@@ -365,7 +365,7 @@ describe('Scroller', () => {
     })
     const firstItemWrapper = scroller.firstItem.wrapper
 
-    scroller.getValue()!.should.be.deep.equal(dataSource.getInit())
+    scroller.getValue().should.be.deep.equal(dataSource.getInit())
     dataSource = new SimpleDataSource(list, { initIndex: 5 })
     scroller.on('change', data => {
       // dom 元素复用
@@ -419,11 +419,11 @@ describe('Scroller', () => {
       el: document.createElement('div'),
       dataSource: strDataSource
     })
-    scroller1.getValue()!.should.be.equal('d')
+    scroller1.getValue().should.be.equal('d')
     const scroller2 = new Scroller({
       el: document.createElement('div'),
       dataSource: numDataSource
     })
-    scroller2.getValue()!.should.be.equal(5)
+    scroller2.getValue().should.be.equal(5)
   })
 })

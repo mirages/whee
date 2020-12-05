@@ -18,7 +18,7 @@ export type IdxCascadable<
 > = Indexable<Cascadable<T>>
 
 export interface DataSource<T> {
-  getInit: () => Nullable<T>
+  getInit: () => T
 
   getPrev: (param: Nullable<T>) => Nullable<T>
 
@@ -34,5 +34,5 @@ export interface DataSourceFactory<T> {
   create: () => DataSource<T>[]
   // indexed data changed need to update relevant dataSource
   // if index === -1, should update all dataSource
-  change: (values: Nullable<T>[], index: number) => DataSource<T>[]
+  change: (values: T[], index: number) => DataSource<T>[]
 }
