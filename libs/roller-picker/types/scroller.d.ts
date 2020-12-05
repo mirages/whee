@@ -5,6 +5,8 @@ interface VItem<T> {
   el: HTMLElement
   data: Nullable<T>
   angle: number
+  prev: Nullable<VItem<T>>
+  next: Nullable<VItem<T>>
 }
 export default class Scroller<T> extends Emitter {
   radius: number
@@ -18,7 +20,8 @@ export default class Scroller<T> extends Emitter {
   private _maxDiffAngle
   private _dataChangeAngle
   private _dataSource
-  private _items
+  private _firstItem
+  private _lastItem
   private _currItem
   private _shouldEnd
   private _rafId
@@ -37,6 +40,7 @@ export default class Scroller<T> extends Emitter {
   private _init
   private _mount
   private _createItem
+  private _iterateItems
   private _scrollAngleDetection
   private _scrollEndAngleDetection
   private _angleDivision
@@ -53,7 +57,7 @@ export default class Scroller<T> extends Emitter {
   scroll(distance: number): void
   scrollEnd(): void
   getValue(): Nullable<T>
-  get items(): VItem<T>[]
+  get firstItem(): VItem<T>
   changeDataSource(dataSource: DataSource<T>, emitChange?: boolean): void
 }
 export {}

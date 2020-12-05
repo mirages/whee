@@ -55,7 +55,7 @@ abstract class BaseSource implements DataSource<number> {
     return value === null ? '' : String(value) + this.options.unit
   }
   format(value: number): string {
-    return ('00' + value).substr(-2)
+    return ('0' + value).substr(-2)
   }
 }
 
@@ -78,9 +78,9 @@ class YearSource extends BaseSource {
   setOptions(options: Partial<InputOpts>): void {
     const max = this.maxDate.getFullYear()
     const min = this.minDate.getFullYear()
-    const loop = options.loop || false
+    const loop = !!options.loop
     const unit = options.unit || '年'
-    let init = options.init || this.nowDate.getFullYear()
+    let init = options.init ?? this.nowDate.getFullYear()
 
     init = fixInit(init, min, max)
     this.options = { min, max, init, loop, unit }
@@ -100,11 +100,11 @@ class MonthSource extends BaseSource {
     const minMon = this.minDate.getMonth()
     const maxYear = this.maxDate.getFullYear()
     const maxMon = this.maxDate.getMonth()
-    const loop = options.loop || false
+    const loop = !!options.loop
     const unit = options.unit || '月'
     let max = 11
     let min = 0
-    let init = options.init || this.nowDate.getMonth()
+    let init = options.init ?? this.nowDate.getMonth()
 
     if (year < minYear || year > maxYear) {
       throw new Error(
@@ -118,6 +118,9 @@ class MonthSource extends BaseSource {
 
     init = fixInit(init, min, max)
     this.options = { min, max, init, loop, unit }
+  }
+  getText(value: Nullable<number>): string {
+    return super.getText(value === null ? null : value + 1)
   }
 }
 
@@ -137,11 +140,11 @@ class DaySource extends BaseSource {
     const maxYear = this.maxDate.getFullYear()
     const maxMon = this.maxDate.getMonth()
     const maxDay = this.maxDate.getDate()
-    const loop = options.loop || false
+    const loop = !!options.loop
     const unit = options.unit || '日'
     let max = this.getMonthDays(year, month)
     let min = 1
-    let init = options.init || this.nowDate.getDate()
+    let init = options.init ?? this.nowDate.getDate()
 
     if (
       year < minYear ||

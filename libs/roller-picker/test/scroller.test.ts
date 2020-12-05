@@ -85,11 +85,11 @@ describe('Scroller', () => {
       scaleRatio: 0.2
     })
 
-    const items = scroller.items
-    const len = items.length
-    let i = 0
-    while (i++ < len - 2) {
-      (items[i].angle - items[i + 1].angle).should.be.equal(intervalAngle)
+    let item = scroller.firstItem
+
+    while (item.next) {
+      (item.angle - item.next.angle).should.be.equal(intervalAngle)
+      item = item.next
     }
   })
 
@@ -101,7 +101,7 @@ describe('Scroller', () => {
       maxAngle
     })
 
-    scroller.items[0].angle.should.be.lessThan(maxAngle)
+    scroller.firstItem.angle.should.be.lessThan(maxAngle)
   })
 
   it("move down along y-axis, scroller item's angle should be reduce", () => {
@@ -110,9 +110,9 @@ describe('Scroller', () => {
       dataSource
     })
 
-    const prevAngle = scroller.items[0].angle
+    const prevAngle = scroller.firstItem.angle
     scroller.scroll(5)
-    scroller.items[0].angle.should.be.lessThan(prevAngle)
+    scroller.firstItem.angle.should.be.lessThan(prevAngle)
   })
 
   it("move up along y-axis, scroller item's angle should be increase", () => {
@@ -121,9 +121,9 @@ describe('Scroller', () => {
       dataSource
     })
 
-    const prevAngle = scroller.items[0].angle
+    const prevAngle = scroller.firstItem.angle
     scroller.scroll(-5)
-    scroller.items[0].angle.should.be.greaterThan(prevAngle)
+    scroller.firstItem.angle.should.be.greaterThan(prevAngle)
   })
 
   it('move cross over options.intervalAngle, emit change event.', () => {
@@ -162,7 +162,7 @@ describe('Scroller', () => {
     }
     times.should.be.equal(0)
     scroller.getValue()!.should.be.deep.equal(currValue)
-    console.log(scroller.items)
+    console.log(scroller.firstItem)
   })
 
   it('move down to prev when end angle more than half options.intervalAngle, and has prev data.', done => {
@@ -303,17 +303,67 @@ describe('Scroller', () => {
       intervalAngle: 15,
       dataSource
     })
-    const firstItemWrapper = scroller.items[0].wrapper
+    const firstItemWrapper = scroller.firstItem.wrapper
 
     scroller.getValue()!.should.be.deep.equal(dataSource.getInit())
     dataSource = new SimpleDataSource(list, { initIndex: 5 })
     scroller.on('change', data => {
       // dom 元素复用
-      scroller.items[0].wrapper.should.be.equal(firstItemWrapper)
+      scroller.firstItem.wrapper.should.be.equal(firstItemWrapper)
       // value 值更新
       data.should.be.deep.equal(dataSource.getInit())
       done()
     })
     scroller.changeDataSource(dataSource)
+  })
+
+  it('scroller can use any type of DataSource', () => {
+    // a - z
+    const strDataSource = {
+      getInit() {
+        return 'd'
+      },
+      getPrev(str: string | null) {
+        if (str === null) return null
+        const preChar = str.charCodeAt(0) - 1
+        return preChar < 97 /* a */ ? null : String.fromCharCode(preChar)
+      },
+      getNext(str: string | null) {
+        if (str === null) return null
+        const preChar = str.charCodeAt(0) + 1
+        return preChar > 122 /* z */ ? null : String.fromCharCode(preChar)
+      },
+      getText(str: string | null) {
+        return str ?? ''
+      }
+    }
+    // 0 - 9
+    const numDataSource = {
+      getInit() {
+        return 5
+      },
+      getPrev(num: number | null) {
+        if (num === null) return null
+        return --num < 0 ? null : num
+      },
+      getNext(num: number | null) {
+        if (num === null) return null
+        return ++num > 9 ? null : num
+      },
+      getText(num: number | null) {
+        return String(num) ?? ''
+      }
+    }
+
+    const scroller1 = new Scroller({
+      el: document.createElement('div'),
+      dataSource: strDataSource
+    })
+    scroller1.getValue()!.should.be.equal('d')
+    const scroller2 = new Scroller({
+      el: document.createElement('div'),
+      dataSource: numDataSource
+    })
+    scroller2.getValue()!.should.be.equal(5)
   })
 })

@@ -14,6 +14,8 @@ interface VItem<T> {
   el: HTMLElement
   data: Nullable<T>
   angle: number
+  prev: Nullable<VItem<T>>
+  next: Nullable<VItem<T>>
 }
 
 export default class Scroller<T> extends Emitter {
@@ -27,7 +29,8 @@ export default class Scroller<T> extends Emitter {
   private _maxDiffAngle = this._getMaxDiffAngle()
   private _dataChangeAngle: number
   private _dataSource: DataSource<T>
-  private _items: VItem<T>[] = []
+  private _firstItem!: VItem<T>
+  private _lastItem!: VItem<T>
   private _currItem!: VItem<T>
   private _shouldEnd = false
   private _rafId = 0
@@ -90,21 +93,35 @@ export default class Scroller<T> extends Emitter {
     const dataSource = this._dataSource
     const currItem = this._createItem(dataSource.getInit(), 0)
 
-    let prevData = currItem.data
-    let nextData = currItem.data
+    let prevItem = currItem
+    let nextItem = currItem
     let angle = this.intervalAngle
 
     this._currItem = currItem
-    this._items = [currItem]
+    this._firstItem = currItem
 
     while (angle < this.maxAngle) {
-      prevData = dataSource.getPrev(prevData)
-      nextData = dataSource.getNext(nextData)
+      const _prevItem = this._createItem(
+        dataSource.getPrev(prevItem.data),
+        angle
+      )
+      const _nextItem = this._createItem(
+        dataSource.getNext(nextItem.data),
+        -angle
+      )
 
-      // 向前添加一个元素
-      this._items.unshift(this._createItem(prevData, angle))
-      // 向后添加一个元素
-      this._items.push(this._createItem(nextData, -angle))
+      prevItem.prev = _prevItem
+      nextItem.next = _nextItem
+      _prevItem.next = prevItem
+      _nextItem.prev = nextItem
+
+      // 链表向前添加一个元素
+      prevItem = _prevItem
+      // 链表向后添加一个元素
+      nextItem = _nextItem
+
+      this._firstItem = prevItem
+      this._lastItem = nextItem
 
       angle += this.intervalAngle // 角度递增
     }
@@ -135,7 +152,7 @@ export default class Scroller<T> extends Emitter {
     })
 
     // 挂载元素
-    this._items.forEach(item => {
+    this._iterateItems(item => {
       this._renderItem(item)
       $wrapper.appendChild(item.wrapper)
     })
@@ -149,7 +166,15 @@ export default class Scroller<T> extends Emitter {
 
     wrapper.appendChild(el)
 
-    return { wrapper, el, data, angle }
+    return { wrapper, el, data, angle, prev: null, next: null }
+  }
+
+  private _iterateItems(cb: (item: VItem<T>) => void) {
+    let item: Nullable<VItem<T>> = this._firstItem
+    while (item) {
+      cb(item)
+      item = item.next
+    }
   }
 
   private _scrollAngleDetection(angle: number) {
@@ -220,38 +245,45 @@ export default class Scroller<T> extends Emitter {
   }
 
   private _update(angle: number) {
-    const items = this._items
-    const len = items.length
-
-    // 更细每个元素的 y 值和 angle 值
-    items.forEach(item => {
-      const prevAngle = item.angle
-      const currAngle = prevAngle - angle // 在原有基础上减去滚动角度，才是顺势变化
-
-      item.angle = currAngle
+    this._iterateItems(item => {
+      item.angle -= angle
     })
 
-    const firstItem = items[0]
-    const lastItem = items[len - 1]
-
+    const firstItem = this._firstItem
+    const lastItem = this._lastItem
     // 更新数组顺序（同时也是更新元素的 data 值）
     if (angle < 0 && firstItem.angle > this.maxAngle) {
-      // 第一个元素转动的角度超过 this.maxAngle，将其放到最后一个（循环利用）
-      firstItem.angle = items[1].angle - this._maxDiffAngle
+      // 第一个元素转动的角度超过 this.maxAngle，将其放到最后一个
+      const secItem = firstItem.next!
+      firstItem.angle = secItem.angle - this._maxDiffAngle
       firstItem.data = this._dataSource.getNext(lastItem.data)
-      items.push(firstItem)
-      items.shift()
+      // 断开旧连接
+      secItem.prev = null
+      firstItem.next = null
+      // 建立新连接
+      firstItem.prev = lastItem
+      lastItem.next = firstItem
+      // 更新第一个元素
+      this._firstItem = secItem
     } else if (angle > 0 && lastItem.angle < -this.maxAngle) {
-      // 最后一个元素转动的角度超过 -this.maxAngle，将其放到第一个（循环利用）
-      lastItem.angle = items[len - 2].angle + this._maxDiffAngle
+      // 最后一个元素转动的角度超过 -this.maxAngle，将其放到第一个
+      const secToLast = lastItem.prev!
+      lastItem.angle = secToLast.angle + this._maxDiffAngle
       lastItem.data = this._dataSource.getPrev(firstItem.data)
-      items.unshift(lastItem)
-      items.pop()
+      // 断开旧连接
+      secToLast.next = null
+      lastItem.prev = null
+      // 建立新连接
+      lastItem.next = firstItem
+      firstItem.prev = lastItem
+      // 更新最后一个元素
+      this._firstItem = lastItem
     }
 
     // 更新当前选中的值
-    if (Math.abs(this._currItem.angle) > this._dataChangeAngle) {
-      this._currItem = items[(len - 1) / 2]
+    const currItem = this._currItem
+    if (Math.abs(currItem.angle) > this._dataChangeAngle) {
+      this._currItem = currItem.angle > 0 ? currItem.next! : currItem.prev!
       // 触发 change 回调
       this._emitChange()
     }
@@ -266,7 +298,9 @@ export default class Scroller<T> extends Emitter {
   }
 
   private _render() {
-    this._items.forEach(item => this._renderItem(item))
+    this._iterateItems(item => {
+      this._renderItem(item)
+    })
   }
 
   private _renderItem(item: VItem<T>) {
@@ -342,28 +376,27 @@ export default class Scroller<T> extends Emitter {
     return this._currItem.data
   }
 
-  get items(): VItem<T>[] {
-    return this._items
+  get firstItem(): VItem<T> {
+    return this._firstItem
   }
 
   changeDataSource(dataSource: DataSource<T>, emitChange = true): void {
     if (!dataSource) return
 
-    const len = this._items.length
     const currData = dataSource.getInit()
-    let index = (len - 1) / 2
-    let prev = currData
-    let next = currData
 
     this._dataSource = dataSource
-    this._items[index].data = currData
+    this._currItem.data = currData
 
-    while (++index < len) {
-      prev = this._dataSource.getPrev(prev)
-      next = this._dataSource.getNext(next)
-
-      this._items[len - 1 - index].data = prev
-      this._items[index].data = next
+    let prevItem: Nullable<VItem<T>> = this._currItem.prev
+    let nextItem: Nullable<VItem<T>> = this._currItem.next
+    while (prevItem) {
+      prevItem.data = this._dataSource.getPrev(prevItem.next!.data)
+      prevItem = prevItem.prev
+    }
+    while (nextItem) {
+      nextItem.data = this._dataSource.getNext(nextItem.prev!.data)
+      nextItem = nextItem.next
     }
 
     this._render()
