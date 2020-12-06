@@ -17,7 +17,11 @@ type InputOpts = {
 }
 
 abstract class BaseSource implements DataSource<number> {
-  protected abstract options: BaseOptions
+  protected options!: BaseOptions
+
+  constructor(options: InputOpts, parents: number[], index: number) {
+    this.setOptions(options, parents, index)
+  }
 
   private createData(value: number): Nullable<number> {
     let _value: number | null
@@ -32,11 +36,64 @@ abstract class BaseSource implements DataSource<number> {
     return _value
   }
 
-  abstract setOptions(options: InputOpts, parents?: Nullable<number>[]): void
+  abstract getMax(parents: number[]): number
+  abstract getMin(parents: number[]): number
+
+  fixMax(max: number, maxDate: number[], parents: number[], index: number) {
+    let flag = true
+
+    for (let i = 0; i < index; i++) {
+      if (maxDate[i] !== parents[i]) {
+        flag = false
+        break
+      }
+    }
+
+    return flag && max > maxDate[index] ? maxDate[index] : max
+  }
+
+  fixMin(min: number, minDate: number[], parents: number[], index: number) {
+    let flag = true
+
+    for (let i = 0; i < index; i++) {
+      if (minDate[i] !== parents[i]) {
+        flag = false
+        break
+      }
+    }
+
+    return flag && min < minDate[index] ? minDate[index] : min
+  }
+
+  fixInit(init: number, min: number, max: number): number {
+    return init > max ? max : init < min ? min : init
+  }
+
+  setOptions(options: InputOpts, parents: number[], index: number): void {
+    const loop = options.loop
+    const unit = options.unit
+
+    const max = this.fixMax(
+      this.getMax(parents),
+      options.maxDate,
+      parents,
+      index
+    )
+    const min = this.fixMin(
+      this.getMin(parents),
+      options.minDate,
+      parents,
+      index
+    )
+    const init = this.fixInit(options.init, min, max)
+
+    this.options = { min, max, init, loop, unit }
+  }
 
   getInit(): number {
     return this.options.init
   }
+
   getPrev(value: Nullable<number>): Nullable<number> {
     if (value === null) return null
     return this.createData(value - 1)
@@ -53,53 +110,29 @@ abstract class BaseSource implements DataSource<number> {
   }
 }
 
-function fixInit(init: number, min: number, max: number): number {
-  return init > max ? max : init < min ? min : init
-}
-
 class YearSource extends BaseSource {
-  protected options!: BaseOptions
   constructor(options: InputOpts) {
-    super()
-    this.setOptions(options)
+    super(options, [], 0)
   }
 
-  setOptions(options: InputOpts): void {
-    const max = options.maxDate[0]
-    const min = options.minDate[0]
-    const loop = options.loop
-    const unit = options.unit
-    const init = options.init
-
-    this.options = { min, max, init, loop, unit }
+  getMax() {
+    return 9999
+  }
+  getMin() {
+    return 0
   }
 }
 
 class MonthSource extends BaseSource {
-  protected options!: BaseOptions
   constructor(options: InputOpts, parents: number[]) {
-    super()
-    this.setOptions(options, parents)
+    super(options, parents, 1)
   }
 
-  setOptions(options: InputOpts, parents: number[]): void {
-    const [year] = parents
-    const [minYear, minMon] = options.minDate
-    const [maxYear, maxMon] = options.maxDate
-    const loop = options.loop
-    const unit = options.unit
-    let max = 11
-    let min = 0
-    let init = options.init
-
-    if (year === minYear && min < minMon) {
-      min = minMon
-    } else if (year === maxYear && max > maxMon) {
-      max = maxMon
-    }
-
-    init = fixInit(init, min, max)
-    this.options = { min, max, init, loop, unit }
+  getMax() {
+    return 11
+  }
+  getMin() {
+    return 0
   }
   getText(value: Nullable<number>): string {
     return super.getText(value === null ? null : value + 1)
@@ -107,33 +140,12 @@ class MonthSource extends BaseSource {
 }
 
 class DaySource extends BaseSource {
-  protected options!: BaseOptions
   constructor(options: InputOpts, parents: number[]) {
-    super()
-    this.setOptions(options, parents)
+    super(options, parents, 2)
   }
 
-  setOptions(options: InputOpts, parents: number[]): void {
+  getMax(parents: number[]) {
     const [year, month] = parents
-    const [minYear, minMon, minDay] = options.minDate
-    const [maxYear, maxMon, maxDay] = options.maxDate
-    const loop = options.loop
-    const unit = options.unit
-    let max = this.getMonthDays(year, month)
-    let min = 1
-    let init = options.init
-
-    if (year === minYear && month === minMon && min < minDay) {
-      min = minDay
-    } else if (year === maxYear && month === maxMon && max > maxDay) {
-      max = maxDay
-    }
-
-    init = fixInit(init, min, max)
-    this.options = { min, max, init, loop, unit }
-  }
-
-  getMonthDays(year: number, month: number) {
     const days = [31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
 
@@ -142,6 +154,48 @@ class DaySource extends BaseSource {
     }
 
     return days[month]
+  }
+  getMin() {
+    return 1
+  }
+}
+
+class HourSource extends BaseSource {
+  constructor(options: InputOpts, parents: number[], index: number) {
+    super(options, parents, index)
+  }
+
+  getMax() {
+    return 23
+  }
+  getMin() {
+    return 0
+  }
+}
+
+class MinuteSource extends BaseSource {
+  constructor(options: InputOpts, parents: number[], index: number) {
+    super(options, parents, index)
+  }
+
+  getMax() {
+    return 59
+  }
+  getMin() {
+    return 0
+  }
+}
+
+class SecondSource extends BaseSource {
+  constructor(options: InputOpts, parents: number[], index: number) {
+    super(options, parents, index)
+  }
+
+  getMax() {
+    return 59
+  }
+  getMin() {
+    return 0
   }
 }
 
@@ -203,35 +257,48 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
     return {
       loop: this.loop,
       unit: this.units[index],
-      maxDate: this.maxDate.slice(0, index + 1),
-      minDate: this.minDate.slice(0, index + 1),
+      maxDate: this.maxDate,
+      minDate: this.minDate,
       init: prevInit
     }
   }
 
   create(): BaseSource[] {
-    const years = new YearSource(this.createOptions(0, this.initDate[0]))
-    const months = new MonthSource(this.createOptions(1, this.initDate[1]), [
-      years.getInit()
-    ])
-    const days = new DaySource(this.createOptions(2, this.initDate[2]), [
-      years.getInit(),
-      months.getInit()
-    ])
+    const ctors = [
+      YearSource,
+      MonthSource,
+      DaySource,
+      HourSource,
+      MinuteSource,
+      SecondSource
+    ]
+    const parents: number[] = []
+    const max = ctors.length
+    let index = 0
 
-    this.dataSources = [years, months, days]
+    while (index < max) {
+      const source = new ctors[index](
+        this.createOptions(index, this.initDate[index]),
+        parents,
+        index
+      )
+      this.dataSources.push(source)
+      parents.push(source.getInit())
+      index++
+    }
 
     return this.dataSources
   }
 
   change(values: number[], index: number): BaseSource[] {
-    const length = values.length
+    const length = this.dataSources.length
     const parents = values.slice(0, index + 1)
 
     while (++index < length) {
       this.dataSources[index].setOptions(
         this.createOptions(index, values[index]),
-        parents
+        parents,
+        index
       )
       parents.push(this.dataSources[index].getInit())
     }

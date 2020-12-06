@@ -14,9 +14,25 @@ declare type InputOpts = {
   unit: string
 }
 declare abstract class BaseSource implements DataSource<number> {
-  protected abstract options: BaseOptions
+  protected options: BaseOptions
+  constructor(options: InputOpts, parents: number[], index: number)
   private createData
-  abstract setOptions(options: InputOpts, parents?: Nullable<number>[]): void
+  abstract getMax(parents: number[]): number
+  abstract getMin(parents: number[]): number
+  fixMax(
+    max: number,
+    maxDate: number[],
+    parents: number[],
+    index: number
+  ): number
+  fixMin(
+    min: number,
+    minDate: number[],
+    parents: number[],
+    index: number
+  ): number
+  fixInit(init: number, min: number, max: number): number
+  setOptions(options: InputOpts, parents: number[], index: number): void
   getInit(): number
   getPrev(value: Nullable<number>): Nullable<number>
   getNext(value: Nullable<number>): Nullable<number>

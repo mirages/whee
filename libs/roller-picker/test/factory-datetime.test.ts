@@ -1,8 +1,8 @@
 import { Nullable } from '../src'
 import { DatetimeDataSourceFactory } from '../src/factory/datetime'
 
-describe('DaatetimeDataSourceFactory', () => {
-  it('options.initData can be set the init show date', () => {
+describe('DatetimeDataSourceFactory', () => {
+  it('options.initDate can be set the init show date', () => {
     const initDate = new Date(2020, 9, 10)
     const factory = new DatetimeDataSourceFactory({
       initDate
@@ -15,7 +15,7 @@ describe('DaatetimeDataSourceFactory', () => {
     days.getInit().should.be.equal(initDate.getDate())
   })
 
-  it('options.initData default value is now date', () => {
+  it('options.initDate default value is now date', () => {
     const factory = new DatetimeDataSourceFactory()
     const now = new Date()
     const [years, months, days] = factory.create()
@@ -149,5 +149,44 @@ describe('DaatetimeDataSourceFactory', () => {
     console.log(init)
     chai.expect(years.getPrev(init)).to.be.equal(null)
     chai.expect(years.getPrev(null)).to.be.equal(null)
+  })
+
+  it('options.unit can be set data unit', () => {
+    const factory = new DatetimeDataSourceFactory({
+      initDate: new Date(2020, 2, 2, 10, 23, 30)
+    })
+    const [years, months, days, hours, minutes, seconds] = factory.create()
+
+    years.getText(2020).should.be.equal('2020年')
+    months.getText(2).should.be.equal('3月')
+    days.getText(2).should.be.equal('2日')
+    hours.getText(10).should.be.equal('10时')
+    minutes.getText(23).should.be.equal('23分')
+    seconds.getText(30).should.be.equal('30秒')
+  })
+
+  it('DatetimeDataSourceFactory should be fix show values when scroller data change', () => {
+    const maxDate = new Date(2020, 5, 10)
+    const minDate = new Date(2018, 7, 20)
+    const initDate = new Date(2019, 6, 15)
+    const factory = new DatetimeDataSourceFactory({
+      maxDate,
+      initDate,
+      minDate
+    })
+
+    const [years, months, days] = factory.create()
+
+    years.getInit().should.be.equal(initDate.getFullYear())
+    months.getInit().should.be.equal(initDate.getMonth())
+    days.getInit().should.be.equal(initDate.getDate())
+
+    factory.change([2020, 6, 15], 0)
+    months.getInit().should.be.equal(maxDate.getMonth())
+    days.getInit().should.be.equal(maxDate.getDate())
+
+    factory.change([2018, 6, 15], 0)
+    months.getInit().should.be.equal(minDate.getMonth())
+    days.getInit().should.be.equal(minDate.getDate())
   })
 })
