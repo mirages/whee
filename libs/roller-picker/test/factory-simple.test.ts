@@ -149,7 +149,7 @@ describe('SimpleDataSourceFactory', () => {
     dataSource.should.be.an('array')
     dataSource[0].should.be.an.instanceOf(SimpleDataSource)
   })
-  it('simpleDataSourceFactory.create() can also be set a init value', () => {
+  it('simpleDataSourceFactory.change() can also be set a init value', () => {
     const data = [{ text: 'a' }, { text: 'b' }, { text: 'c' }]
     let initIndex = 0
     const factory = new SimpleDataSourceFactory([data], [{ initIndex }])

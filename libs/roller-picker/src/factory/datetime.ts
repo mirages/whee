@@ -17,7 +17,6 @@ type InputOpts = {
 }
 
 abstract class BaseSource implements DataSource<number> {
-  protected nowDate = new Date()
   protected abstract options: BaseOptions
 
   private createData(value: number): Nullable<number> {

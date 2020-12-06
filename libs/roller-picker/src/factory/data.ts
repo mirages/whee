@@ -32,7 +32,7 @@ export interface DataSourceFactory<T> {
   readonly cascadable?: boolean
   // create init dataSource list
   create: () => DataSource<T>[]
-  // indexed data changed need to update relevant dataSource
+  // index data changed need to update relevant dataSource downward
   // if index === -1, should update all dataSource
   change: (values: T[], index: number) => DataSource<T>[]
 }

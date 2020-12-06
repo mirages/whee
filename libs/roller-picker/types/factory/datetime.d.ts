@@ -14,7 +14,6 @@ declare type InputOpts = {
   unit: string
 }
 declare abstract class BaseSource implements DataSource<number> {
-  protected nowDate: Date
   protected abstract options: BaseOptions
   private createData
   abstract setOptions(options: InputOpts, parents?: Nullable<number>[]): void

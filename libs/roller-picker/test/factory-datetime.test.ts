@@ -113,4 +113,41 @@ describe('DaatetimeDataSourceFactory', () => {
     })
     factory.initDate.should.be.deep.equal([2010, 0, 1, 0, 0, 0])
   })
+
+  it('options.loop=true can set scroller scroll circularly', () => {
+    const factory = new DatetimeDataSourceFactory({
+      minDate: new Date(2010, 0, 1),
+      maxDate: new Date(2020, 11, 31),
+      loop: true
+    })
+    const [years] = factory.create()
+    let init: number
+
+    init = years.getInit()
+    years.getNext(init)!.should.be.equal(2010)
+
+    factory.change([2010, 0, 1], -1)
+    init = years.getInit()
+    console.log(init)
+    years.getPrev(init)!.should.be.equal(2020)
+  })
+
+  it('options.loop=false scroller cannot scroll circularly', () => {
+    const factory = new DatetimeDataSourceFactory({
+      minDate: new Date(2010, 0, 1),
+      maxDate: new Date(2020, 11, 31)
+    })
+    const [years] = factory.create()
+    let init: number
+
+    init = years.getInit()
+    chai.expect(years.getNext(init)).to.be.equal(null)
+    chai.expect(years.getNext(null)).to.be.equal(null)
+
+    factory.change([2010, 0, 1], -1)
+    init = years.getInit()
+    console.log(init)
+    chai.expect(years.getPrev(init)).to.be.equal(null)
+    chai.expect(years.getPrev(null)).to.be.equal(null)
+  })
 })
