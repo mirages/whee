@@ -166,6 +166,293 @@ describe('DatetimeDataSourceFactory', () => {
     seconds.getText(30).should.be.equal('30秒')
   })
 
+  it('options.type=DATETYEP.yyyy should be select the year data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.yyyy
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(1)
+    sources[0].getInit().should.be.equal(initDate.getFullYear())
+  })
+
+  it('options.type=DATETYEP.yyyyMM should be select the year-month data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.yyyyMM
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(2)
+    sources[0].getInit().should.be.equal(initDate.getFullYear())
+    sources[1].getInit().should.be.equal(initDate.getMonth())
+  })
+
+  it('options.type=DATETYEP.yyyyMMdd should be select the year-month-day data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.yyyyMMdd
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(3)
+    sources[0].getInit().should.be.equal(initDate.getFullYear())
+    sources[1].getInit().should.be.equal(initDate.getMonth())
+    sources[2].getInit().should.be.equal(initDate.getDate())
+  })
+
+  it('options.type=DATETYEP.yyyyMMddHH should be select the year-month-day-hour data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.yyyyMMddHH
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(4)
+    sources[0].getInit().should.be.equal(initDate.getFullYear())
+    sources[1].getInit().should.be.equal(initDate.getMonth())
+    sources[2].getInit().should.be.equal(initDate.getDate())
+    sources[3].getInit().should.be.equal(initDate.getHours())
+  })
+
+  it('options.type=DATETYEP.yyyyMMddHHmm should be select the year-month-day-hour-minute data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.yyyyMMddHHmm
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(5)
+    sources[0].getInit().should.be.equal(initDate.getFullYear())
+    sources[1].getInit().should.be.equal(initDate.getMonth())
+    sources[2].getInit().should.be.equal(initDate.getDate())
+    sources[3].getInit().should.be.equal(initDate.getHours())
+    sources[4].getInit().should.be.equal(initDate.getMinutes())
+  })
+
+  it('options.type=DATETYEP.yyyyMMddHHmmss should be select the year-month-day-hour-minute-second data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.yyyyMMddHHmmss
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(6)
+    sources[0].getInit().should.be.equal(initDate.getFullYear())
+    sources[1].getInit().should.be.equal(initDate.getMonth())
+    sources[2].getInit().should.be.equal(initDate.getDate())
+    sources[3].getInit().should.be.equal(initDate.getHours())
+    sources[4].getInit().should.be.equal(initDate.getMinutes())
+    sources[5].getInit().should.be.equal(initDate.getSeconds())
+  })
+
+  it('options.type=DATETYEP.MM should be select the month data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.MM
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(1)
+    sources[0].getInit().should.be.equal(initDate.getMonth())
+  })
+
+  it('options.type=DATETYEP.MMdd should be select the month-day data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.MMdd
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(2)
+    sources[0].getInit().should.be.equal(initDate.getMonth())
+    sources[1].getInit().should.be.equal(initDate.getDate())
+  })
+
+  it('options.type=DATETYEP.MMddHH should be select the month-day-hour data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.MMddHH
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(3)
+    sources[0].getInit().should.be.equal(initDate.getMonth())
+    sources[1].getInit().should.be.equal(initDate.getDate())
+    sources[2].getInit().should.be.equal(initDate.getHours())
+  })
+
+  it('options.type=DATETYEP.MMddHHmm should be select the month-day-hour-minute data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.MMddHHmm
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(4)
+    sources[0].getInit().should.be.equal(initDate.getMonth())
+    sources[1].getInit().should.be.equal(initDate.getDate())
+    sources[2].getInit().should.be.equal(initDate.getHours())
+    sources[3].getInit().should.be.equal(initDate.getMinutes())
+  })
+
+  it('options.type=DATETYEP.MMddHHmmss should be select the month-day-hour-minute-second data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.MMddHHmmss
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(5)
+    sources[0].getInit().should.be.equal(initDate.getMonth())
+    sources[1].getInit().should.be.equal(initDate.getDate())
+    sources[2].getInit().should.be.equal(initDate.getHours())
+    sources[3].getInit().should.be.equal(initDate.getMinutes())
+    sources[4].getInit().should.be.equal(initDate.getSeconds())
+  })
+
+  it('options.type=DATETYEP.dd should be select the day data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.dd
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(1)
+    sources[0].getInit().should.be.equal(initDate.getDate())
+  })
+
+  it('options.type=DATETYEP.ddHH should be select the day-hour data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.ddHH
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(2)
+    sources[0].getInit().should.be.equal(initDate.getDate())
+    sources[1].getInit().should.be.equal(initDate.getHours())
+  })
+
+  it('options.type=DATETYEP.ddHHmm should be select the day-hour-minute data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.ddHHmm
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(3)
+    sources[0].getInit().should.be.equal(initDate.getDate())
+    sources[1].getInit().should.be.equal(initDate.getHours())
+    sources[2].getInit().should.be.equal(initDate.getMinutes())
+  })
+
+  it('options.type=DATETYEP.ddHHmmss should be select the day-hour-minute-second data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.ddHHmmss
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(4)
+    sources[0].getInit().should.be.equal(initDate.getDate())
+    sources[1].getInit().should.be.equal(initDate.getHours())
+    sources[2].getInit().should.be.equal(initDate.getMinutes())
+    sources[3].getInit().should.be.equal(initDate.getSeconds())
+  })
+
+  it('options.type=DATETYEP.HH should be select the hour data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.HH
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(1)
+    sources[0].getInit().should.be.equal(initDate.getHours())
+  })
+
+  it('options.type=DATETYEP.HHmm should be select the hour-minute data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.HHmm
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(2)
+    sources[0].getInit().should.be.equal(initDate.getHours())
+    sources[1].getInit().should.be.equal(initDate.getMinutes())
+  })
+
+  it('options.type=DATETYEP.HHmmss should be select the hour-minute-second data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.HHmmss
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(3)
+    sources[0].getInit().should.be.equal(initDate.getHours())
+    sources[1].getInit().should.be.equal(initDate.getMinutes())
+    sources[2].getInit().should.be.equal(initDate.getSeconds())
+  })
+
+  it('options.type=DATETYEP.mm should be select the minute data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.mm
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(1)
+    sources[0].getInit().should.be.equal(initDate.getMinutes())
+  })
+
+  it('options.type=DATETYEP.mmss should be select the minute-second data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.mmss
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(2)
+    sources[0].getInit().should.be.equal(initDate.getMinutes())
+    sources[1].getInit().should.be.equal(initDate.getSeconds())
+  })
+
+  it('options.type=DATETYEP.ss should be select the second data', () => {
+    const initDate = new Date(2010, 2, 20, 6, 23, 54)
+    const factory = new DatetimeDataSourceFactory({
+      initDate,
+      type: DATETYPE.ss
+    })
+    const sources = factory.create()
+
+    sources.length.should.be.equal(1)
+    sources[0].getInit().should.be.equal(initDate.getSeconds())
+  })
+
   it('DatetimeDataSourceFactory should be fix show values when scroller data change', () => {
     const maxDate = new Date(2020, 5, 10)
     const minDate = new Date(2018, 7, 20)
