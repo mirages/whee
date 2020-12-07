@@ -1,0 +1,64 @@
+// border颜色
+@border-color: #e5e5e5;
+
+// mask
+@mask-light: rgba(255, 255, 255, .4);
+@mask-deep: rgba(255, 255, 255, .9);
+
+.scroller {
+  position: relative;
+
+  overflow: hidden;
+
+  width: 100%;
+  height: 100%;
+
+  text-align: center;
+
+  touch-action: none;
+
+  &::before,
+  &::after {
+    content: '';
+
+    position: absolute;
+    left: 0;
+    z-index: 2;
+
+    display: block;
+
+    width: 100%;
+    height: 44%;
+  }
+
+  &::before {
+    top: 0;
+
+    border-bottom: 1px solid @border-color;
+
+    background: linear-gradient(@mask-deep 0%, @mask-deep 10%, @mask-light 100%);
+  }
+
+  &::after {
+    bottom: 0;
+
+    border-top: 1px solid @border-color;
+
+    background: linear-gradient(@mask-light 0%, @mask-deep 90%, @mask-deep 100%);
+  }
+}
+
+.scroller-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  text-align: center;
+}

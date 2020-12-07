@@ -1,5 +1,4 @@
 import { Picker, DataSource, Nullable } from '../src/index'
-import styles from '../src/index.less'
 import { angleToRadian, getEle } from '../src/utils'
 
 interface AddrData {
@@ -201,26 +200,30 @@ class CityFactory extends BaseFactory {
 }
 
 describe('Picker', () => {
-  it('picker.show() should show the picker, and picker.hide() should hide the picker', () => {
-    const picker = new Picker({
-      dataSourceFactory: {
-        create() {
-          return [new ProvinceFactory()]
-        },
-        change() {
-          return [new ProvinceFactory()]
-        }
-      }
-    })
-    picker.show()
-    picker.$root.className.should.be.include(styles['picker-in'])
-    picker.hide()
-    picker.$root.className.should.be.not.include(styles['picker-in'])
+  it('options.el must not be empty', () => {
+    const factory = new ProvinceFactory()
+    chai
+      .expect(() => {
+        new Picker({
+          el: '#ttttsss',
+          dataSourceFactory: {
+            cascadable: false,
+            create() {
+              return [factory]
+            },
+            change() {
+              return [factory]
+            }
+          }
+        })
+      })
+      .to.throw()
   })
 
   it('ensure button should be emit a ensure event, and callback current data', done => {
     const factory = new ProvinceFactory()
     const picker = new Picker({
+      el: document.createElement('div'),
       dataSourceFactory: {
         create() {
           return [factory]
@@ -248,6 +251,7 @@ describe('Picker', () => {
 
   it('cancel button should be emit a cancel event, and reset the values', done => {
     const picker = new Picker({
+      el: document.createElement('div'),
       dataSourceFactory: {
         create() {
           return [new ProvinceFactory()]
@@ -277,6 +281,7 @@ describe('Picker', () => {
 
   it('picker.getValues() return an array, and init value should be options.dataSourceFactory init value', () => {
     const picker = new Picker({
+      el: document.createElement('div'),
       dataSourceFactory: {
         create() {
           const provinceFactory = new ProvinceFactory()
@@ -314,6 +319,7 @@ describe('Picker', () => {
 
   it("picker.setValues() can set picker's value after created the picker", () => {
     const picker = new Picker({
+      el: document.createElement('div'),
       dataSourceFactory: {
         create() {
           const provinceFactory = new ProvinceFactory()
@@ -355,6 +361,7 @@ describe('Picker', () => {
 
   it('picker.scrollers can update in chain if the dataSourceFactory is cascadable', done => {
     const picker = new Picker({
+      el: document.createElement('div'),
       radius: 200,
       intervalAngle: 15,
       dataSourceFactory: {

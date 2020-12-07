@@ -1,12 +1,12 @@
 import Motion from 'js-motion'
-import { DataSource, Nullable } from './factory/data'
+import { DataSource, Nullable } from '../factory/data'
 import {
   angleToRadian,
   getEle,
   createEle,
   distanceToAngle,
   Emitter
-} from './utils'
+} from '../utils'
 import styles from './index.less'
 
 interface VItem<T> {
@@ -23,7 +23,13 @@ export default class Scroller<T> extends Emitter {
   perspective = 0
   intervalAngle = 10
   scaleRatio = 0.1
-  styles: { item: string } = { item: '' }
+  styles: {
+    item: string
+    scroller: string
+  } = {
+    item: '',
+    scroller: ''
+  }
   maxAngle = 50
 
   private _maxDiffAngle = this._getMaxDiffAngle()
@@ -42,7 +48,7 @@ export default class Scroller<T> extends Emitter {
     scaleRatio?: number
     intervalAngle?: number
     maxAngle?: number
-    styles?: { item: string }
+    styles?: { item: string; scroller: string }
   }) {
     super()
     const {
@@ -128,7 +134,10 @@ export default class Scroller<T> extends Emitter {
   }
 
   private _mount($root: HTMLElement) {
-    const $wrapper = createEle('div', styles['scroller'])
+    const $wrapper = createEle(
+      'div',
+      `${styles.scroller} ${this.styles.scroller || ''}`
+    )
     const motion = new Motion({
       target: $wrapper,
       direction: Motion.Direction.y

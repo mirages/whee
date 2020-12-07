@@ -1,0 +1,68 @@
+// 高度
+@height-head: 44px;
+@height-body: 280px;
+
+// 内容区样式
+.picker {
+  width: 100%;
+
+  background-color: #fff;
+  user-select: none;
+
+  button {
+    border: none;
+
+    background: none;
+    outline: none;
+  }
+}
+
+.picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: @height-head;
+  padding: 5px;
+
+  text-align: center;
+
+  background-color: #fff;
+}
+
+.picker-cancel,
+.picker-ensure {
+  height: 100%;
+  padding: 0 11px;
+
+  font-size: 15px;
+
+  flex: none;
+}
+
+.picker-cancel {
+  color: #707d88;
+}
+
+.picker-ensure {
+  color: #2d5375;
+}
+
+.picker-title {
+  font-size: 16px;
+  font-weight: 500;
+
+  flex: auto;
+}
+
+.picker-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: @height-body;
+
+  & > div {
+    flex: 1;
+  }
+}

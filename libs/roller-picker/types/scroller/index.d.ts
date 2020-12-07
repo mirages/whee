@@ -1,5 +1,5 @@
-import { DataSource, Nullable } from './factory/data'
-import { Emitter } from './utils'
+import { DataSource, Nullable } from '../factory/data'
+import { Emitter } from '../utils'
 interface VItem<T> {
   wrapper: HTMLElement
   el: HTMLElement
@@ -15,6 +15,7 @@ export default class Scroller<T> extends Emitter {
   scaleRatio: number
   styles: {
     item: string
+    scroller: string
   }
   maxAngle: number
   private _maxDiffAngle
@@ -34,6 +35,7 @@ export default class Scroller<T> extends Emitter {
     maxAngle?: number
     styles?: {
       item: string
+      scroller: string
     }
   })
   private _getMaxDiffAngle

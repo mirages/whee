@@ -1,12 +1,25 @@
-import { DataSourceFactory } from './factory/data'
-import Scroller from './scroller'
-import { Emitter } from './utils'
+import { DataSourceFactory } from '../factory/data'
+import Scroller from '../scroller'
+import { Emitter } from '../utils'
 interface PickerOpts<T> {
+  el: HTMLElement | string
   radius?: number
   maxAngle?: number
   scaleRatio?: number
   intervalAngle?: number
   dataSourceFactory: DataSourceFactory<T>
+  title?: string
+  styles?: {
+    picker?: string
+    head?: string
+    body?: string
+    foot?: string
+    title?: string
+    ensure?: string
+    cancel?: string
+    scroller?: string
+    item?: string
+  }
 }
 declare class Picker<T> extends Emitter {
   private _scrollers
@@ -20,8 +33,6 @@ declare class Picker<T> extends Emitter {
   private _resetDataSources
   private _changedIndependently
   private _changedCascade
-  show(): void
-  hide(): void
   getValues(): T[]
   setValues(val: T[]): void
   get scrollers(): Scroller<T>[]
