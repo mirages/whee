@@ -1,5 +1,5 @@
 import { Nullable } from '../src'
-import { DatetimeDataSourceFactory } from '../src/factory/datetime'
+import { DatetimeDataSourceFactory, DATETYPE } from '../src/factory/datetime'
 
 describe('DatetimeDataSourceFactory', () => {
   it('options.initDate can be set the init show date', () => {
@@ -153,13 +153,14 @@ describe('DatetimeDataSourceFactory', () => {
 
   it('options.unit can be set data unit', () => {
     const factory = new DatetimeDataSourceFactory({
-      initDate: new Date(2020, 2, 2, 10, 23, 30)
+      initDate: new Date(2020, 2, 2, 10, 23, 30),
+      type: DATETYPE.yyyyMMddHHmmss
     })
     const [years, months, days, hours, minutes, seconds] = factory.create()
 
     years.getText(2020).should.be.equal('2020年')
-    months.getText(2).should.be.equal('3月')
-    days.getText(2).should.be.equal('2日')
+    months.getText(2).should.be.equal('03月')
+    days.getText(2).should.be.equal('02日')
     hours.getText(10).should.be.equal('10时')
     minutes.getText(23).should.be.equal('23分')
     seconds.getText(30).should.be.equal('30秒')
