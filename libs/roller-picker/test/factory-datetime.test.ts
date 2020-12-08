@@ -151,19 +151,30 @@ describe('DatetimeDataSourceFactory', () => {
     chai.expect(years.getPrev(null)).to.be.equal(null)
   })
 
-  it('options.unit can be set data unit', () => {
+  it('options.units can be set data unit', () => {
     const factory = new DatetimeDataSourceFactory({
       initDate: new Date(2020, 2, 2, 10, 23, 30),
       type: DATETYPE.yyyyMMddHHmmss
     })
     const [years, months, days, hours, minutes, seconds] = factory.create()
 
+    // default units
     years.getText(2020).should.be.equal('2020年')
     months.getText(2).should.be.equal('03月')
     days.getText(2).should.be.equal('02日')
     hours.getText(10).should.be.equal('10时')
     minutes.getText(23).should.be.equal('23分')
     seconds.getText(30).should.be.equal('30秒')
+
+    const factory2 = new DatetimeDataSourceFactory({
+      initDate: new Date(2020, 2, 2, 10, 23, 30),
+      type: DATETYPE.ddHHmm,
+      units: ['d', 'h', 'm']
+    })
+    const [days2, hours2, minutes2] = factory2.create()
+    days2.getText(2).should.be.equal('02d')
+    hours2.getText(10).should.be.equal('10h')
+    minutes2.getText(23).should.be.equal('23m')
   })
 
   it('options.type=DATETYEP.yyyy should be select the year data', () => {

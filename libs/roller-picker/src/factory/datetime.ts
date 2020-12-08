@@ -264,31 +264,33 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
   ) {
     const now = new Date()
     const {
-      minDate = new Date(1900, 0, 1, 0, 0, 0, 0),
-      maxDate = now,
-      initDate = now,
       loop = false,
       type = DATETYPE.yyyyMMdd,
-      units = UNITS
+      units = UNITS,
+      minDate = new Date(1900, 0, 1, 0, 0, 0),
+      maxDate = now
     } = options
+    let { initDate = now } = options
 
-    let _initDate = initDate
     if (maxDate < minDate) {
       throw new Error(
         'DatetimeDataSourceFactory: options.maxDate must not be less than options.minDate'
       )
     } else if (initDate > maxDate) {
-      _initDate = maxDate
+      initDate = maxDate
     } else if (initDate < minDate) {
-      _initDate = minDate
+      initDate = minDate
     }
 
     this.minDate = this.dateToArray(minDate)
     this.maxDate = this.dateToArray(maxDate)
-    this.initDate = this.dateToArray(_initDate)
-    this.units = units
+    this.initDate = this.dateToArray(initDate)
     this.loop = loop
     this.types = type.split('').map(Number)
+    this.units = this.types.reduce((acc, type, idx) => {
+      acc[type] = units[idx]
+      return acc
+    }, UNITS.slice(0))
   }
 
   protected dateToArray(date: Date): number[] {
