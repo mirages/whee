@@ -18,18 +18,18 @@ interface VItem<T> {
   next: Nullable<VItem<T>>
 }
 
+interface StylesOpts {
+  scroller?: string
+  mask?: string
+  item?: string
+}
+
 export default class Scroller<T> extends Emitter {
   radius = 200
   perspective = 0
   intervalAngle = 10
   scaleRatio = 0.1
-  styles: {
-    item: string
-    scroller: string
-  } = {
-    item: '',
-    scroller: ''
-  }
+  styles: StylesOpts = {}
   maxAngle = 50
 
   private _maxDiffAngle = this._getMaxDiffAngle()
@@ -48,7 +48,7 @@ export default class Scroller<T> extends Emitter {
     scaleRatio?: number
     intervalAngle?: number
     maxAngle?: number
-    styles?: { item: string; scroller: string }
+    styles?: StylesOpts
   }) {
     super()
     const {
@@ -166,6 +166,22 @@ export default class Scroller<T> extends Emitter {
       $wrapper.appendChild(item.wrapper)
     })
 
+    $wrapper.appendChild(
+      createEle(
+        'div',
+        `${styles['scroller-mask']} ${styles['mask-top']} ${
+          this.styles.mask || ''
+        }`
+      )
+    )
+    $wrapper.appendChild(
+      createEle(
+        'div',
+        `${styles['scroller-mask']} ${styles['mask-bottom']} ${
+          this.styles.mask || ''
+        }`
+      )
+    )
     $root.appendChild($wrapper)
   }
 

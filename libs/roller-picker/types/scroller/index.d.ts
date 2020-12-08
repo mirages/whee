@@ -8,15 +8,17 @@ interface VItem<T> {
   prev: Nullable<VItem<T>>
   next: Nullable<VItem<T>>
 }
+interface StylesOpts {
+  scroller?: string
+  mask?: string
+  item?: string
+}
 export default class Scroller<T> extends Emitter {
   radius: number
   perspective: number
   intervalAngle: number
   scaleRatio: number
-  styles: {
-    item: string
-    scroller: string
-  }
+  styles: StylesOpts
   maxAngle: number
   private _maxDiffAngle
   private _dataChangeAngle
@@ -33,10 +35,7 @@ export default class Scroller<T> extends Emitter {
     scaleRatio?: number
     intervalAngle?: number
     maxAngle?: number
-    styles?: {
-      item: string
-      scroller: string
-    }
+    styles?: StylesOpts
   })
   private _getMaxDiffAngle
   private _init
