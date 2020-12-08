@@ -25,12 +25,12 @@ interface StylesOpts {
 }
 
 export default class Scroller<T> extends Emitter {
-  radius = 200
-  perspective = 0
-  intervalAngle = 10
-  scaleRatio = 0.1
+  radius = 140
+  perspective = 140
+  intervalAngle = 18
+  scaleRatio = 0.5
   styles: StylesOpts = {}
-  maxAngle = 50
+  maxAngle = 60
 
   private _maxDiffAngle = this._getMaxDiffAngle()
   private _dataChangeAngle: number
@@ -339,7 +339,7 @@ export default class Scroller<T> extends Emitter {
     const scale = Math.abs(Math.cos((1 - Math.pow(scaleRatio, 3)) * radian))
     const text = this._dataSource.getText(data)
     const cssText = `;
-      transform: translateY(${y}px) perspective(${perspective}px) rotateX(${angle.toFixed(
+      transform: translateY(${y}px) translateZ(0) perspective(${perspective}px) rotateX(${angle.toFixed(
       4
     )}deg) scale(${scale.toFixed(4)});`
 
@@ -392,6 +392,8 @@ export default class Scroller<T> extends Emitter {
 
       if (index < count) {
         this._rafId = window.requestAnimationFrame(step)
+      } else {
+        this.emit('scrollEnd', this.getValue())
       }
     }
 

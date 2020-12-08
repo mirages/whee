@@ -11,6 +11,7 @@ interface PickerOpts<T> {
   intervalAngle?: number
   dataSourceFactory: DataSourceFactory<T>
   title?: string
+  pickedTrigger?: 'change' | 'scrollEnd'
   styles?: {
     picker?: string
     head?: string
@@ -21,6 +22,7 @@ interface PickerOpts<T> {
     cancel?: string
     scroller?: string
     item?: string
+    mask?: string
   }
 }
 
@@ -49,6 +51,7 @@ class Picker<T> extends Emitter {
       dataSourceFactory,
       el,
       title = '',
+      pickedTrigger = 'change',
       styles: _styles = {},
       ...scrollerOpts
     } = options
@@ -90,6 +93,7 @@ class Picker<T> extends Emitter {
         ...scrollerOpts,
         styles: {
           item: _styles.item || '',
+          mask: _styles.mask || '',
           scroller: _styles.scroller || ''
         }
       })
@@ -103,14 +107,15 @@ class Picker<T> extends Emitter {
     if (dataSourceFactory.cascadable) {
       // 需要联动更新
       this._scrollers.forEach((scroller, index) => {
-        scroller.on('change', (data: T) => {
+        scroller.on(pickedTrigger, (data: T) => {
+          console.log(pickedTrigger, index, data)
           this._changedCascade(data, index)
         })
       })
     } else {
       // 独立更新
       this._scrollers.forEach((scroller, index) => {
-        scroller.on('change', (data: T) => {
+        scroller.on(pickedTrigger, (data: T) => {
           this._changedIndependently(data, index)
         })
       })

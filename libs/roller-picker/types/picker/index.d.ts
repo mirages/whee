@@ -9,6 +9,7 @@ interface PickerOpts<T> {
   intervalAngle?: number
   dataSourceFactory: DataSourceFactory<T>
   title?: string
+  pickedTrigger?: 'change' | 'scrollEnd'
   styles?: {
     picker?: string
     head?: string
@@ -19,6 +20,7 @@ interface PickerOpts<T> {
     cancel?: string
     scroller?: string
     item?: string
+    mask?: string
   }
 }
 declare class Picker<T> extends Emitter {
