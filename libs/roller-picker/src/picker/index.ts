@@ -1,4 +1,4 @@
-import { DataSourceFactory, Nullable, DataSource } from '../factory/data'
+import { DataSourceFactory } from '../factory/data'
 import Scroller from '../scroller'
 import { Emitter, getEle, createEle } from '../utils'
 import styles from './index.less'
@@ -31,7 +31,6 @@ class Picker<T> extends Emitter {
   private _values: T[] = []
   private _tempValues: T[] = []
   private _dataSourceFactory: DataSourceFactory<T>
-  private _cacheDataSources: Nullable<DataSource<T>[]> = null // 缓存新创建的 data source
 
   $root!: HTMLElement
 

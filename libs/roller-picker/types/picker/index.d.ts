@@ -28,7 +28,6 @@ declare class Picker<T> extends Emitter {
   private _values
   private _tempValues
   private _dataSourceFactory
-  private _cacheDataSources
   $root: HTMLElement
   constructor(options: PickerOpts<T>)
   private render
