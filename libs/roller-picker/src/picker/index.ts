@@ -11,7 +11,7 @@ interface PickerOpts<T> {
   intervalAngle?: number
   dataSourceFactory: DataSourceFactory<T>
   title?: string
-  pickedTrigger?: 'change' | 'scrollEnd'
+  pickedEvent?: 'change' | 'scrollEnd'
   styles?: {
     picker?: string
     head?: string
@@ -51,7 +51,7 @@ class Picker<T> extends Emitter {
       dataSourceFactory,
       el,
       title = '',
-      pickedTrigger = 'change',
+      pickedEvent = 'scrollEnd',
       styles: _styles = {},
       ...scrollerOpts
     } = options
@@ -107,15 +107,14 @@ class Picker<T> extends Emitter {
     if (dataSourceFactory.cascadable) {
       // 需要联动更新
       this._scrollers.forEach((scroller, index) => {
-        scroller.on(pickedTrigger, (data: T) => {
-          console.log(pickedTrigger, index, data)
+        scroller.on(pickedEvent, (data: T) => {
           this._changedCascade(data, index)
         })
       })
     } else {
       // 独立更新
       this._scrollers.forEach((scroller, index) => {
-        scroller.on(pickedTrigger, (data: T) => {
+        scroller.on(pickedEvent, (data: T) => {
           this._changedIndependently(data, index)
         })
       })
@@ -147,24 +146,19 @@ class Picker<T> extends Emitter {
   }
 
   private _changedCascade(data: T, index: number): void {
+    const length = this._scrollers.length
     this._tempValues[index] = data
 
-    if (index === this._scrollers.length - 1) {
-      // 最后一个 scroller 变化，不进行联动更新
-      this._cacheDataSources = null
-      return
+    const facorys = this._dataSourceFactory.change(
+      this._tempValues.slice(0),
+      index
+    )
+
+    // change scroller dataFactory downward
+    while (++index < length) {
+      this._scrollers[index].changeDataSource(facorys[index], false)
+      this._tempValues[index] = this._scrollers[index].getValue()
     }
-    if (!this._cacheDataSources) {
-      this._cacheDataSources = this._dataSourceFactory.change(
-        this._tempValues.slice(0),
-        index
-      )
-    }
-    // 联动更新下一个 dataSource
-    const nextIndex = index + 1
-    const nextDataSource = this._cacheDataSources[nextIndex]
-    const nextScroller = this._scrollers[nextIndex]
-    nextScroller.changeDataSource(nextDataSource)
   }
 
   getValues(): T[] {

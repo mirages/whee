@@ -9,7 +9,7 @@ interface PickerOpts<T> {
   intervalAngle?: number
   dataSourceFactory: DataSourceFactory<T>
   title?: string
-  pickedTrigger?: 'change' | 'scrollEnd'
+  pickedEvent?: 'change' | 'scrollEnd'
   styles?: {
     picker?: string
     head?: string

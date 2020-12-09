@@ -10,7 +10,7 @@ interface PickerData extends AddrData {
   index: number
 }
 
-class BaseFactory implements DataSource<PickerData> {
+class BaseSource implements DataSource<PickerData> {
   protected list: AddrData[] = []
   protected initIndex = 0
 
@@ -40,7 +40,7 @@ class BaseFactory implements DataSource<PickerData> {
   }
 }
 
-const ProviceData = [
+const ProvinceData = [
   {
     id: '010000',
     value: '北京市'
@@ -62,10 +62,10 @@ const ProviceData = [
     value: '湖北省'
   }
 ]
-class ProvinceFactory extends BaseFactory {
+class ProvinceSource extends BaseSource {
   constructor(initId?: string) {
     super()
-    this.list = ProviceData
+    this.list = ProvinceData
     const index = this.list.findIndex(item => item.id === initId)
     this.initIndex = index > -1 ? index : 0
   }
@@ -188,7 +188,7 @@ const CityData: {
     }
   ]
 }
-class CityFactory extends BaseFactory {
+class CitySource extends BaseSource {
   constructor(firstId: string, initId?: string) {
     super()
     this.list = CityData[firstId] || CityData['010000']
@@ -201,7 +201,7 @@ class CityFactory extends BaseFactory {
 
 describe('Picker', () => {
   it('options.el must not be empty', () => {
-    const factory = new ProvinceFactory()
+    const factory = new ProvinceSource()
     chai
       .expect(() => {
         new Picker({
@@ -220,8 +220,79 @@ describe('Picker', () => {
       .to.throw()
   })
 
+  it('options.pickedEvent=change pick cascadable values when scroller emit change event', () => {
+    let changedTime = 0
+    const picker = new Picker({
+      el: document.createElement('div'),
+      pickedEvent: 'change',
+      dataSourceFactory: {
+        cascadable: true,
+        create() {
+          const provinceFactory = new ProvinceSource('030000') // init province id
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CitySource(initProvince)
+          return [provinceFactory, cityFactory]
+        },
+        change(initValues: PickerData[]) {
+          const initProv = initValues[0].id
+          const initCity = initValues[1].id
+
+          const provinceFactory = new ProvinceSource(initProv)
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CitySource(initProvince, initCity)
+
+          changedTime++
+
+          return [provinceFactory, cityFactory]
+        }
+      }
+    })
+    const scroller = picker.scrollers[0]
+
+    scroller.scroll(2 * angleToRadian(scroller.intervalAngle) * scroller.radius)
+    // after scroll intervalAngle, should change dataSource
+    changedTime.should.be.equal(2)
+  })
+
+  it('options.pickedEvent=scrollEnd pick cascadable values when scroller emit scrollEnd event', () => {
+    let changedTime = 0
+    const picker = new Picker({
+      el: document.createElement('div'),
+      pickedEvent: 'scrollEnd',
+      dataSourceFactory: {
+        cascadable: true,
+        create() {
+          const provinceFactory = new ProvinceSource('030000') // init province id
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CitySource(initProvince)
+          return [provinceFactory, cityFactory]
+        },
+        change(initValues: PickerData[]) {
+          const initProv = initValues[0].id
+          const initCity = initValues[1].id
+
+          const provinceFactory = new ProvinceSource(initProv)
+          const initProvince = provinceFactory.getInit().id
+          const cityFactory = new CitySource(initProvince, initCity)
+
+          changedTime++
+
+          return [provinceFactory, cityFactory]
+        }
+      }
+    })
+    const scroller = picker.scrollers[0]
+
+    scroller.scroll(-angleToRadian(scroller.intervalAngle) * scroller.radius)
+    // after scroll intervalAngle, should not change dataSource
+    changedTime.should.be.equal(0)
+    scroller.scrollEnd()
+    // after scrollEnd, should change dataSource
+    changedTime.should.be.equal(1)
+  })
+
   it('ensure button should be emit a ensure event, and callback current data', done => {
-    const factory = new ProvinceFactory()
+    const factory = new ProvinceSource()
     const picker = new Picker({
       el: document.createElement('div'),
       dataSourceFactory: {
@@ -239,6 +310,7 @@ describe('Picker', () => {
 
     // 滚动一段距离
     scroller.scroll(-angleToRadian(scroller.intervalAngle) * scroller.radius)
+    scroller.scrollEnd()
     const currValue = factory.getNext(initValue)
     chai.should().exist($ensure)
     picker.on('ensure', (data: PickerData[]) => {
@@ -254,10 +326,10 @@ describe('Picker', () => {
       el: document.createElement('div'),
       dataSourceFactory: {
         create() {
-          return [new ProvinceFactory()]
+          return [new ProvinceSource()]
         },
         change() {
-          return [new ProvinceFactory()]
+          return [new ProvinceSource()]
         }
       }
     })
@@ -284,18 +356,18 @@ describe('Picker', () => {
       el: document.createElement('div'),
       dataSourceFactory: {
         create() {
-          const provinceFactory = new ProvinceFactory()
+          const provinceFactory = new ProvinceSource()
           const initProvince = provinceFactory.getInit().id
-          const cityFactory = new CityFactory(initProvince)
+          const cityFactory = new CitySource(initProvince)
           return [provinceFactory, cityFactory]
         },
         change(initValues: PickerData[]) {
           const initProv = initValues[0].id
           const initCity = initValues[1].id
 
-          const provinceFactory = new ProvinceFactory(initProv)
+          const provinceFactory = new ProvinceSource(initProv)
           const initProvince = provinceFactory.getInit().id
-          const cityFactory = new CityFactory(initProvince, initCity)
+          const cityFactory = new CitySource(initProvince, initCity)
           return [provinceFactory, cityFactory]
         }
       }
@@ -322,18 +394,18 @@ describe('Picker', () => {
       el: document.createElement('div'),
       dataSourceFactory: {
         create() {
-          const provinceFactory = new ProvinceFactory()
+          const provinceFactory = new ProvinceSource()
           const initProvince = provinceFactory.getInit().id
-          const cityFactory = new CityFactory(initProvince)
+          const cityFactory = new CitySource(initProvince)
           return [provinceFactory, cityFactory]
         },
         change(initValues: PickerData[]) {
           const initProv = initValues[0].id
           const initCity = initValues[1].id
 
-          const provinceFactory = new ProvinceFactory(initProv)
+          const provinceFactory = new ProvinceSource(initProv)
           const initProvince = provinceFactory.getInit().id
-          const cityFactory = new CityFactory(initProvince, initCity)
+          const cityFactory = new CitySource(initProvince, initCity)
           return [provinceFactory, cityFactory]
         }
       }
@@ -367,18 +439,18 @@ describe('Picker', () => {
       dataSourceFactory: {
         cascadable: true,
         create() {
-          const provinceFactory = new ProvinceFactory()
+          const provinceFactory = new ProvinceSource()
           const initProvince = provinceFactory.getInit().id
-          const cityFactory = new CityFactory(initProvince)
+          const cityFactory = new CitySource(initProvince)
           return [provinceFactory, cityFactory]
         },
         change(initValues: PickerData[]) {
           const initProv = initValues[0].id
           const initCity = initValues[1].id
 
-          const provinceFactory = new ProvinceFactory(initProv)
+          const provinceFactory = new ProvinceSource(initProv)
           const initProvince = provinceFactory.getInit().id
-          const cityFactory = new CityFactory(initProvince, initCity)
+          const cityFactory = new CitySource(initProvince, initCity)
           return [provinceFactory, cityFactory]
         }
       }
@@ -387,6 +459,7 @@ describe('Picker', () => {
     provinceScroller.scroll(
       -angleToRadian(provinceScroller.intervalAngle) * provinceScroller.radius
     )
+    provinceScroller.scrollEnd()
 
     const $ensure = getEle('[ref=picker-ensure]', picker.$root) as HTMLElement
     picker.on('ensure', (data: PickerData[]) => {

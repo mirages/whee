@@ -54,26 +54,113 @@ describe('Scroller', () => {
     scroller.scaleRatio.should.be.an('number')
   })
 
-  it('scroller.getValue() should be null when the dataSource return a null value', () => {
+  it('scroller should be emit a "change" event when data changed, and callback the scroller value', done => {
+    const initIndex = 3
+    const dataSource = new SimpleDataSource(list, { initIndex })
     const scroller = new Scroller({
       el: $root,
-      dataSource: {
-        getInit(): null {
-          return null
-        },
-        getPrev() {
-          return null
-        },
-        getNext() {
-          return null
-        },
-        getText() {
-          return ''
-        }
-      }
+      maxAngle: 46,
+      intervalAngle: 15,
+      dataSource
     })
 
-    chai.should().not.exist(scroller.getValue())
+    scroller.on('change', (data: Indexable<string>) => {
+      data.should.be.deep.equal(scroller.getValue())
+      done()
+    })
+
+    scroller.scroll(angleToRadian(scroller.intervalAngle) * scroller.radius)
+  })
+
+  it('scroller should be emit a "scrollEnd" event when scroll ended, and callback the scroller value', done => {
+    const initIndex = 3
+    const dataSource = new SimpleDataSource(list, { initIndex })
+    const scroller = new Scroller({
+      el: $root,
+      maxAngle: 46,
+      intervalAngle: 15,
+      dataSource
+    })
+
+    scroller.on('scrollEnd', (data: Indexable<string>) => {
+      data.should.be.deep.equal(scroller.getValue())
+      done()
+    })
+
+    scroller.scroll(-angleToRadian(scroller.intervalAngle) * scroller.radius)
+    scroller.scrollEnd()
+  })
+
+  it('scroller.changeDataSource(dataSource, emitChange) can set a new data factory, and can emit a change event', done => {
+    let dataSource = new SimpleDataSource(list)
+    const scroller = new Scroller({
+      el: $root,
+      maxAngle: 46,
+      intervalAngle: 15,
+      dataSource
+    })
+    const firstItemWrapper = scroller.firstItem.wrapper
+
+    scroller.getValue().should.be.deep.equal(dataSource.getInit())
+    dataSource = new SimpleDataSource(list, { initIndex: 5 })
+    scroller.on('change', data => {
+      // dom 元素复用
+      scroller.firstItem.wrapper.should.be.equal(firstItemWrapper)
+      // value 值更新
+      data.should.be.deep.equal(dataSource.getInit())
+      done()
+    })
+    scroller.changeDataSource(dataSource)
+  })
+
+  it('scroller can use any type of DataSource', () => {
+    // a - z
+    const strDataSource = {
+      getInit() {
+        return 'd'
+      },
+      getPrev(str: string | null) {
+        if (str === null) return null
+        const preChar = str.charCodeAt(0) - 1
+        return preChar < 97 /* a */ ? null : String.fromCharCode(preChar)
+      },
+      getNext(str: string | null) {
+        if (str === null) return null
+        const preChar = str.charCodeAt(0) + 1
+        return preChar > 122 /* z */ ? null : String.fromCharCode(preChar)
+      },
+      getText(str: string | null) {
+        return str ?? ''
+      }
+    }
+    // 0 - 9
+    const numDataSource = {
+      getInit() {
+        return 5
+      },
+      getPrev(num: number | null) {
+        if (num === null) return null
+        return --num < 0 ? null : num
+      },
+      getNext(num: number | null) {
+        if (num === null) return null
+        return ++num > 9 ? null : num
+      },
+      getText(num: number | null) {
+        return String(num) ?? ''
+      }
+    }
+
+    const scroller1 = new Scroller({
+      el: document.createElement('div'),
+      dataSource: strDataSource
+    })
+    scroller1.getValue().should.be.equal('d')
+    const scroller2 = new Scroller({
+      el: document.createElement('div'),
+      dataSource: numDataSource
+    })
+    scroller2.getValue().should.be.equal(5)
   })
 
   it("scroller item angle's difference should be equal options.intervalAngle", () => {
@@ -184,24 +271,6 @@ describe('Scroller', () => {
       first++
       last++
     }
-  })
-
-  it('move cross over options.intervalAngle, emit change event.', () => {
-    const initIndex = 3
-    const dataSource = new SimpleDataSource(list, { initIndex })
-    const scroller = new Scroller({
-      el: $root,
-      maxAngle: 46,
-      intervalAngle: 15,
-      dataSource
-    })
-    const initData = dataSource.getInit()
-
-    const y = angleToRadian(scroller.intervalAngle) * scroller.radius
-    scroller.scroll(y)
-    scroller.getValue().should.be.deep.equal(dataSource.getPrev(initData))
-    scroller.scroll(-y)
-    scroller.getValue().should.be.deep.equal(initData)
   })
 
   it("conn't move down when there is no prev data", () => {
@@ -353,77 +422,5 @@ describe('Scroller', () => {
       scroller.getValue().should.be.deep.equal(initData)
       done()
     }, 1500)
-  })
-
-  it('scroller.changeDataSource() can set a new data factory, and emit a change event', done => {
-    let dataSource = new SimpleDataSource(list)
-    const scroller = new Scroller({
-      el: $root,
-      maxAngle: 46,
-      intervalAngle: 15,
-      dataSource
-    })
-    const firstItemWrapper = scroller.firstItem.wrapper
-
-    scroller.getValue().should.be.deep.equal(dataSource.getInit())
-    dataSource = new SimpleDataSource(list, { initIndex: 5 })
-    scroller.on('change', data => {
-      // dom 元素复用
-      scroller.firstItem.wrapper.should.be.equal(firstItemWrapper)
-      // value 值更新
-      data.should.be.deep.equal(dataSource.getInit())
-      done()
-    })
-    scroller.changeDataSource(dataSource)
-  })
-
-  it('scroller can use any type of DataSource', () => {
-    // a - z
-    const strDataSource = {
-      getInit() {
-        return 'd'
-      },
-      getPrev(str: string | null) {
-        if (str === null) return null
-        const preChar = str.charCodeAt(0) - 1
-        return preChar < 97 /* a */ ? null : String.fromCharCode(preChar)
-      },
-      getNext(str: string | null) {
-        if (str === null) return null
-        const preChar = str.charCodeAt(0) + 1
-        return preChar > 122 /* z */ ? null : String.fromCharCode(preChar)
-      },
-      getText(str: string | null) {
-        return str ?? ''
-      }
-    }
-    // 0 - 9
-    const numDataSource = {
-      getInit() {
-        return 5
-      },
-      getPrev(num: number | null) {
-        if (num === null) return null
-        return --num < 0 ? null : num
-      },
-      getNext(num: number | null) {
-        if (num === null) return null
-        return ++num > 9 ? null : num
-      },
-      getText(num: number | null) {
-        return String(num) ?? ''
-      }
-    }
-
-    const scroller1 = new Scroller({
-      el: document.createElement('div'),
-      dataSource: strDataSource
-    })
-    scroller1.getValue().should.be.equal('d')
-    const scroller2 = new Scroller({
-      el: document.createElement('div'),
-      dataSource: numDataSource
-    })
-    scroller2.getValue().should.be.equal(5)
   })
 })

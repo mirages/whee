@@ -376,8 +376,6 @@ export default class Scroller<T> extends Emitter {
 
     this._shouldEnd = false
 
-    if (!scrollAngle) return
-
     const count = Math.ceil((50 * Math.abs(scrollAngle)) / this.intervalAngle)
     let prevAngle = 0
     let index = 0
