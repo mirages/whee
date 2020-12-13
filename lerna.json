@@ -1,0 +1,7 @@
+{
+  "packages": [
+    "components/*",
+    "libs/*"
+  ],
+  "version": "independent"
+}
