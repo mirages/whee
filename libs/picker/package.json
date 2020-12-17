@@ -1,5 +1,5 @@
 {
-  "name": "scroller-picker",
+  "name": "@whee/js-picker",
   "version": "0.1.0",
   "description": "a scroll picker for mobile",
   "engines": {
@@ -16,32 +16,32 @@
     "types"
   ],
   "scripts": {
-    "cm": "cz",
     "clean": "rimraf dist && rimraf types",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lint:ts": "eslint --f codeframe {src,test,plugins}/**/*.ts karma.conf.ts",
+    "lint:css": "stylelint **/*.{css,less,scss}",
     "test": "karma start",
     "build": "npm run clean && rollup -c"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mirages/lib-starter.git"
+    "url": "git+https://github.com/mirages/whee.git",
+    "directory": "libs/picker"
   },
   "keywords": [
-    "lib-starter",
-    "typescript",
-    "rollup",
-    "karma"
+    "mobile picker",
+    "scroller",
+    "picker",
+    "datetime picker",
+    "address picker"
   ],
   "author": "mirages",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mirages/lib-starter/issues"
+    "url": "https://github.com/mirages/whee/issues"
   },
-  "homepage": "https://github.com/mirages/lib-starter#readme",
+  "homepage": "https://github.com/mirages/whee#readme",
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-conventional": "^11.0.0",
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@rollup/plugin-typescript": "^6.1.0",
@@ -49,14 +49,8 @@
     "@types/karma": "^5.0.1",
     "@types/less": "^3.0.1",
     "@types/mocha": "^8.0.3",
-    "@typescript-eslint/eslint-plugin": "^4.6.1",
-    "@typescript-eslint/parser": "^4.6.1",
     "chai": "^4.2.0",
-    "commitizen": "^4.2.2",
-    "conventional-changelog-cli": "^2.1.1",
     "cz-conventional-changelog": "3.3.0",
-    "eslint": "^7.13.0",
-    "husky": "^4.3.0",
     "karma": "^5.2.3",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
@@ -64,33 +58,14 @@
     "karma-mocha-reporter": "^2.2.5",
     "karma-typescript": "^5.2.0",
     "less": "^3.12.2",
-    "lint-staged": "^10.5.1",
     "mocha": "^8.2.1",
     "postcss": "^8.1.7",
-    "prettier": "2.1.2",
-    "rimraf": "^3.0.2",
     "rollup": "^2.33.1",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-terser": "^7.0.2",
-    "stylelint": "^13.7.2",
-    "stylelint-config-standard": "^20.0.0",
-    "stylelint-order": "^4.1.0",
-    "ts-node": "^9.0.0",
-    "tslib": "^2.0.3",
-    "typescript": "^4.0.5"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
+    "tslib": "^2.0.3"
   },
   "dependencies": {
-    "js-motion": "^1.1.0"
+    "@whee/js-motion": "^1.1.0"
   }
 }

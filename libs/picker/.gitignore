@@ -3,4 +3,3 @@ dist
 .vscode
 .DS_Store
 coverage
-example

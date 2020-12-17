@@ -5,6 +5,7 @@ plugins:
 rules:
   # use `emptyLineBefore`
   declaration-empty-line-before: null
+  number-leading-zero: null
   order/order:
     - custom-properties
     - at-variables

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      .picker {
+        margin-top: 20px;
+        border-radius: 8px;
+        box-shadow: rgba(0,0,0,.2) 0px 0px 4px;
+        overflow: hidden;
+      }
+      .mask {
+        height: 120px!important;
+      }
+      .sl {
+        margin: 20px 0;
+      }
+    </style>
+    <link rel="stylesheet" href="../dist/index.css" />
+  </head>
+  <body>
+    <div class="sl" id="scroller"></div>
+    <div class="picker" id="picker-simple"></div>
+    <div class="picker" id="picker-cascade"></div>
+    <div class="picker" id="picker-tm"></div>
+    <script src="../dist/index.umd.js"></script>
+    <script src="../dist/factory/simple.umd.js"></script>
+    <script src="../dist/factory/datetime.umd.js"></script>
+    <script>
+      var { Picker, Scroller } = window['scroller-picker']
+      var { SimpleDataSourceFactory, CascadeDataSourceFactory } = window['scroller-picker/factory/simple']
+      var { DatetimeDataSourceFactory } = window['scroller-picker/factory/datetime']
+      var dataList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      var cascadeData = [
+        {
+          id: 'a',
+          text: 'a',
+          children: [
+            {
+              id: 'a-1',
+              text: 'a-1',
+              children: [
+                { id: 'a-1-1', text: 'a-1-1' },
+                { id: 'a-1-2', text: 'a-1-2' },
+                { id: 'a-1-3', text: 'a-1-3' },
+                { id: 'a-1-4', text: 'a-1-4' }
+              ]
+            },
+            {
+              id: 'a-2',
+              text: 'a-2',
+              children: [
+                { id: 'a-2-1', text: 'a-2-1' },
+                { id: 'a-2-2', text: 'a-2-2' },
+                { id: 'a-2-3', text: 'a-2-3' },
+                { id: 'a-2-4', text: 'a-2-4' }
+              ]
+            },
+            {
+              id: 'a-3',
+              text: 'a-3',
+              children: [
+                { id: 'a-3-1', text: 'a-3-1' },
+                { id: 'a-3-2', text: 'a-3-2' },
+                { id: 'a-3-3', text: 'a-3-3' },
+                { id: 'a-3-4', text: 'a-3-4' }
+              ]
+            },
+            {
+              id: 'a-4',
+              text: 'a-4',
+              children: [
+                { id: 'a-4-1', text: 'a-4-1' },
+                { id: 'a-4-2', text: 'a-4-2' },
+                { id: 'a-4-3', text: 'a-4-3' },
+                { id: 'a-4-4', text: 'a-4-4' }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'b',
+          text: 'b',
+          children: [
+            {
+              id: 'b-1',
+              text: 'b-1',
+              children: [
+                { id: 'b-1-1', text: 'b-1-1' },
+                { id: 'b-1-2', text: 'b-1-2' },
+                { id: 'b-1-3', text: 'b-1-3' },
+                { id: 'b-1-4', text: 'b-1-4' }
+              ]
+            },
+            {
+              id: 'b-2',
+              text: 'b-2',
+              children: [
+                { id: 'b-2-1', text: 'b-2-1' },
+                { id: 'b-2-2', text: 'b-2-2' },
+                { id: 'b-2-3', text: 'b-2-3' },
+                { id: 'b-2-4', text: 'b-2-4' }
+              ]
+            },
+            {
+              id: 'b-3',
+              text: 'b-3',
+              children: [
+                { id: 'b-3-1', text: 'b-3-1' },
+                { id: 'b-3-2', text: 'b-3-2' },
+                { id: 'b-3-3', text: 'b-3-3' },
+                { id: 'b-3-4', text: 'b-3-4' }
+              ]
+            },
+            {
+              id: 'b-4',
+              text: 'b-4',
+              children: [
+                { id: 'b-4-1', text: 'b-4-1' },
+                { id: 'b-4-2', text: 'b-4-2' },
+                { id: 'b-4-3', text: 'b-4-3' },
+                { id: 'b-4-4', text: 'b-4-4' }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'c',
+          text: 'c',
+          children: [
+            {
+              id: 'c-1',
+              text: 'c-1',
+              children: [
+                { id: 'c-1-1', text: 'c-1-1' },
+                { id: 'c-1-2', text: 'c-1-2' },
+                { id: 'c-1-3', text: 'c-1-3' },
+                { id: 'c-1-4', text: 'c-1-4' }
+              ]
+            },
+            {
+              id: 'c-2',
+              text: 'c-2',
+              children: [
+                { id: 'c-2-1', text: 'c-2-1' },
+                { id: 'c-2-2', text: 'c-2-2' },
+                { id: 'c-2-3', text: 'c-2-3' },
+                { id: 'c-2-4', text: 'c-2-4' }
+              ]
+            },
+            {
+              id: 'c-3',
+              text: 'c-3',
+              children: [
+                { id: 'c-3-1', text: 'c-3-1' },
+                { id: 'c-3-2', text: 'c-3-2' },
+                { id: 'c-3-3', text: 'c-3-3' },
+                { id: 'c-3-4', text: 'c-3-4' }
+              ]
+            },
+            {
+              id: 'c-4',
+              text: 'c-4',
+              children: [
+                { id: 'c-4-1', text: 'c-4-1' },
+                { id: 'c-4-2', text: 'c-4-2' },
+                { id: 'c-4-3', text: 'c-4-3' },
+                { id: 'c-4-4', text: 'c-4-4' }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'd',
+          text: 'd',
+          children: [
+            {
+              id: 'd-1',
+              text: 'd-1',
+              children: [
+                { id: 'd-1-1', text: 'd-1-1' },
+                { id: 'd-1-2', text: 'd-1-2' },
+                { id: 'd-1-3', text: 'd-1-3' },
+                { id: 'd-1-4', text: 'd-1-4' }
+              ]
+            },
+            {
+              id: 'd-2',
+              text: 'd-2',
+              children: [
+                { id: 'd-2-1', text: 'd-2-1' },
+                { id: 'd-2-2', text: 'd-2-2' },
+                { id: 'd-2-3', text: 'd-2-3' },
+                { id: 'd-2-4', text: 'd-2-4' }
+              ]
+            },
+            {
+              id: 'd-3',
+              text: 'd-3',
+              children: [
+                { id: 'd-3-1', text: 'd-3-1' },
+                { id: 'd-3-2', text: 'd-3-2' },
+                { id: 'd-3-3', text: 'd-3-3' },
+                { id: 'd-3-4', text: 'd-3-4' }
+              ]
+            },
+            {
+              id: 'd-4',
+              text: 'd-4',
+              children: [
+                { id: 'd-4-1', text: 'd-4-1' },
+                { id: 'd-4-2', text: 'd-4-2' },
+                { id: 'd-4-3', text: 'd-4-3' },
+                { id: 'd-4-4', text: 'd-4-4' }
+              ]
+            }
+          ]
+        }
+      ]
+      var dtFactory = new DatetimeDataSourceFactory({
+        maxDate: new Date(2010, 11, 26, 23, 59, 59),
+        minDate: new Date(2000, 0, 1),
+        loop: true
+      })
+      var cascadeFactory = new CascadeDataSourceFactory(cascadeData, [
+        {
+          initIndex: 1,
+          loop: true
+        },{
+          initIndex: 2,
+          loop: false
+        },{
+          initIndex: 3,
+          loop: false
+        }
+      ])
+      var simpleDataFactory = new SimpleDataSourceFactory([dataList, dataList, dataList], [
+        {
+          initIndex: 5,
+          loop: true
+        }, {
+          initIndex: 3,
+          loop: true
+        }, {
+          initIndex: 0,
+          loop: true
+        }
+      ])
+      var scroller = new Scroller({
+        el: '#scroller',
+        dataSource: new SimpleDataSourceFactory([dataList], [
+          {
+            initIndex: 3,
+            loop: true
+          }
+        ]).create()[0],
+        styles: {
+          mask: 'mask'
+        }
+      })
+      var picker = new Picker({
+        el: '#picker-simple',
+        dataSourceFactory: simpleDataFactory,
+        title: '简单选择器',
+        styles: {
+          mask: 'mask'
+        }
+      })
+      var picker = new Picker({
+        el: '#picker-cascade',
+        dataSourceFactory: cascadeFactory,
+        title: '级联选择器',
+        styles: {
+          scroller: 'scroller',
+          mask: 'mask'
+        }
+      })
+      var picker = new Picker({
+        el: '#picker-tm',
+        dataSourceFactory: dtFactory,
+        title: '日期选择器',
+        styles: {
+          scroller: 'scroller',
+          mask: 'mask'
+        }
+      })
+    </script>
+  </body>
+</html>
