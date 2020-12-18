@@ -71,7 +71,7 @@ export class SimpleDataSource<T extends SimpleData>
   }
 
   getInit(): Indexable<T> {
-    return this.createData(this.initIndex)!
+    return this.createData(this.initIndex)! // eslint-disable-line
   }
 
   getPrev(data: Nullable<Indexable<T>>): Nullable<Indexable<T>> {

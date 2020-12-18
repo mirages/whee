@@ -278,7 +278,7 @@ export default class Scroller<T> extends Emitter {
     // 更新数组顺序（同时也是更新元素的 data 值）
     if (angle < 0 && firstItem.angle > this.maxAngle) {
       // 第一个元素转动的角度超过 this.maxAngle，将其放到最后一个
-      const secItem = firstItem.next!
+      const secItem = firstItem.next! // eslint-disable-line
       firstItem.angle = secItem.angle - this._maxDiffAngle
       firstItem.data = this._dataSource.getNext(lastItem.data)
       // 断开旧连接
@@ -292,7 +292,7 @@ export default class Scroller<T> extends Emitter {
       this._lastItem = firstItem
     } else if (angle > 0 && lastItem.angle < -this.maxAngle) {
       // 最后一个元素转动的角度超过 -this.maxAngle，将其放到第一个
-      const secToLast = lastItem.prev!
+      const secToLast = lastItem.prev! // eslint-disable-line
       lastItem.angle = secToLast.angle + this._maxDiffAngle
       lastItem.data = this._dataSource.getPrev(firstItem.data)
       // 断开旧连接
@@ -309,7 +309,7 @@ export default class Scroller<T> extends Emitter {
     // 更新当前选中的值
     const currItem = this._currItem
     if (Math.abs(currItem.angle) > this._dataChangeAngle) {
-      this._currItem = currItem.angle > 0 ? currItem.next! : currItem.prev!
+      this._currItem = currItem.angle > 0 ? currItem.next! : currItem.prev! // eslint-disable-line
       // 触发 change 回调
       this._emitChange()
     }
@@ -399,7 +399,7 @@ export default class Scroller<T> extends Emitter {
   }
 
   getValue(): T {
-    return this._currItem.data!
+    return this._currItem.data! // eslint-disable-line
   }
 
   get firstItem(): VItem<T> {
@@ -421,11 +421,11 @@ export default class Scroller<T> extends Emitter {
     let prevItem: Nullable<VItem<T>> = this._currItem.prev
     let nextItem: Nullable<VItem<T>> = this._currItem.next
     while (prevItem) {
-      prevItem.data = this._dataSource.getPrev(prevItem.next!.data)
+      prevItem.data = this._dataSource.getPrev(prevItem.next!.data) // eslint-disable-line
       prevItem = prevItem.prev
     }
     while (nextItem) {
-      nextItem.data = this._dataSource.getNext(nextItem.prev!.data)
+      nextItem.data = this._dataSource.getNext(nextItem.prev!.data) // eslint-disable-line
       nextItem = nextItem.next
     }
 

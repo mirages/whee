@@ -1,10 +1,16 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import typescript from '@rollup/plugin-typescript'
-import { uglify } from 'rollup-plugin-uglify'
-import banner from 'rollup-plugin-banner'
+import { terser } from 'rollup-plugin-terser'
 
 const pkg = require('./package.json')
+const banner = `
+/*!
+ * ${pkg.name}
+ * v${pkg.version}
+ * by ${pkg.author}
+ */
+`
 
 export default {
   input: 'src/index.ts',
@@ -15,17 +21,14 @@ export default {
       dir: "./",
       entryFileNames: 'dist/[name].umd.js',
       format: 'umd',
-      name: 'Motion',
-      plugins: [
-        uglify({
-          mangle: true
-        })
-      ]
+      name: pkg.name,
+      banner
     },
     {
       dir: "./",
       entryFileNames: 'dist/[name].esm.js',
-      format: 'es'
+      format: 'es',
+      banner
     }
   ],
   plugins: [
@@ -40,6 +43,17 @@ export default {
       declarationDir: 'types/',
       rootDir: 'src/'
     }),
-    banner(`${pkg.name}\nv${pkg.version}\nby ${pkg.author}`)
+    terser({
+      output: {
+        comments: (node, comment) => {
+          const text = comment.value
+          const type = comment.type
+          if (type == 'comment2') {
+            // multiline comment
+            return /^!/.test(text) && !/Copyright/.test(text)
+          }
+        }
+      }
+    })
   ]
 }

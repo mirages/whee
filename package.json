@@ -2,7 +2,6 @@
   "name": "whee",
   "private": true,
   "scripts": {
-    "test": "lerna run test -- -- --single-run --browsers ChromeHeadless"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
