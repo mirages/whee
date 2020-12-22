@@ -74,7 +74,7 @@ class Motion {
   private renderData: TouchData | null = null
   private frameId = 0
   private rendering = false
-  private accumulation = 8
+  private accumulation = 6
   private tmThreshold = 50 // 惯性滚动时间差阈值，超过该值不触发惯性滚动，ios 比较灵敏，android 不灵敏
   private touchstartHandler: TouchstartCallback = noop
   private touchmoveHandler: TouchmoveCallback = noop
@@ -109,7 +109,9 @@ class Motion {
         this.touchstart(e)
         this.touchstartHandler(e)
       },
-      Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */ false
+      Motion.isSupportPassive
+        ? { passive: false, capture: true }
+        : /* istanbul ignore next */ false
     )
 
     this.el.addEventListener(
@@ -120,7 +122,9 @@ class Motion {
           this.touchmoveHandler(s, e)
         })
       },
-      Motion.isSupportPassive ? { passive: false, capture: true } : /* istanbul ignore next */ false
+      Motion.isSupportPassive
+        ? { passive: false, capture: true }
+        : /* istanbul ignore next */ false
     )
 
     this.el.addEventListener('touchend', e => {
@@ -151,7 +155,8 @@ class Motion {
       )
       data.a =
         (Math.atan(
-          (secondTouch.pageY - firstTouch.pageY) / (secondTouch.pageX - firstTouch.pageX)
+          (secondTouch.pageY - firstTouch.pageY) /
+            (secondTouch.pageX - firstTouch.pageX)
         ) *
           180) /
         Math.PI
@@ -173,7 +178,10 @@ class Motion {
     const x = data.x - lastData.x
     const y = data.y - lastData.y
 
-    if (t > this.tmThreshold && Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / t < 0.3) {
+    if (
+      t > this.tmThreshold &&
+      Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / t < 0.3
+    ) {
       // 距上次数据时间差较大并且移动距离较小时（缓慢滚动），不收集滚动数据
       this.trendData = []
     } else {
@@ -195,8 +203,8 @@ class Motion {
         prevData.a > 0 && currData.a < -80
           ? currData.a - prevData.a + 180
           : prevData.a < 0 && currData.a > 80
-            ? currData.a - prevData.a - 180
-            : currData.a - prevData.a
+          ? currData.a - prevData.a - 180
+          : currData.a - prevData.a
     }
     this.prevData = currData
 
@@ -242,10 +250,11 @@ class Motion {
     const v0 = s / t
     const a0 = v0 / t / 10
     let v = v0
-    let a = -a0 / 15
+    let a = -a0 * 0.06
 
     return /* step */ () => {
-      const nextA = a + 0.04 * a0
+      const ratio = v / v0
+      const nextA = ratio > 0.4 ? a + 0.02 * a0 : a - 0.015 * a0
       const nextV = v - a * this.accumulation
       let deltaS = ((v + nextV) / 2) * this.accumulation
 
@@ -342,7 +351,9 @@ class Motion {
   touchmove(event: TouchEvent, cb: StepCallback = noop): void {
     if (event.targetTouches[0].identifier === this.mainFinger) {
       // move with main finger
-      this.mode === Mode.frame ? this.moveFrame(event, cb) : this.moveRealtime(event, cb)
+      this.mode === Mode.frame
+        ? this.moveFrame(event, cb)
+        : this.moveRealtime(event, cb)
     } else {
       // move without main finger, do nothing.
     }

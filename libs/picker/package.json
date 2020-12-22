@@ -6,7 +6,7 @@
     "node": ">=10.13.0",
     "git": ">=2.13.0"
   },
-  "main": "dist/index.umd.ts",
+  "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",
   "directories": {
     "test": "test"
