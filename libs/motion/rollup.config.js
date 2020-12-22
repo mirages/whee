@@ -1,5 +1,3 @@
-import { nodeResolve } from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
 import typescript from '@rollup/plugin-typescript'
 import { terser } from 'rollup-plugin-terser'
 
@@ -32,8 +30,6 @@ export default {
     }
   ],
   plugins: [
-    nodeResolve(),
-    commonjs(),
     typescript({
       // 可覆盖 tsconfig.json 文件中的 CompilerOptions 配置
       // https://github.com/rollup/plugins/tree/master/packages/typescript/#readme

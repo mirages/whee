@@ -1,7 +1,6 @@
 import ts from '@rollup/plugin-typescript'
 import { terser } from 'rollup-plugin-terser'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
 import postcss from 'rollup-plugin-postcss'
 
 const pkg = require('./package.json')
@@ -52,7 +51,6 @@ export default LIST.map(item => ({
   ],
   plugins: [
     nodeResolve(),
-    commonjs(),
     ts({
       sourceMap: false,
       // 生成 .d.ts 文件。参考：https://github.com/rollup/plugins/issues/61#issuecomment-597090769
