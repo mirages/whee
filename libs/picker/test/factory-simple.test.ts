@@ -5,6 +5,7 @@ import {
 } from '../src/factory/simple'
 import type { IdxCascadable } from '../src'
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('SimpleDataSource', () => {
   it('getInit() should be return the init data', () => {
     const data = [1, 2, 3]

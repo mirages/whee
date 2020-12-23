@@ -1,6 +1,7 @@
 import { Nullable } from '../src'
 import { DatetimeDataSourceFactory, DATETYPE } from '../src/factory/datetime'
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('DatetimeDataSourceFactory', () => {
   it('options.initDate can be set the init show date', () => {
     const initDate = new Date(2020, 9, 10)

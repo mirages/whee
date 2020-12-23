@@ -12,7 +12,7 @@
   "scripts": {
     "clean": "rimraf dist && rimraf types",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "lint:ts": "eslint --f codeframe {src,test}/**",
+    "lint:ts": "eslint --f codeframe {src,test}/** karma.conf.ts",
     "test": "karma start --single-run --browsers ChromeHeadless",
     "build": "npm run clean && rollup -c",
     "pub": "sh scripts/release.sh"
@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/mirages/whee/issues"
   },
-  "homepage": "https://github.com/mirages/whee.git#readme",
+  "homepage": "https://github.com/mirages/whee/tree/main/libs/motion#readme",
   "keywords": [
     "mobile",
     "motion",

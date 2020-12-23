@@ -7,6 +7,7 @@ const dataSource = new SimpleDataSource(list, { initIndex: 0 })
 
 const $root = createEle('div')
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('Scroller', () => {
   it('options.el should be a real element', () => {
     (() => {
