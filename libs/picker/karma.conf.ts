@@ -8,14 +8,19 @@ import createCsspreprocessor from './plugins/karma-css-preprocessor'
 import karmaTypescriptCssTransform from './plugins/karma-typescript-css-transform'
 
 const karmaTypescriptConfig: KarmaTypescriptConfig = {
-  tsconfig: './tsconfig.json',
+  // 引用的是 libs/tsconfig.json 文件，则相当于 ts 的工作目录是 libs
+  tsconfig: '../tsconfig.json',
   compilerOptions: {
     // module: 'umd',
-    target: 'es5',
-    noEmit: false, // 必须输出 js 文件
-    sourceMap: true // 覆盖率测试报告需要
+    // 测试用例运行在浏览器中，只能是 es5 代码
+    target: 'ES5',
+    // 必须输出 js 文件，需要执行生成的 js 文件
+    noEmit: false,
+    // 覆盖率测试报告需要
+    sourceMap: true
   },
-  include: ['test/**/*'],
+  // include 是根据 ts 的工作目录 libs 进行解析的
+  include: ['picker/test/**/*'],
   reports: {
     html: {
       directory: 'coverage',

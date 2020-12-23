@@ -52,11 +52,17 @@ export default LIST.map(item => ({
   plugins: [
     nodeResolve(),
     ts({
+      // 引用的是 libs/tsconfig.json 文件，则相当于 ts 的工作目录是 libs
+      tsconfig: '../tsconfig.json',
       sourceMap: false,
       // 生成 .d.ts 文件。参考：https://github.com/rollup/plugins/issues/61#issuecomment-597090769
-      declaration: true,
-      declarationDir: 'types/',
-      rootDir: 'src/'
+      // declaration: true,
+      // declarationDir: 'types/',
+      // rootDir: 'src/'
+      // 这里的 include 仍然是相对于 rollup.config.js 文件所在的目录
+      include: [
+        "../**/*.ts"
+      ]
     }),
     terser({
       output: {

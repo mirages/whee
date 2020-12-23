@@ -1,4 +1,4 @@
-import Motion from '@whee/js-motion'
+import Motion from '../../../motion/src'
 import { DataSource, Nullable } from '../factory/data'
 import {
   angleToRadian,
