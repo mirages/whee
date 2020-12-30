@@ -79,5 +79,8 @@ export default LIST.map(item => ({
       extract: `${item.folder}/index.css`,
       minimize: item.format === 'umd'
     })
+  ],
+  external: [
+    '@whee/js-motion'
   ]
 }))
