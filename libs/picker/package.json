@@ -6,22 +6,23 @@
     "node": ">=10.13.0",
     "git": ">=2.13.0"
   },
-  "main": "dist/index.umd.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "module": "es/index.js",
   "directories": {
     "test": "test"
   },
   "files": [
     "dist",
+    "es",
     "types"
   ],
   "scripts": {
-    "clean": "rimraf dist && rimraf types",
+    "clean": "rimraf dist && rimraf es && rimraf types",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lint:ts": "eslint --f codeframe {src,test,plugins}/**/*.ts karma.conf.ts",
     "lint:css": "stylelint src/**/*.{css,less,scss}",
     "test": "karma start --single-run --browsers ChromeHeadless",
-    "build": "npm run clean && rollup -c"
+    "build": "npm run clean && rollup -c && tsc"
   },
   "repository": {
     "type": "git",
@@ -42,12 +43,9 @@
   },
   "homepage": "https://github.com/mirages/whee/tree/main/libs/picker#readme",
   "devDependencies": {
-    "cz-conventional-changelog": "3.3.0",
-    "tslib": "^2.0.3"
+    "cz-conventional-changelog": "3.3.0"
   },
   "dependencies": {
-  },
-  "eslintIgnore": [
-    "types"
-  ]
+    "@whee/js-motion": "^1.1.0"
+  }
 }
