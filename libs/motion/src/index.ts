@@ -7,10 +7,16 @@ enum Direction {
   y = 'y',
   xy = 'xy'
 }
+enum Coordinate {
+  screen = 'screen',
+  client = 'client',
+  page = 'page'
+}
 interface Options {
   target?: HTMLElement | string
   mode?: Mode
   direction?: Direction
+  coordinate?: Coordinate
 }
 interface MoveData {
   x: number
@@ -63,10 +69,12 @@ class Motion {
 
   static Direction = Direction
   static Mode = Mode
+  static Coordinate = Coordinate
 
   readonly el: HTMLElement | null
   readonly mode: Mode
   readonly direction: Direction
+  readonly coordinate: Coordinate
   private mainFinger = 0
   private trendData: TouchData[] = []
   private trendLength = 4
@@ -93,6 +101,7 @@ class Motion {
     this.el = options.target ? this.getEl(options.target) : null
     this.mode = options.mode || Mode.realtime
     this.direction = options.direction || Direction.xy
+    this.coordinate = options.coordinate || Coordinate.page
 
     this.initEvent()
   }
@@ -140,9 +149,11 @@ class Motion {
   ): TouchData {
     const firstTouch = event[prop][0]
     const secondTouch = event[prop][1]
+    const pX = (this.coordinate + 'X') as 'pageX' | 'clientX' | 'screenX'
+    const pY = (this.coordinate + 'Y') as 'pageY' | 'clientY' | 'screenY'
     const data: TouchData = {
-      x: firstTouch.pageX,
-      y: firstTouch.pageY,
+      x: firstTouch[pX],
+      y: firstTouch[pY],
       t: Date.now(),
       l: 0,
       a: 0
@@ -150,13 +161,13 @@ class Motion {
 
     if (secondTouch) {
       data.l = Math.sqrt(
-        Math.pow(firstTouch.pageX - secondTouch.pageX, 2) +
-          Math.pow(firstTouch.pageY - secondTouch.pageY, 2)
+        Math.pow(firstTouch[pX] - secondTouch[pY], 2) +
+          Math.pow(firstTouch[pX] - secondTouch[pY], 2)
       )
       data.a =
         (Math.atan(
-          (secondTouch.pageY - firstTouch.pageY) /
-            (secondTouch.pageX - firstTouch.pageX)
+          (secondTouch[pY] - firstTouch[pY]) /
+            (secondTouch[pX] - firstTouch[pX])
         ) *
           180) /
         Math.PI

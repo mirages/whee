@@ -7,10 +7,16 @@ declare enum Direction {
     y = "y",
     xy = "xy"
 }
+declare const enum Coordinate {
+    screen = "screen",
+    client = "client",
+    page = "page"
+}
 interface Options {
     target?: HTMLElement | string;
     mode?: Mode;
     direction?: Direction;
+    coordinate?: Coordinate;
 }
 interface MoveData {
     x: number;
@@ -41,6 +47,7 @@ declare class Motion {
     readonly el: HTMLElement | null;
     readonly mode: Mode;
     readonly direction: Direction;
+    readonly coordinate: Coordinate;
     private mainFinger;
     private trendData;
     private trendLength;
