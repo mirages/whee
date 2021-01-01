@@ -2,8 +2,15 @@ import Motion from '../src/index'
 import { expect } from 'chai'
 import { delay } from './helper'
 
-const Direction = Motion.Direction
-const Mode = Motion.Mode
+const enum Direction {
+  x = 'x',
+  y = 'y',
+  xy = 'xy'
+}
+const enum Mode {
+  realtime = 'realtime',
+  frame = 'frame'
+}
 const createTouch = (options: {
   pageX: number
   pageY: number
@@ -57,7 +64,7 @@ describe('Motion Class - instance methods', function () {
         motion1.touchmove(touchmoveEvent)
       }).to.not.throw()
     })
-    it('move only in "x" direction when options.direction equal Direction.x', done => {
+    it('move only in "x" direction when options.direction equal "x"', done => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.x })
       const touchstart = createTouch({
@@ -89,7 +96,7 @@ describe('Motion Class - instance methods', function () {
         done()
       })
     })
-    it('move only in "y" direction when options.direction equal Direction.y', done => {
+    it('move only in "y" direction when options.direction equal "y"', done => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.y })
       const touchstart = createTouch({
@@ -121,7 +128,7 @@ describe('Motion Class - instance methods', function () {
         done()
       })
     })
-    it('move can in "x" and "y" direction when options.direction equal Direction.xy', done => {
+    it('move can in "x" and "y" direction when options.direction equal "xy"', done => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.xy })
       const touchstart = createTouch({
@@ -153,7 +160,7 @@ describe('Motion Class - instance methods', function () {
         done()
       })
     })
-    it('move realtime when options.mode equal Mode.realtime', () => {
+    it('move realtime when options.mode equal "realtime"', () => {
       const target = document.createElement('div')
       const motion = new Motion({ direction: Direction.xy })
       const touchstart = createTouch({
@@ -194,7 +201,7 @@ describe('Motion Class - instance methods', function () {
         expect(moveY).to.be.equal(disY)
       }
     })
-    it('move frame by frame when options.mode equal Mode.frame', done => {
+    it('move frame by frame when options.mode equal "frame"', done => {
       const target = document.createElement('div')
       const motions = [
         new Motion({ direction: Direction.x, mode: Mode.frame }),
@@ -835,7 +842,8 @@ describe('Motion Class - instance methods', function () {
         expect(trans.angle).to.be.closeTo(
           (2 *
             Math.atan(
-              (touchstart2.pageX - touchstart1.pageX) / (touchstart2.pageY - touchstart1.pageY)
+              (touchstart2.pageX - touchstart1.pageX) /
+                (touchstart2.pageY - touchstart1.pageY)
             ) *
             180) /
             Math.PI,
@@ -878,7 +886,8 @@ describe('Motion Class - instance methods', function () {
         expect(trans.angle).to.be.closeTo(
           (-2 *
             Math.atan(
-              (touchstart2.pageX - touchstart1.pageX) / (touchstart1.pageY - touchstart2.pageY)
+              (touchstart2.pageX - touchstart1.pageX) /
+                (touchstart1.pageY - touchstart2.pageY)
             ) *
             180) /
             Math.PI,

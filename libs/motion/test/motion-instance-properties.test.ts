@@ -1,8 +1,15 @@
 import Motion from '../src/index'
 import { expect } from 'chai'
 
-const Direction = Motion.Direction
-const Mode = Motion.Mode
+const enum Direction {
+  x = 'x',
+  y = 'y',
+  xy = 'xy'
+}
+const enum Mode {
+  realtime = 'realtime',
+  frame = 'frame'
+}
 
 describe('Motion Class - instance properties', () => {
   it('motion.mode should be Mode.realtime or Mode.frame', () => {
@@ -14,9 +21,15 @@ describe('Motion Class - instance properties', () => {
     // expect(new Motion({ mode: 'asd' as Mode }).mode).to.be.equal(Mode.realtime)
   })
   it('motion.direction should be Direction.x or Direction.y or Direction.xy', () => {
-    expect(new Motion({ direction: Direction.x }).direction).to.be.equal(Direction.x)
-    expect(new Motion({ direction: Direction.y }).direction).to.be.equal(Direction.y)
-    expect(new Motion({ direction: Direction.xy }).direction).to.be.equal(Direction.xy)
+    expect(new Motion({ direction: Direction.x }).direction).to.be.equal(
+      Direction.x
+    )
+    expect(new Motion({ direction: Direction.y }).direction).to.be.equal(
+      Direction.y
+    )
+    expect(new Motion({ direction: Direction.xy }).direction).to.be.equal(
+      Direction.xy
+    )
   })
   it('motion.direction default value is Direction.xy', () => {
     expect(new Motion().direction).to.be.equal(Direction.xy)

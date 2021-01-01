@@ -53,8 +53,8 @@
     <script src="../dist/index.js"></script>
     <script>
       var Motion = window['@whee/js-motion']
-      var Direction = Motion.Direction
-      var Mode = Motion.Mode
+      var Direction = { x: 'x', y: 'y', xy: 'xy' }
+      var Mode = { realtime: 'realtime', frame: 'frame' }
       var $target = document.querySelector('#target')
 
       // 触摸板

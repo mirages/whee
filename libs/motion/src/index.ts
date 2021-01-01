@@ -1,17 +1,6 @@
-enum Mode {
-  realtime = 'realtime',
-  frame = 'frame'
-}
-enum Direction {
-  x = 'x',
-  y = 'y',
-  xy = 'xy'
-}
-enum Coordinate {
-  screen = 'screen',
-  client = 'client',
-  page = 'page'
-}
+type Mode = 'realtime' | 'frame'
+type Direction = 'x' | 'y' | 'xy'
+type Coordinate = 'screen' | 'client' | 'page'
 interface Options {
   target?: HTMLElement | string
   mode?: Mode
@@ -67,10 +56,6 @@ class Motion {
     return supportsPassive
   })()
 
-  static Direction = Direction
-  static Mode = Mode
-  static Coordinate = Coordinate
-
   readonly el: HTMLElement | null
   readonly mode: Mode
   readonly direction: Direction
@@ -99,9 +84,9 @@ class Motion {
    */
   constructor(options: Options = {}) {
     this.el = options.target ? this.getEl(options.target) : null
-    this.mode = options.mode || Mode.realtime
-    this.direction = options.direction || Direction.xy
-    this.coordinate = options.coordinate || Coordinate.page
+    this.mode = options.mode || 'realtime'
+    this.direction = options.direction || 'xy'
+    this.coordinate = options.coordinate || 'page'
 
     this.initEvent()
   }
@@ -237,9 +222,9 @@ class Motion {
     let xMoveStep = this.getMoveStep(average.x, average.t)
     let yMoveStep = this.getMoveStep(average.y, average.t)
 
-    if (this.direction === Direction.x) {
+    if (this.direction === 'x') {
       yMoveStep = () => 0
-    } else if (this.direction === Direction.y) {
+    } else if (this.direction === 'y') {
       xMoveStep = () => 0
     }
 
@@ -303,8 +288,8 @@ class Motion {
       this.frameId = requestAnimationFrame(() => {
         const moveData = this.getMoveData(this.renderData as TouchData)
         const cbData: CbData = {
-          x: this.direction !== Direction.y ? moveData.x : 0,
-          y: this.direction !== Direction.x ? moveData.y : 0,
+          x: this.direction !== 'y' ? moveData.x : 0,
+          y: this.direction !== 'x' ? moveData.y : 0,
           scale: moveData.scale,
           angle: moveData.angle
         }
@@ -319,8 +304,8 @@ class Motion {
     const data = this.createData(event)
     const moveData = this.getMoveData(data)
     const cbData: CbData = {
-      x: this.direction !== Direction.y ? moveData.x : 0,
-      y: this.direction !== Direction.x ? moveData.y : 0,
+      x: this.direction !== 'y' ? moveData.x : 0,
+      y: this.direction !== 'x' ? moveData.y : 0,
       scale: moveData.scale,
       angle: moveData.angle
     }
@@ -362,7 +347,7 @@ class Motion {
   touchmove(event: TouchEvent, cb: StepCallback = noop): void {
     if (event.targetTouches[0].identifier === this.mainFinger) {
       // move with main finger
-      this.mode === Mode.frame
+      this.mode === 'frame'
         ? this.moveFrame(event, cb)
         : this.moveRealtime(event, cb)
     } else {
