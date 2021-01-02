@@ -1,6 +1,6 @@
 {
   "name": "@whee/js-motion",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "motion for mobile",
   "files": [
     "dist",
@@ -37,10 +37,5 @@
   "author": "mirages",
   "license": "MIT",
   "dependencies": {},
-  "devDependencies": {
-    "cz-conventional-changelog": "3.3.0"
-  },
-  "eslintIgnore": [
-    "types"
-  ]
+  "devDependencies": {}
 }
