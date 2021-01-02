@@ -18,6 +18,7 @@
     "chai": "^4.2.0",
     "commitizen": "^4.2.2",
     "conventional-changelog-cli": "^2.1.1",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.15.0",
     "husky": "^4.3.6",
     "karma": "^5.2.3",
