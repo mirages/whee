@@ -18,22 +18,26 @@ type InputOpts = {
 
 /**
  * date source type.
- * 从 0 开始，对应数组数据的下标索引值
  */
-const enum DSTYPE {
-  year,
-  month,
-  day,
-  hour,
-  minute,
-  second
+const DateSourceType = {
+  year: '0' as const,
+  month: '1' as const,
+  day: '2' as const,
+  hour: '3' as const,
+  minute: '4' as const,
+  second: '5' as const
 }
+type DateSourceTypeValue = typeof DateSourceType[keyof typeof DateSourceType]
 
 abstract class BaseSource implements DataSource<number> {
   protected options!: BaseOptions
-  protected type: DSTYPE
+  protected type: DateSourceTypeValue
 
-  constructor(options: InputOpts, parents: number[], type: DSTYPE) {
+  constructor(
+    options: InputOpts,
+    parents: number[],
+    type: DateSourceTypeValue
+  ) {
     this.type = type
     this.setOptions(options, parents)
   }
@@ -50,7 +54,7 @@ abstract class BaseSource implements DataSource<number> {
   }
 
   private fixMax(max: number, maxDate: number[], parents: number[]) {
-    const type = this.type
+    const type = Number(this.type)
     const isEqual =
       maxDate.slice(0, type).toString() === parents.slice(0, type).toString()
 
@@ -58,7 +62,7 @@ abstract class BaseSource implements DataSource<number> {
   }
 
   private fixMin(min: number, minDate: number[], parents: number[]) {
-    const type = this.type
+    const type = Number(this.type)
     const isEqual =
       minDate.slice(0, type).toString() === parents.slice(0, type).toString()
 
@@ -107,7 +111,7 @@ abstract class BaseSource implements DataSource<number> {
 
 class YearSource extends BaseSource {
   constructor(options: InputOpts, parents: number[] = []) {
-    super(options, parents, DSTYPE.year)
+    super(options, parents, DateSourceType.year)
   }
 
   getMax() {
@@ -126,7 +130,7 @@ class YearSource extends BaseSource {
 
 class MonthSource extends BaseSource {
   constructor(options: InputOpts, parents: number[]) {
-    super(options, parents, DSTYPE.month)
+    super(options, parents, DateSourceType.month)
   }
 
   getMax() {
@@ -142,7 +146,7 @@ class MonthSource extends BaseSource {
 
 class DaySource extends BaseSource {
   constructor(options: InputOpts, parents: number[]) {
-    super(options, parents, DSTYPE.day)
+    super(options, parents, DateSourceType.day)
   }
 
   getMax(parents: number[]) {
@@ -163,7 +167,7 @@ class DaySource extends BaseSource {
 
 class HourSource extends BaseSource {
   constructor(options: InputOpts, parents: number[]) {
-    super(options, parents, DSTYPE.hour)
+    super(options, parents, DateSourceType.hour)
   }
 
   getMax() {
@@ -176,7 +180,7 @@ class HourSource extends BaseSource {
 
 class MinuteSource extends BaseSource {
   constructor(options: InputOpts, parents: number[]) {
-    super(options, parents, DSTYPE.minute)
+    super(options, parents, DateSourceType.minute)
   }
 
   getMax() {
@@ -189,7 +193,7 @@ class MinuteSource extends BaseSource {
 
 class SecondSource extends BaseSource {
   constructor(options: InputOpts, parents: number[]) {
-    super(options, parents, DSTYPE.second)
+    super(options, parents, DateSourceType.second)
   }
 
   getMax() {
@@ -201,36 +205,54 @@ class SecondSource extends BaseSource {
 }
 
 /**
- * '0' 对应 DSTYPE.year
- * '1' 对应 DSTYPE.month
- * '2' 对应 DSTYPE.day
- * '3' 对应 DSTYPE.hour
- * '4' 对应 DSTYPE.minute
- * '5' 对应 DSTYPE.second
+ * '0','1','2','3','4','5' 分别对应 DateSourceTypeValue
  */
-export enum DATETYPE {
-  yyyy = '0',
-  yyyyMM = '01',
-  yyyyMMdd = '012',
-  yyyyMMddHH = '0123',
-  yyyyMMddHHmm = '01234',
-  yyyyMMddHHmmss = '012345',
-  MM = '1',
-  MMdd = '12',
-  MMddHH = '123',
-  MMddHHmm = '1234',
-  MMddHHmmss = '12345',
-  dd = '2',
-  ddHH = '23',
-  ddHHmm = '234',
-  ddHHmmss = '2345',
-  HH = '3',
-  HHmm = '34',
-  HHmmss = '345',
-  mm = '4',
-  mmss = '45',
-  ss = '5'
+export const DATETYPE: {
+  yyyy: '0'
+  yyyyMM: '01'
+  yyyyMMdd: '012'
+  yyyyMMddHH: '0123'
+  yyyyMMddHHmm: '01234'
+  yyyyMMddHHmmss: '012345'
+  MM: '1'
+  MMdd: '12'
+  MMddHH: '123'
+  MMddHHmm: '1234'
+  MMddHHmmss: '12345'
+  dd: '2'
+  ddHH: '23'
+  ddHHmm: '234'
+  ddHHmmss: '2345'
+  HH: '3'
+  HHmm: '34'
+  HHmmss: '345'
+  mm: '4'
+  mmss: '45'
+  ss: '5'
+} = {
+  yyyy: '0',
+  yyyyMM: '01',
+  yyyyMMdd: '012',
+  yyyyMMddHH: '0123',
+  yyyyMMddHHmm: '01234',
+  yyyyMMddHHmmss: '012345',
+  MM: '1',
+  MMdd: '12',
+  MMddHH: '123',
+  MMddHHmm: '1234',
+  MMddHHmmss: '12345',
+  dd: '2',
+  ddHH: '23',
+  ddHHmm: '234',
+  ddHHmmss: '2345',
+  HH: '3',
+  HHmm: '34',
+  HHmmss: '345',
+  mm: '4',
+  mmss: '45',
+  ss: '5'
 }
+type DatetimeTypeValue = typeof DATETYPE[keyof typeof DATETYPE]
 
 const UNITS = ['年', '月', '日', '时', '分', '秒']
 const CTORS = [
@@ -249,7 +271,7 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
   readonly initDate: number[] = []
   readonly units: string[] = []
   readonly loop: boolean
-  readonly types: DSTYPE[]
+  readonly types: DateSourceTypeValue[]
   protected dataSources: BaseSource[] = []
 
   constructor(
@@ -258,7 +280,7 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
       maxDate?: Date
       initDate?: Date
       loop?: boolean
-      type?: DATETYPE
+      type?: DatetimeTypeValue
       units?: string[]
     } = {}
   ) {
@@ -286,9 +308,9 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
     this.maxDate = this.dateToArray(maxDate)
     this.initDate = this.dateToArray(initDate)
     this.loop = loop
-    this.types = type.split('').map(Number)
+    this.types = type.split('') as DateSourceTypeValue[]
     this.units = this.types.reduce((acc, type, idx) => {
-      acc[type] = units[idx]
+      acc[Number(type)] = units[idx]
       return acc
     }, UNITS.slice(0))
   }
@@ -315,11 +337,12 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
   }
 
   create(): BaseSource[] {
-    const parents: number[] = this.initDate.slice(0, this.types[0])
+    const parents: number[] = this.initDate.slice(0, Number(this.types[0]))
 
     this.types.forEach(type => {
-      const source = new CTORS[type](
-        this.createOptions(type, this.initDate[type]),
+      const _type = Number(type)
+      const source = new CTORS[_type](
+        this.createOptions(_type, this.initDate[_type]),
         parents
       )
       this.dataSources.push(source)
@@ -331,12 +354,12 @@ export class DatetimeDataSourceFactory implements DataSourceFactory<number> {
 
   change(values: number[], index: number): BaseSource[] {
     const parents: number[] = this.initDate
-      .slice(0, this.types[0])
+      .slice(0, Number(this.types[0]))
       .concat(values.slice(0, index + 1))
 
     for (let i = index + 1, len = this.types.length; i < len; i++) {
       this.dataSources[i].setOptions(
-        this.createOptions(this.types[i], values[i]),
+        this.createOptions(Number(this.types[i]), values[i]),
         parents
       )
       parents.push(this.dataSources[i].getInit())

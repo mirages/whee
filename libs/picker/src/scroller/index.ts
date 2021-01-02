@@ -140,7 +140,7 @@ export default class Scroller<T> extends Emitter {
     )
     const motion = new Motion({
       target: $wrapper,
-      direction: Motion.Direction.y
+      direction: 'y'
     })
 
     motion.onTouchmove(({ y }) => {

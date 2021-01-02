@@ -47,6 +47,6 @@
     "cz-conventional-changelog": "3.3.0"
   },
   "dependencies": {
-    "@whee/js-motion": "^1.1.0"
+    "@whee/js-motion": "^2.0.0"
   }
 }

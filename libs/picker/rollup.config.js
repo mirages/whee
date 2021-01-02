@@ -39,18 +39,18 @@ export default LIST.map(item => ({
           name: item.globalName,
           banner,
           plugins: [
-            terser({
-              output: {
-                comments: (node, comment) => {
-                  const text = comment.value
-                  const type = comment.type
-                  if (type == 'comment2') {
-                    // multiline comment
-                    return /^!/.test(text) && !/Copyright/.test(text)
-                  }
-                }
-              }
-            })
+            // terser({
+            //   output: {
+            //     comments: (node, comment) => {
+            //       const text = comment.value
+            //       const type = comment.type
+            //       if (type == 'comment2') {
+            //         // multiline comment
+            //         return /^!/.test(text) && !/Copyright/.test(text)
+            //       }
+            //     }
+            //   }
+            // })
           ]
         }
       : {})
@@ -80,7 +80,5 @@ export default LIST.map(item => ({
       minimize: item.format === 'umd'
     })
   ],
-  external: [
-    '@whee/js-motion'
-  ]
+  external: item.format === 'umd' ? [] : ['@whee/js-motion']
 }))
