@@ -1,6 +1,7 @@
 import ts from '@rollup/plugin-typescript'
 import { terser } from 'rollup-plugin-terser'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
 import postcss from 'rollup-plugin-postcss'
 
 const pkg = require('./package.json')
@@ -39,30 +40,34 @@ export default LIST.map(item => ({
           name: item.globalName,
           banner,
           plugins: [
-            // terser({
-            //   output: {
-            //     comments: (node, comment) => {
-            //       const text = comment.value
-            //       const type = comment.type
-            //       if (type == 'comment2') {
-            //         // multiline comment
-            //         return /^!/.test(text) && !/Copyright/.test(text)
-            //       }
-            //     }
-            //   }
-            // })
+            terser({
+              output: {
+                comments: (node, comment) => {
+                  const text = comment.value
+                  const type = comment.type
+                  if (type == 'comment2') {
+                    // multiline comment
+                    return /^!/.test(text) && !/Copyright/.test(text)
+                  }
+                }
+              }
+            })
           ]
         }
       : {})
   },
   plugins: [
-    nodeResolve(),
+    // 打 umd 包时需要解析依赖包，
+    nodeResolve({
+      mainFields: ['main']
+    }),
+    commonjs(),
     ts({
       // 引用的是 libs/tsconfig.json 文件，则相当于 ts 的工作目录是 libs
       tsconfig: '../tsconfig.json',
       sourceMap: false,
       // 这里的 include 仍然是相对于 rollup.config.js 文件所在的目录
-      include: ['../motion/**/*.ts', '*.d.ts', 'src/**/*.ts'],
+      include: ['*.d.ts', 'src/**/*.ts'],
       ...(item.format === 'umd'
         ? {
             target: 'ES5'

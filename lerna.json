@@ -3,5 +3,14 @@
     "components/*",
     "libs/*"
   ],
-  "version": "independent"
+  "version": "independent",
+  "command": {
+    "publish": {
+      "ignoreChanges": [
+        "**/test/**",
+        "**/*.md"
+      ],
+      "registry": "https://registry.npmjs.org/"
+    }
+  }
 }

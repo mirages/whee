@@ -15,11 +15,7 @@
     // Import non-ES modules as default imports.
     "esModuleInterop": true,
     "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "baseUrl": ".",
-    "paths": {
-      "@whee/js-motion":["node_modules/@whee/js-motion/src"]
-    }
+    "strictNullChecks": true
   },
   "include": [
     "*/*.d.ts",
