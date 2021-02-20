@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - lts/*
+dist: xenial
+addons:
+  chrome: stable
+scripts:
+  - npx lerna bootstrap
+  - npx lerna run test
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -v
