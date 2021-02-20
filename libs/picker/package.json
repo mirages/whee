@@ -22,7 +22,8 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lint:ts": "eslint --f codeframe {src,test,plugins}/**/*.ts karma.conf.ts",
     "lint:css": "stylelint src/**/*.{css,less,scss}",
-    "test": "karma start --single-run --browsers ChromeHeadless",
+    "test": "rimraf coverage && karma start --single-run --browsers ChromeHeadless",
+    "test:ci": "npm test && npm run build",
     "build": "npm run clean && rollup -c && tsc"
   },
   "repository": {

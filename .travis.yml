@@ -6,8 +6,6 @@ addons:
   chrome: stable
 script:
   - npx lerna bootstrap
-  - ls -l libs/picker/node_modules/@whee
-  - npx lerna run test --scope @whee/js-motion
-  - npx lerna run test --scope @whee/js-picker
+  - npx lerna run test:ci
 after_success:
   - bash <(curl -s https://codecov.io/bash) -v
