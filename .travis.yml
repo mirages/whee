@@ -4,8 +4,9 @@ node_js:
 dist: xenial
 addons:
   chrome: stable
-scripts:
+script:
   - npx lerna bootstrap
+  - ls -l libs/picker/node_modules/@whee
   - npx lerna run test
 after_success:
   - bash <(curl -s https://codecov.io/bash) -v
