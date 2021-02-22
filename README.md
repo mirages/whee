@@ -1,6 +1,10 @@
 # whee
 
 <p align="center">
+  <a href="https://travis-ci.com/github/mirages/whee"><img src="https://travis-ci.com/mirages/whee.svg?branch=main" alt="Build Status" /></a>
+  <a href="https://codecov.io/gh/mirages/whee/"><img src="https://codecov.io/gh/mirages/whee/branch/main/graph/badge.svg?token=H12HB38OZR" alt="codecov" /></a>
+</p>
+<p align="center">
   <a href="https://github.com/microsoft/TypeScript"><img src="https://img.shields.io/github/package-json/dependency-version/mirages/whee/dev/typescript" alt="typescript" /></a>
   <a href=""><img src="https://img.shields.io/github/package-json/dependency-version/mirages/whee/dev/eslint" alt="eslint" /></a>
   <a href=""><img src="https://img.shields.io/github/package-json/dependency-version/mirages/whee/dev/stylelint" alt="stylelint" /></a>

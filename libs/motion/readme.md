@@ -1,7 +1,5 @@
 # Motion
 
-[![Build Status](https://travis-ci.com/mirages/motion.svg?branch=master)](https://travis-ci.com/mirages/motion) [![codecov](https://codecov.io/gh/mirages/motion/branch/master/graph/badge.svg?token=ZM4K1Q670O)](https://codecov.io/gh/mirages/motion/branch/master) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-
 移动端触摸手势检测工具，根据元素的 `touchstart, touchmove, touchend` 事件计算相关的滑动、缩放和旋转操作，以及触摸事件结束后的惯性滑动。
 
 > 滑动、缩放以及旋转都是**当前时刻**相对元素**上一时刻**的状态计算的，因此从触摸开始(`touchstart`)到触摸结束(`touchend`)之间总的滑动距离和旋转角度，需要将每一时刻值进行**累加**，而缩放大小则需要**累乘**。
