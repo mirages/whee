@@ -1,5 +1,3 @@
-# sroller-picker
-
 移动端 `js` 滚动选择器控件。支持单列、多列选择，以及多列级联选择。
 
 ## Picker
@@ -11,7 +9,7 @@
 ### 用法
 
 ```js
-import { Picker } from 'scroller-picker'
+import { Picker } from '@whee/js-picker'
 
 const picker = new Picker({
   /* PickerOpts */
@@ -107,7 +105,7 @@ picker.on('ensure', values => {})
 ### 用法
 
 ```js
-import { Scroller } from 'scroller-picker'
+import { Scroller } from '@whee/js-picker'
 
 const scroller = new Scroller({
   /* ScrollerOpts */
@@ -203,7 +201,7 @@ scroller.on('scrollEnd', vaule => { ... })
 ### 示例
 
 ```js
-import { Scroller } from 'scroller-picker'
+import { Scroller } from '@whee/js-picker'
 
 const initIndex = 3
 const data = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
