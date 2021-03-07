@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "build": "node scripts/build.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint:ts": "eslint --f codeframe src/ --ext .js,.ts,.tsx",
+    "test": "jest --config=jest.config.json"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "@vue/babel-plugin-jsx": "^1.0.3",
-    "vue": "^3.0.5"
+    "@vue/test-utils": "^2.0.0-rc.3",
+    "vue": "^3.0.7"
   }
 }

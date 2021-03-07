@@ -1,12 +1,4 @@
-import {
-  defineComponent,
-  computed,
-  watch,
-  reactive,
-  isReactive,
-  ref,
-  PropType
-} from 'vue'
+import { defineComponent, computed, PropType } from 'vue'
 import styles from './index.less'
 
 export type LoadingType = 'spinner' | 'circle'
@@ -41,6 +33,7 @@ export default defineComponent({
       for (let i = 0; i < num; i++) {
         pos.push(
           <i
+            data-test="loading-spinner"
             style={{
               width: `${Math.floor(lineWidth.value)}px`,
               height: `${Math.floor(lineHeight.value)}px`,
@@ -58,7 +51,13 @@ export default defineComponent({
     const renderCircle = () => {
       return (
         <svg viewBox="0 0 30 30">
-          <circle cx="15" cy="15" r="12" stroke={props.color}></circle>
+          <circle
+            cx="15"
+            cy="15"
+            r="12"
+            data-test="loading-circle"
+            stroke={props.color}
+          ></circle>
         </svg>
       )
     }
@@ -71,6 +70,7 @@ export default defineComponent({
         }}
       >
         <div
+          data-test="loading-size"
           class={styles[props.type]}
           style={{
             width: size.value + 'px',

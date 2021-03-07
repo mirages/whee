@@ -1,0 +1,22 @@
+{
+  "roots": [
+    "<rootDir>/src"
+  ],
+  "transform": {
+    "\\.[jt]sx?$": "babel-jest"
+  },
+  "collectCoverage": true,
+  "coverageDirectory": "<rootDir>/coverage",
+  "coveragePathIgnorePatterns": [
+    "/node_modules/"
+  ],
+  "collectCoverageFrom": [
+    "<rootDir>/**/*.{ts,tsx,js,jsx}"
+  ],
+  "coverageReporters": [
+    "lcov", "json", "text-summary"
+  ],
+  "moduleNameMapper": {
+    "\\.(css|less)$": "identity-obj-proxy"
+  }
+}
