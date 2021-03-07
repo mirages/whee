@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    // "declaration": true,
+    // "declarationDir": "types",
+    // "emitDeclarationOnly": true,
+    "target": "esnext",
+    "module": "esnext",
+    // 这样就可以对 `this` 上的数据属性进行更严格的推断`
+    "strict": true,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "allowJs": false,
+    // Disallow features that require cross-file information for emit.
+    // Set true will ignore const enum feature.
+    // see: https://github.com/microsoft/TypeScript/issues/41641
+    "isolatedModules": true,
+    // Import non-ES modules as default imports.
+    "esModuleInterop": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "global.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.jsx"
+  ],
+  "exclude": [
+    "node_modules/**",
+    "dist/**"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@whee/vue",
+  "version": "0.0.1",
+  "description": "vue components for mobile",
+  "main": "dist/index.js",
+  "module": "es",
+  "files": [
+    "dist",
+    "es",
+    "types"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mirages/whee.git",
+    "directory": "components/vue"
+  },
+  "author": "mirages",
+  "license": "MIT",
+  "devDependencies": {
+    "@vue/babel-plugin-jsx": "^1.0.3",
+    "vue": "^3.0.5"
+  }
+}

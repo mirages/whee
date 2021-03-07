@@ -1,0 +1,14 @@
+{
+  "presets": [
+    [
+      "@babel/preset-typescript",
+      {
+        "isTsx": true,
+        "allExtentions": true
+      }
+    ]
+  ],
+  "plugins": [
+    "@vue/babel-plugin-jsx"
+  ]
+}
