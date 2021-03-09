@@ -36,7 +36,8 @@ const build = async () => {
             },
             extract: path.resolve(distDir, 'index.css')
           })
-        ]
+        ],
+        external: ['vue']
       })
 
       await bundle.write({
