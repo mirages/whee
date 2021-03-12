@@ -4,7 +4,7 @@ import styles from './index.less'
 export type LoadingType = 'spinner' | 'circle'
 
 export default defineComponent({
-  name: 'wh-loading',
+  name: 'we-loading',
   props: {
     size: {
       type: [Number, String],
