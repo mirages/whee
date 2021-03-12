@@ -1,6 +1,6 @@
 "*.md":
   - prettier --write
-"*.{ts,tsx}":
+"*.{js,jsx,ts,tsx}":
   # prettier and eslint
   - prettier --write
   - eslint --fix
