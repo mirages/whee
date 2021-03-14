@@ -10,9 +10,11 @@
     "types"
   ],
   "scripts": {
-    "build": "node scripts/build.js",
+    "clean": "rimraf dist && rimraf es",
     "lint:ts": "eslint --f codeframe src/ --ext .js,.ts,.tsx",
-    "test": "jest --config=jest.config.json"
+    "test": "rimraf coverage && jest --config=jest.config.json",
+    "test:ci": "npm test && npm run build",
+    "build": "npm run clean && node scripts/build.js"
   },
   "repository": {
     "type": "git",
