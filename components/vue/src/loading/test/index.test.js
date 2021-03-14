@@ -12,25 +12,31 @@ test('the size prop can set the loading size', () => {
 
   expect(loadingSize.style.width).toEqual('40px')
   expect(loadingSize.style.height).toEqual('40px')
+  expect(wrapper.html()).toMatchSnapshot()
 })
 
 test('the type prop can set the loading type: spinner or circle', async () => {
-  const wrapper  = mount(Loading, {
+  const wrapper = mount(Loading, {
     props: {
       type: 'spinner'
     }
   })
 
   expect(wrapper.find('[data-test=loading-spinner]').exists()).toBe(true)
+  let prevHtml = wrapper.html()
 
   await wrapper.setProps({ type: 'circle' })
   expect(wrapper.find('[data-test=loading-circle]').exists()).toBe(true)
+  expect(prevHtml + wrapper.html()).toMatchSnapshot()
 })
 
-test('the color prop can set the loading and text color', () => {
+test('the default slot can set the loading text and style', () => {
   const wrapper = mount(Loading, {
-    props: {
-      color: 'red'
+    slots: {
+      default: () => <p class="test">loading...</p>
     }
   })
+
+  expect(wrapper.html()).toContain('<p class="test">loading...</p>')
+  expect(wrapper.html()).toMatchSnapshot()
 })
