@@ -1,0 +1,76 @@
+@main-color: #4f8efa;
+
+.btn {
+  height: 46px;
+  padding: 0 15px;
+  border: none;
+
+  outline: none;
+
+  &[disabled] {
+    opacity: .5;
+  }
+
+  &:not([disabled]):active {
+    opacity: .9;
+  }
+}
+
+.btn-default {
+  border: 1px solid @main-color;
+
+  color: @main-color;
+
+  background-color: #fff;
+}
+
+.btn-primary {
+  color: #fff;
+
+  background-color: @main-color;
+}
+
+.btn-danger {
+  color: #fff;
+
+  background-color: #ee0a24;
+}
+
+.btn-ghost {
+  border: 1px solid @main-color;
+
+  color: @main-color;
+
+  background-color: transparent;
+}
+
+.content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  & > :first-child {
+    margin-right: 2px;
+  }
+
+  & > :last-child {
+    margin-left: 2px;
+  }
+}
+
+.round {
+  border-radius: 100px;
+}
+
+.square {
+  border-radius: 2px;
+}
+
+.block {
+  display: block;
+
+  width: 100%;
+}
