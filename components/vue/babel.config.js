@@ -5,8 +5,8 @@ const presets = [
   [
     '@babel/preset-typescript',
     {
-      isTsx: true,
-      allExtentions: true
+      isTSX: true,
+      allExtensions: true
     }
   ]
 ]

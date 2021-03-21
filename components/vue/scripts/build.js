@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { rollup } = require('rollup')
 const fs = require('fs')
 const path = require('path')
@@ -32,12 +33,13 @@ const build = async () => {
             extensions: ['.css', '.less'],
             autoModules: false, // 关闭自动 css module，使用自定义的 css module
             modules: {
-              generateScopedName: '[local]__[contenthash:base64:8]'
+              generateScopedName: '[local]__[contenthash:base64:8]',
+              localsConvention: 'dashes'
             },
             extract: path.resolve(distDir, 'index.css')
           })
         ],
-        external: ['vue']
+        external: id => !/\.(css|less)$/.test(id)
       })
 
       await bundle.write({
