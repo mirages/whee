@@ -21,11 +21,12 @@ export default defineComponent({
     }
   },
   setup(props, { slots }) {
+    const offset = 0.7
     const size = computed(() => Math.floor(Number(props.size) / 2) * 2)
-    const lineWidth = computed(() => (size.value * 0.5) / (1 + 0.6))
-    const lineHeight = computed(() => lineWidth.value / 3)
+    const lineWidth = computed(() => (size.value * 0.5) / (1 + offset))
+    const lineHeight = computed(() => lineWidth.value / 2.5)
     const renderSpinner = () => {
-      const num = 12 // 线条数，同 css 中的 animation-timing-function: steps(12)
+      const num = 10 // spinner 线条数
       const pos = []
       const diffR = 360 / num
       const diffO = 0.7 / num
@@ -37,8 +38,10 @@ export default defineComponent({
             style={{
               width: `${Math.floor(lineWidth.value)}px`,
               height: `${Math.floor(lineHeight.value)}px`,
-              transform: `translate(60%, -50%) rotate(${-90 + diffR * i}deg)`,
-              transformOrigin: '-60% 50%',
+              transform: `translate(${offset * 100}%, -50%) rotate(${
+                -90 + diffR * i
+              }deg)`,
+              transformOrigin: `-${offset * 100}% 50%`,
               opacity: 1 - diffO * i,
               backgroundColor: props.color
             }}
@@ -46,19 +49,30 @@ export default defineComponent({
         )
       }
 
-      return pos
+      return (
+        <div
+          class={[styles.spinner]}
+          style={{
+            animationTimingFunction: `steps(${num})`
+          }}
+        >
+          {pos}
+        </div>
+      )
     }
     const renderCircle = () => {
       return (
-        <svg viewBox="0 0 30 30">
-          <circle
-            cx="15"
-            cy="15"
-            r="12"
-            data-test="loading-circle"
-            stroke={props.color}
-          ></circle>
-        </svg>
+        <div class={[styles.circle]}>
+          <svg viewBox="0 0 30 30">
+            <circle
+              cx="15"
+              cy="15"
+              r="12"
+              data-test="loading-circle"
+              stroke={props.color}
+            ></circle>
+          </svg>
+        </div>
       )
     }
 
@@ -71,7 +85,6 @@ export default defineComponent({
       >
         <div
           data-test="loading-size"
-          class={styles[props.type]}
           style={{
             width: size.value + 'px',
             height: size.value + 'px'

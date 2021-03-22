@@ -1,6 +1,6 @@
 import { defineComponent, PropType } from 'vue'
 import styles from './index.less'
-import Loading from '../loading/index'
+import Loading, { LoadingType } from '../loading/index'
 
 export type Shape = 'square' | 'round'
 export type BtnType = 'default' | 'primary' | 'danger' | 'ghost'
@@ -23,6 +23,14 @@ export default defineComponent({
     loading: {
       type: Boolean,
       default: false
+    },
+    loadingSize: {
+      type: [String, Number],
+      default: 18
+    },
+    loadingType: {
+      type: String as PropType<LoadingType>,
+      default: 'spinner'
     },
     disabled: {
       type: Boolean,
@@ -47,6 +55,8 @@ export default defineComponent({
         <div class={[styles.content]}>
           {props.loading ? (
             <Loading
+              size={props.loadingSize}
+              type={props.loadingType}
               color={
                 props.type === 'default' || props.type === 'ghost'
                   ? '#4f8efa'
