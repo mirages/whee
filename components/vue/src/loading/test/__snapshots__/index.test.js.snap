@@ -3,57 +3,52 @@
 exports[`the default slot can set the loading text and style 1`] = `
 <div class="loading">
   <div data-test="loading-size"
-       class="spinner"
        style="width: 20px; height: 20px;"
   >
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(-90deg); transform-origin: -60% 50%; opacity: 1; background-color: rgb(153, 153, 153);"
+    <div class="spinner"
+         style="animation-timing-function: steps(10);"
     >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(-60deg); transform-origin: -60% 50%; opacity: 0.9416666666666667; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(-30deg); transform-origin: -60% 50%; opacity: 0.8833333333333333; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(0deg); transform-origin: -60% 50%; opacity: 0.825; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(30deg); transform-origin: -60% 50%; opacity: 0.7666666666666667; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(60deg); transform-origin: -60% 50%; opacity: 0.7083333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(90deg); transform-origin: -60% 50%; opacity: 0.65; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(120deg); transform-origin: -60% 50%; opacity: 0.5916666666666668; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(150deg); transform-origin: -60% 50%; opacity: 0.5333333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(180deg); transform-origin: -60% 50%; opacity: 0.4750000000000001; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(210deg); transform-origin: -60% 50%; opacity: 0.41666666666666674; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(240deg); transform-origin: -60% 50%; opacity: 0.3583333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(-90deg); transform-origin: -70% 50%; opacity: 1; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(-54deg); transform-origin: -70% 50%; opacity: 0.93; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(-18deg); transform-origin: -70% 50%; opacity: 0.86; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(18deg); transform-origin: -70% 50%; opacity: 0.79; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(54deg); transform-origin: -70% 50%; opacity: 0.72; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(90deg); transform-origin: -70% 50%; opacity: 0.65; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(126deg); transform-origin: -70% 50%; opacity: 0.5800000000000001; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(162deg); transform-origin: -70% 50%; opacity: 0.51; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(198deg); transform-origin: -70% 50%; opacity: 0.44000000000000006; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(234deg); transform-origin: -70% 50%; opacity: 0.3700000000000001; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+    </div>
   </div>
   <div style="color: rgb(153, 153, 153);">
     <p class="test">
@@ -66,57 +61,52 @@ exports[`the default slot can set the loading text and style 1`] = `
 exports[`the size prop can set the loading size 1`] = `
 <div class="loading">
   <div data-test="loading-size"
-       class="spinner"
        style="width: 40px; height: 40px;"
   >
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(-90deg); transform-origin: -60% 50%; opacity: 1; background-color: rgb(153, 153, 153);"
+    <div class="spinner"
+         style="animation-timing-function: steps(10);"
     >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(-60deg); transform-origin: -60% 50%; opacity: 0.9416666666666667; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(-30deg); transform-origin: -60% 50%; opacity: 0.8833333333333333; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(0deg); transform-origin: -60% 50%; opacity: 0.825; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(30deg); transform-origin: -60% 50%; opacity: 0.7666666666666667; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(60deg); transform-origin: -60% 50%; opacity: 0.7083333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(90deg); transform-origin: -60% 50%; opacity: 0.65; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(120deg); transform-origin: -60% 50%; opacity: 0.5916666666666668; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(150deg); transform-origin: -60% 50%; opacity: 0.5333333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(180deg); transform-origin: -60% 50%; opacity: 0.4750000000000001; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(210deg); transform-origin: -60% 50%; opacity: 0.41666666666666674; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 12px; height: 4px; transform: translate(60%, -50%) rotate(240deg); transform-origin: -60% 50%; opacity: 0.3583333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(-90deg); transform-origin: -70% 50%; opacity: 1; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(-54deg); transform-origin: -70% 50%; opacity: 0.93; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(-18deg); transform-origin: -70% 50%; opacity: 0.86; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(18deg); transform-origin: -70% 50%; opacity: 0.79; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(54deg); transform-origin: -70% 50%; opacity: 0.72; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(90deg); transform-origin: -70% 50%; opacity: 0.65; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(126deg); transform-origin: -70% 50%; opacity: 0.5800000000000001; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(162deg); transform-origin: -70% 50%; opacity: 0.51; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(198deg); transform-origin: -70% 50%; opacity: 0.44000000000000006; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 11px; height: 4px; transform: translate(70%, -50%) rotate(234deg); transform-origin: -70% 50%; opacity: 0.3700000000000001; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+    </div>
   </div>
   <div style="color: rgb(153, 153, 153);">
   </div>
@@ -126,75 +116,71 @@ exports[`the size prop can set the loading size 1`] = `
 exports[`the type prop can set the loading type: spinner or circle 1`] = `
 <div class="loading">
   <div data-test="loading-size"
-       class="spinner"
        style="width: 20px; height: 20px;"
   >
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(-90deg); transform-origin: -60% 50%; opacity: 1; background-color: rgb(153, 153, 153);"
+    <div class="spinner"
+         style="animation-timing-function: steps(10);"
     >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(-60deg); transform-origin: -60% 50%; opacity: 0.9416666666666667; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(-30deg); transform-origin: -60% 50%; opacity: 0.8833333333333333; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(0deg); transform-origin: -60% 50%; opacity: 0.825; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(30deg); transform-origin: -60% 50%; opacity: 0.7666666666666667; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(60deg); transform-origin: -60% 50%; opacity: 0.7083333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(90deg); transform-origin: -60% 50%; opacity: 0.65; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(120deg); transform-origin: -60% 50%; opacity: 0.5916666666666668; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(150deg); transform-origin: -60% 50%; opacity: 0.5333333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(180deg); transform-origin: -60% 50%; opacity: 0.4750000000000001; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(210deg); transform-origin: -60% 50%; opacity: 0.41666666666666674; background-color: rgb(153, 153, 153);"
-    >
-    </i>
-    <i data-test="loading-spinner"
-       style="width: 6px; height: 2px; transform: translate(60%, -50%) rotate(240deg); transform-origin: -60% 50%; opacity: 0.3583333333333334; background-color: rgb(153, 153, 153);"
-    >
-    </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(-90deg); transform-origin: -70% 50%; opacity: 1; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(-54deg); transform-origin: -70% 50%; opacity: 0.93; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(-18deg); transform-origin: -70% 50%; opacity: 0.86; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(18deg); transform-origin: -70% 50%; opacity: 0.79; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(54deg); transform-origin: -70% 50%; opacity: 0.72; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(90deg); transform-origin: -70% 50%; opacity: 0.65; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(126deg); transform-origin: -70% 50%; opacity: 0.5800000000000001; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(162deg); transform-origin: -70% 50%; opacity: 0.51; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(198deg); transform-origin: -70% 50%; opacity: 0.44000000000000006; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+      <i data-test="loading-spinner"
+         style="width: 5px; height: 2px; transform: translate(70%, -50%) rotate(234deg); transform-origin: -70% 50%; opacity: 0.3700000000000001; background-color: rgb(153, 153, 153);"
+      >
+      </i>
+    </div>
   </div>
   <div style="color: rgb(153, 153, 153);">
   </div>
 </div>
 <div class="loading">
   <div data-test="loading-size"
-       class="circle"
        style="width: 20px; height: 20px;"
   >
-    <svg viewbox="0 0 30 30">
-      <circle cx="15"
-              cy="15"
-              r="12"
-              data-test="loading-circle"
-              stroke="#999"
-      >
-      </circle>
-    </svg>
+    <div class="circle">
+      <svg viewbox="0 0 30 30">
+        <circle cx="15"
+                cy="15"
+                r="12"
+                data-test="loading-circle"
+                stroke="#999"
+        >
+        </circle>
+      </svg>
+    </div>
   </div>
   <div style="color: rgb(153, 153, 153);">
   </div>
