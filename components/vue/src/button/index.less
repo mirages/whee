@@ -9,13 +9,21 @@
 
   outline: none;
 
-  &[disabled] {
-    opacity: .5;
-  }
-
-  &:not([disabled]):active {
+  &:active {
     opacity: .9;
   }
+}
+
+.loading {
+  opacity: 1 !important;
+
+  cursor: default;
+}
+
+.disabled {
+  opacity: .5 !important;
+
+  cursor: not-allowed;
 }
 
 .btn-default {

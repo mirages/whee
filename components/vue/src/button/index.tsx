@@ -37,38 +37,49 @@ export default defineComponent({
       default: false
     }
   },
-  setup(props, { slots }) {
-    return () => (
-      <button
-        class={{
-          [styles.btn]: true,
-          [styles.btnDefault]: props.type === 'default',
-          [styles.btnPrimary]: props.type === 'primary',
-          [styles.btnDanger]: props.type === 'danger',
-          [styles.btnGhost]: props.type === 'ghost',
-          [styles.round]: props.shape === 'round',
-          [styles.square]: props.shape === 'square',
-          [styles.block]: props.block
-        }}
-        disabled={props.disabled}
-      >
-        <div class={[styles.content]}>
-          {props.loading ? (
-            <Loading
-              size={props.loadingSize}
-              type={props.loadingType}
-              color={
-                props.type === 'default' || props.type === 'ghost'
-                  ? '#4f8efa'
-                  : '#fff'
-              }
-            />
-          ) : (
-            ''
-          )}
-          <div>{slots.default ? slots.default() : ''}</div>
-        </div>
-      </button>
-    )
+  emits: ['click'],
+  setup(props, { slots, emit }) {
+    const clickHandler = (e: MouseEvent) => {
+      if (!props.loading && !props.disabled) {
+        emit('click', e)
+      }
+    }
+    return () => {
+      return (
+        <button
+          class={{
+            [styles.btn]: true,
+            [styles.btnDefault]: props.type === 'default',
+            [styles.btnPrimary]: props.type === 'primary',
+            [styles.btnDanger]: props.type === 'danger',
+            [styles.btnGhost]: props.type === 'ghost',
+            [styles.round]: props.shape === 'round',
+            [styles.square]: props.shape === 'square',
+            [styles.disabled]: props.disabled,
+            [styles.loading]: props.loading,
+            [styles.block]: props.block
+          }}
+          disabled={props.disabled}
+          onClick={clickHandler}
+        >
+          <div class={[styles.content]}>
+            {props.loading ? (
+              <Loading
+                size={props.loadingSize}
+                type={props.loadingType}
+                color={
+                  props.type === 'default' || props.type === 'ghost'
+                    ? '#4f8efa'
+                    : '#fff'
+                }
+              />
+            ) : (
+              ''
+            )}
+            <div>{slots.default ? slots.default() : ''}</div>
+          </div>
+        </button>
+      )
+    }
   }
 })
