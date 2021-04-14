@@ -50,7 +50,7 @@ test('the disabled prop can set the button disable state', async () => {
   expect(html).toMatchSnapshot()
 })
 
-test('the loading props can set the button loading state', () => {
+test('the loading props can set the button loading state', async () => {
   const wrapper = mount(Button, {
     props: {
       loading: true,
@@ -58,8 +58,15 @@ test('the loading props can set the button loading state', () => {
       loadingType: 'circle'
     }
   })
+  let html = wrapper.html()
 
-  expect(wrapper.html()).toMatchSnapshot()
+  await wrapper.setProps({ type: 'primary' })
+  html += wrapper.html()
+
+  await wrapper.setProps({ type: 'ghost' })
+  html += wrapper.html()
+
+  expect(html).toMatchSnapshot()
 })
 
 test('the default slot can set the button text', () => {
@@ -72,4 +79,45 @@ test('the default slot can set the button text', () => {
   expect(wrapper.find('[data-test=text]').html()).toEqual(
     '<p data-test="text">确认无误</p>'
   )
+})
+
+test('should emit click event', async () => {
+  const mockFn = jest.fn()
+  const wrapper = mount(Button, {
+    props: {
+      onclick: mockFn
+    }
+  })
+
+  await wrapper.trigger('click')
+
+  expect(mockFn).toHaveBeenCalledTimes(1)
+})
+
+test('should not emit click event when disabled', async () => {
+  const mockFn = jest.fn()
+  const wrapper = mount(Button, {
+    props: {
+      disabled: true,
+      onClick: mockFn
+    }
+  })
+
+  await wrapper.trigger('click')
+
+  expect(mockFn).toHaveBeenCalledTimes(0)
+})
+
+test('should not emit click event when loading', async () => {
+  const mockFn = jest.fn()
+  const wrapper = mount(Button, {
+    props: {
+      loading: true,
+      onClick: mockFn
+    }
+  })
+
+  await wrapper.trigger('click')
+
+  expect(mockFn).toHaveBeenCalledTimes(0)
 })
